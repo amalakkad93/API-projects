@@ -203,7 +203,6 @@ module.exports = {
           review: "This spot was not worth the high price we paid. We expected a more luxurious experience, but it fell short. We were disappointed with the overall value and wouldn't choose it again in the future.",
           stars: 2
         }
-
       ], { validate: true })
     },
 
