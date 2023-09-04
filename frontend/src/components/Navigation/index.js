@@ -4,16 +4,16 @@ import React, { useState } from "react";
 import { useSelector } from "react-redux";
 import ProfileButton from "./ProfileButton";
 import logo from "../../assets/logo/long-logo.png";
-import "./Nav2.css";
-// import "./Nav.css";
+import "./Navigation.css";
 
 function Navigation({ isLoaded }) {
   const sessionUser = useSelector((state) => state.session.user);
   const [showMenu, setShowMenu] = useState(false);
 
   return (
-    <div className="navBar-container">
+    <>
 
+    <div className="navBar-container">
       <div className="navBar-inner-container">
         <div className="navBar-logo-create-link">
           <NavLink exact to="/" className="navbar-logo">
@@ -46,6 +46,8 @@ function Navigation({ isLoaded }) {
         </div>
       </div>
     </div>
+   <hr className="line"></hr>
+    </>
   );
 }
 
