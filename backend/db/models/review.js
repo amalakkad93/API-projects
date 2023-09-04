@@ -21,7 +21,7 @@ module.exports = (sequelize, DataTypes) => {
     },
     spotId: DataTypes.INTEGER,
     userId: DataTypes.INTEGER,
-    review: DataTypes.STRING,
+    review: DataTypes.TEXT,
     stars: DataTypes.INTEGER,
     createdAt: {
       type: DataTypes.DATE,
