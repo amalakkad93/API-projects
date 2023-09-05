@@ -207,6 +207,7 @@ router.get('/current', requireAuth, async (req, res) => {
 
   let spotsList = processSpots(spots)
   res.json(spotsList);
+  // res.json({Spots: spotsList})
 })
 
 // ======== Get details of a Spot from an id ========
@@ -218,7 +219,8 @@ router.get('/:spotId', async (req, res) => {
       { model: Review },
       { model: SpotImage, attributes: ['id', 'url', 'preview'] },
       { model: User, attributes: ['id', 'firstName', 'lastName'] }
-    ]
+    ],
+    order: [[SpotImage, "preview", "DESC"]]
   });
 
   if (spot) {
@@ -247,15 +249,14 @@ router.get('/:spotId', async (req, res) => {
 
     return res.json(response);
   } else {
-
     return createErrorHandler(404, "Spot couldn't be found", {}, res);
   }
 });
 
 //======== Create a Spot ========
 router.post('/', requireAuth, validateSpot, async (req, res) => {
-  const { user } = req;
   const { address, city, state, country, lat, lng, name, description, price } = req.body;
+  const { user } = req;
   if(user) {
 
     const spot = await Spot.create({ ownerId: user.id, address, city, state, country, lat, lng, name, description, price });
@@ -337,9 +338,11 @@ router.get('/:spotId/reviews', async (req, res) => {
       },
     ],
     where: { spotId: req.params.spotId },
+    order: [['createdAt', 'DESC']]
   });
 
-  if (reviews.length === 0) return createErrorHandler(404, "Spot not found", {}, res);
+  // if (reviews.length === 0) return createErrorHandler(404, "Spot not found", {}, res);
+  if (reviews.length === 0) return res.json({ Reviews: [] });
 
   const updatedReviews = reviews.map((review) => {
     const reviewJSON = review.toJSON();
@@ -354,26 +357,48 @@ router.get('/:spotId/reviews', async (req, res) => {
 });
 
 // ======== Create a Review for a Spot based on the Spot's id ========
+// router.post('/:spotId/reviews', requireAuth, authCatch, validateReview, async (req, res) => {
+//   const { review, stars } = req.body;
+//   const spotId = req.params.spotId;
+//   const userId = req.user.id;
+
+//   const oldReview = await Review.findOne({ where: { userId: req.user.id, spotId: req.params.spotId } });
+
+//   if (oldReview) return createErrorHandler(500, "User already has a review for this spot", {}, res);
+
+//   const spot = await Spot.findOne({ where: { id: spotId } });
+
+//   if (spot) {
+//     const newReview = await Review.create({ userId, spotId, review, stars });
+//     return res.json(newReview);
+
+//   } else if (res.status(404)) {
+//     return createErrorHandler(404, "Spot couldn't be found", {}, res);
+//   }
+
+// });
+//*********************************************************************************************************** */
+//*********************************************************************************************************** */
+// ======== Create a Review for a Spot based on the Spot's id ========
 router.post('/:spotId/reviews', requireAuth, authCatch, validateReview, async (req, res) => {
   const { review, stars } = req.body;
   const spotId = req.params.spotId;
   const userId = req.user.id;
 
-  const oldReview = await Review.findOne({ where: { userId: req.user.id, spotId: req.params.spotId } });
+  const oldReview = await Review.findOne({ where: { userId, spotId } });
 
-  if (oldReview) return createErrorHandler(500, "User already has a review for this spot", {}, res);
+  if (oldReview) return createErrorHandler(409, "User already has a review for this spot", {}, res);
 
   const spot = await Spot.findOne({ where: { id: spotId } });
 
-  if (spot) {
-    const newReview = await Review.create({ userId, spotId, review, stars });
-    return res.json(newReview);
+  if (!spot) return createErrorHandler(404, "Spot couldn't be found", {}, res);
 
-  } else if (res.status(404)) {
-    return createErrorHandler(404, "Spot couldn't be found", {}, res);
-  }
-
+  const newReview = await Review.create({ userId, spotId, review, stars });
+  return res.json(newReview);
 });
+
+//*********************************************************************************************************** */
+//*********************************************************************************************************** */
 
 //======== Get all Bookings for a Spot based on the Spot's id ========
 router.get('/:spotId/bookings', requireAuth, authCatch, async (req, res) => {
@@ -405,8 +430,6 @@ router.post('/:spotId/bookings', requireAuth, authCatch, validateBooking, displa
   const { startDate, endDate } = req.body;
   const spotId = req.params.spotId;
   const userId = req.user.id;
-
-
 
   const startBooking = await Booking.findOne({
       where: {

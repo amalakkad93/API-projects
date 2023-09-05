@@ -1,0 +1,94 @@
+.tile-parent-delete-spot{
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 0px;
+  border: black solid 4px;
+  border-radius: 10px;
+  /* height: 243px; */
+  height: 283px;
+  width: 337px;
+  margin-top: 0px;
+  margin-bottom: 0px;
+  padding:10px;
+}
+
+/* .delete-btn button {
+  margin-left: 10px;
+  margin-right: 10px;
+  background-color:  #FF5A5F;
+    border: black solid 1px;
+    box-shadow: 3px 3px 2px black;
+    color: white;
+    height: 30px
+  } */
+
+.modal__buttons {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 20px;
+  gap: 10px;
+}
+.delete-spot-h1-p-tag {
+  margin-top: -28px;
+}
+.delete-keep-spot-cancel-btn, .delete-spot-h1-p-tag {
+  height: 50%;
+  width: 100%;
+}
+/* #delete-spot-btn button[disabled] {
+  background-color: grey;
+  cursor: not-allowed;
+} */
+
+#cancle-spot-btn:hover,
+#delete-spot-btn:hover{
+  color:black;
+}
+
+#delete-spot-btn{
+  background-color:  #FF5A5F;
+  border: black solid 1px;
+  box-shadow: 3px 3px 2px black;
+  margin-bottom: 20px;
+  height: 30px;
+  color: white;
+  margin-right: 10px;
+  margin-left: 10px;
+  width: 90%;
+  height: 48px;
+  cursor: pointer;
+  }
+
+#cancle-spot-btn {
+  background-color: grey;
+  border: black solid 1px;
+  box-shadow: 3px 3px 2px black;
+  margin-bottom: 20px;
+  height: 30px;
+  color: white;
+  margin-right: 10px;
+  margin-left: 10px;
+  width: 90%;
+  height: 48px;
+  cursor: pointer;
+  }
+  #delete-spot-btn:disabled{
+  background-color: gray;
+  border: black solid 1px;
+  box-shadow: none;
+  }
+
+  .delete-spot-h1-tag {
+    display:flex;
+    justify-content: center;
+    align-items: center;
+    /* margin-top: -46px; */
+  }
+  .delete-spot-p-tag {
+    font-weight: bold;
+    display:flex;
+    justify-content: center;
+    align-items: center
+  }

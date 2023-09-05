@@ -1,0 +1,97 @@
+/* #model-content{
+  border-radius: 30px;
+
+} */
+
+ .tile-parent-delete-review{
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 0px;
+  border: black solid 4px;
+  border-radius: 10px;
+  height: 243px;
+  width: 337px;
+  margin-top: 0px;
+  margin-bottom: 0px;
+  padding:10px;
+
+}
+
+
+/* .delete-btn button {
+  margin-left: 10px;
+  margin-right: 10px;
+  background-color:  #FF5A5F;
+    border: black solid 1px;
+    box-shadow: 3px 3px 2px black;
+    color: white;
+    height: 30px
+  } */
+
+.modal__buttons {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 20px;
+  gap: 10px;
+}
+.delete-review-h1-p-tag {
+  margin-top: -28px;
+}
+.delete-keep-review-cancel-btn, .delete-review-h1-p-tag {
+  height: 50%;
+  width: 100%;
+}
+#delete-review-btn button[disabled] {
+  background-color: grey;
+  cursor: not-allowed;
+}
+
+#delete-review-btn:hover,
+#cancle-review-btn:hover{
+  color: black;
+}
+
+#cancle-review-btn {
+  background-color: grey;
+}
+#delete-review-btn {
+  background-color:  #FF5A5F;
+}
+#delete-review-btn,
+#cancle-review-btn{
+  /* background-color:  #FF5A5F; */
+  /* background-color: grey; */
+  border: black solid 1px;
+  box-shadow: 3px 3px 2px black;
+  margin-bottom: 20px;
+  height: 30px;
+  color: white;
+  margin-right: 10px;
+  margin-left: 10px;
+  width: 90%;
+  height: 48px;
+  cursor: pointer;
+  }
+  #delete-review-btn:disabled{
+  background-color: gray;
+  border: black solid 1px;
+  box-shadow: none;
+  }
+
+  .delete-review-h1-tag {
+    display:flex;
+    justify-content: center;
+    align-items: center;
+    /* margin-top: -46px; */
+  }
+  .delete-review-p-tag {
+    font-weight: bold;
+    display:flex;
+    justify-content: center;
+    align-items: center
+    /* width: 90%; */
+    /* margin-top:10px; */
+    /* margin-top: -12px; */
+  }

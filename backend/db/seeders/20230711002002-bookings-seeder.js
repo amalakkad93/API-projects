@@ -45,7 +45,6 @@ module.exports = {
         startDate: '2023-10-01',
         endDate: '2023-10-10',
 
-
       },])
   },
 

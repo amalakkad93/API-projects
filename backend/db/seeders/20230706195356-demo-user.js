@@ -15,25 +15,67 @@ module.exports = {
   async up (queryInterface, Sequelize) {
     await User.bulkCreate([
       {
-        firstName: 'Anas',
-        lastName: 'Alakkad',
+        firstName: 'John',
+        lastName: 'Doe',
         email: 'demo@user.io',
         username: 'Demo-lition',
         hashedPassword: bcrypt.hashSync('password')
       },
       {
-        firstName: 'John',
-        lastName: 'Dorsey',
+        firstName: 'Anas',
+        lastName: 'Alakkad',
         email: 'user1@user.io',
         username: 'FakeUser1',
+        hashedPassword: bcrypt.hashSync('password1')
+      },
+      {
+        firstName: 'John',
+        lastName: 'Dorsey',
+        email: 'user2@user.io',
+        username: 'FakeUser2',
         hashedPassword: bcrypt.hashSync('password2')
       },
       {
         firstName: 'Alex',
         lastName: 'H',
-        email: 'user2@user.io',
-        username: 'FakeUser2',
+        email: 'user3@user.io',
+        username: 'FakeUser3',
         hashedPassword: bcrypt.hashSync('password3')
+      },
+      {
+        firstName: 'nichole',
+        lastName: 'Alakkad',
+        email: 'user4@user.io',
+        username: 'FakeUser4',
+        hashedPassword: bcrypt.hashSync('password4')
+      },
+      {
+        firstName: 'mike',
+        lastName: 'dillon',
+        email: 'john.doe@example.com',
+        username: 'JohnDoe',
+        hashedPassword: bcrypt.hashSync('password1', 10)
+      },
+      {
+        firstName: 'Jane',
+        lastName: 'Smith',
+        email: 'jane.smith@example.com',
+        username: 'JaneSmith',
+        hashedPassword: bcrypt.hashSync('password2', 10)
+      },
+      {
+        firstName: 'Michael',
+        lastName: 'Johnson',
+        email: 'michael.johnson@example.com',
+        username: 'MichaelJohnson',
+        hashedPassword: bcrypt.hashSync('password3', 10)
+      },
+      {
+        firstName: 'Emily',
+        lastName: 'Williams',
+        email: 'emily.williams@example.com',
+        username: 'EmilyWilliams',
+        hashedPassword: bcrypt.hashSync('password4', 10)
       }
     ], { validate: true });
   },
