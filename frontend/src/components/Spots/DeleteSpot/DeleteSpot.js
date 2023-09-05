@@ -35,14 +35,10 @@ export default function DeleteSpot({spotId}) {
           <h1 className="delete-spot-h1-tag">Confirm Delete</h1>
           <p className="delete-spot-p-tag">Are you sure you want to delete this spot from the listings?</p>
         </div>
-        <div className="delete-keep-spot-btn">
+        <div className="delete-keep-spot-btn1">
           <button id="delete-spot-btn" onClick={handleDelete}>Yes (Delete Spot)</button>
-          <button id="delete-spot-btn" onClick={closeModal}>No (Keep Spot)</button>
+          <button id="cancle-spot-btn" onClick={closeModal}>No (Keep Spot)</button>
         </div>
-        {/* <div className="modal__buttons">
-          <button className='delete-btn' onClick={deleteReviewCallBack}>Yes (Delete Review)</button>
-          <button className='cancel-btn' onClick={closeModal}>No (Keep Review)</button>
-        </div> */}
       </div>
     </>
   );

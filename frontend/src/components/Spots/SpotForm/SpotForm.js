@@ -29,9 +29,9 @@ export default function SpotForm({ formType, spotId }) {
   const [country, setCountry] = useState("");
   const [state, setState] = useState("");
   const [city, setCity] = useState("");
-  const [countriesList, setCountriesList] = useState([]);
-  const [stateList, setStateList] = useState([]);
-  const [cityList, setCityList] = useState([]);
+  // const [countriesList, setCountriesList] = useState([]);
+  // const [stateList, setStateList] = useState([]);
+  // const [cityList, setCityList] = useState([]);
   const [lat, setLat] = useState(1);
   const [lng, setLng] = useState(1);
   const [name, setName] = useState("");
@@ -52,7 +52,7 @@ export default function SpotForm({ formType, spotId }) {
 
   // ***************useEffects***************
   useEffect(() => {
-    GetCountries().then((result) => setCountriesList(result));
+    // GetCountries().then((result) => setCountriesList(result));
     if (formType === "Edit" && spotId) {
       dispatch(getSpotDetailThunk(spotId)).then((data) => {
         setAddress(data.address);
@@ -65,8 +65,8 @@ export default function SpotForm({ formType, spotId }) {
         setState(data.state);
         setCity(data.city);
 
-        GetState(data.country).then((states) => setStateList(states));
-        GetCity(data.country, data.state).then((cities) => setCityList(cities));
+        // GetState(data.country).then((states) => setStateList(states));
+        // GetCity(data.country, data.state).then((cities) => setCityList(cities));
         setInitialSpot(data);
       });
     }
@@ -74,26 +74,26 @@ export default function SpotForm({ formType, spotId }) {
 
   // =========================================
 
-  useEffect(() => {
-    if (country) {
-      GetState(country)
-        .then((states) => setStateList(states))
-        .catch((err) => {
-          console.error("Error fetching states:", err);
-        });
-    }
-  }, [country]);
-  // =========================================
+  // useEffect(() => {
+  //   if (country) {
+  //     GetState(country)
+  //       .then((states) => setStateList(states))
+  //       .catch((err) => {
+  //         console.error("Error fetching states:", err);
+  //       });
+  //   }
+  // }, [country]);
+  // // =========================================
 
-  useEffect(() => {
-    if (state) {
-      GetCity(country, state)
-        .then((cities) => setCityList(cities))
-        .catch((err) => {
-          console.error("Error fetching cities:", err);
-        });
-    }
-  }, [state]);
+  // useEffect(() => {
+  //   if (state) {
+  //     GetCity(country, state)
+  //       .then((cities) => setCityList(cities))
+  //       .catch((err) => {
+  //         console.error("Error fetching cities:", err);
+  //       });
+  //   }
+  // }, [state]);
   // =========================================
 
   // ******************************************
@@ -187,41 +187,41 @@ export default function SpotForm({ formType, spotId }) {
   };
   // ****************************************
 
-  // **********handleCountryChange******************
-  const handleCountryChange = (e) => {
-    const selectedCountryId = e.target.value;
-    setCountry(Number(selectedCountryId));
-    clearValidationError("country");
-    setState(null);
-    setCity(null);
-    GetState(selectedCountryId)
-      .then((states) => setStateList(states))
-      .catch((error) => {
-        console.error("Error fetching states:", error);
-      });
-  };
-  // ****************************************
+  // // **********handleCountryChange******************
+  // const handleCountryChange = (e) => {
+  //   const selectedCountryId = e.target.value;
+  //   setCountry(Number(selectedCountryId));
+  //   clearValidationError("country");
+  //   setState(null);
+  //   setCity(null);
+  //   GetState(selectedCountryId)
+  //     .then((states) => setStateList(states))
+  //     .catch((error) => {
+  //       console.error("Error fetching states:", error);
+  //     });
+  // };
+  // // ****************************************
 
-  // **********handleCityChange******************
-  const handleCityChange = (e) => {
-    const selectedCityId = e.target.value;
-    setCity(Number(selectedCityId));
-    clearValidationError("city");
-  };
-  // ****************************************
+  // // **********handleCityChange******************
+  // const handleCityChange = (e) => {
+  //   const selectedCityId = e.target.value;
+  //   setCity(Number(selectedCityId));
+  //   clearValidationError("city");
+  // };
+  // // ****************************************
 
-  // **********handleStateChange******************
-  const handleStateChange = (e) => {
-    const selectedStateId = e.target.value;
-    setState(Number(selectedStateId));
-    clearValidationError("state");
-    setCity(null);
-    GetCity(country, selectedStateId)
-      .then((cities) => setCityList(cities.name))
-      .catch((error) => {
-        console.error("Error fetching cities:", error);
-      });
-  };
+  // // **********handleStateChange******************
+  // const handleStateChange = (e) => {
+  //   const selectedStateId = e.target.value;
+  //   setState(Number(selectedStateId));
+  //   clearValidationError("state");
+  //   setCity(null);
+  //   GetCity(country, selectedStateId)
+  //     .then((cities) => setCityList(cities.name))
+  //     .catch((error) => {
+  //       console.error("Error fetching cities:", error);
+  //     });
+  // };
   // ****************************************
 
   const handleSubmit = async (e) => {
@@ -241,11 +241,22 @@ export default function SpotForm({ formType, spotId }) {
 
     const getNameById = (list, id) =>
       list?.find((item) => item.id === id)?.name || "";
+    // const spot = {
+    //   address,
+    //   city: getNameById(cityList, city),
+    //   state: getNameById(stateList, state),
+    //   country: getNameById(countriesList, country),
+    //   lat,
+    //   lng,
+    //   name,
+    //   description,
+    //   price,
+    // };
     const spot = {
       address,
-      city: getNameById(cityList, city),
-      state: getNameById(stateList, state),
-      country: getNameById(countriesList, country),
+      city,
+      state,
+      country,
       lat,
       lng,
       name,
@@ -268,15 +279,27 @@ export default function SpotForm({ formType, spotId }) {
         const updatedSpot = {
           ...initialSpot,
           address,
-          city: getNameById(cityList, city) || initialSpot.city,
-          state: getNameById(stateList, state) || initialSpot.state,
-          country: getNameById(countriesList, country) || initialSpot.country,
+          city,
+          state,
+          country,
           lat,
           lng,
           name,
           description,
           price,
         };
+        // const updatedSpot = {
+        //   ...initialSpot,
+        //   address,
+        //   city: getNameById(cityList, city) || initialSpot.city,
+        //   state: getNameById(stateList, state) || initialSpot.state,
+        //   country: getNameById(countriesList, country) || initialSpot.country,
+        //   lat,
+        //   lng,
+        //   name,
+        //   description,
+        //   price,
+        // };
         const updatedSpotData = await dispatch(updateSpotThunk(updatedSpot));
         if (updatedSpotData) navigate(`/spots/${updatedSpotData.id}`);
         else return null;
@@ -315,11 +338,15 @@ export default function SpotForm({ formType, spotId }) {
             {/* <div className="error-container"> <p>State</p>{validationObj.stateid && (<p className="errors">{validationObj.stateid}</p>)}</div> */}
 
             <LabeledInput title="Country" error={validationObj.country}>
-              <SelectInput
+              <TextInput
+                id="country"
+                type="text"
+                label="Country"
                 value={country}
-                options={countriesList}
-                placeholder={formType === "Edit" ? country : "Select a Country"}
-                onChange={handleCountryChange}
+                error={validationObj.country}
+                placeholder="Country"
+                onChange={handleInputChange(setCountry, "country")}
+                className="input-form"
               />
             </LabeledInput>
             {/* ****************************Address************************************ */}
@@ -334,6 +361,7 @@ export default function SpotForm({ formType, spotId }) {
                 error={validationObj.address}
                 placeholder="Address"
                 onChange={handleInputChange(setAddress, "address")}
+                className="input-form"
               />
             </LabeledInput>
 
@@ -342,24 +370,30 @@ export default function SpotForm({ formType, spotId }) {
               {/* ***************************City*************************************** */}
               {/* <div className="error-container"><p>city</p>{validationObj.cityid && (<p className="errors">{validationObj.cityid}</p>)}</div> */}
               <LabeledInput title="City" error={validationObj.city}>
-                <SelectInput
-                  value={city}
-                  options={cityList}
-                  placeholder={formType === "Edit" ? city : "Select a City"}
-                  disabled={!country || !state}
-                  onChange={handleCityChange}
-                />
+              <TextInput
+                id="city"
+                type="text"
+                label="City"
+                value={city}
+                error={validationObj.city}
+                placeholder="City"
+                onChange={handleInputChange(setCity, "city")}
+                className="city-state-input"
+              />
               </LabeledInput>
               {/* ***************************State*************************************** */}
               {/* <div className="error-container"><p>State</p>{validationObj.stateid && (<p className="errors">{validationObj.stateid}</p>)}</div> */}
               <LabeledInput title="State" error={validationObj.state}>
-                <SelectInput
-                  value={state}
-                  options={stateList}
-                  placeholder={formType === "Edit" ? state : "Select a State"}
-                  disabled={!country}
-                  onChange={handleStateChange}
-                />
+              <TextInput
+                id="state"
+                type="text"
+                label="State"
+                value={state}
+                error={validationObj.state}
+                placeholder="State"
+                onChange={handleInputChange(setState, "state")}
+                className="city-state-input"
+              />
               </LabeledInput>
             </div>
             {/* ****************************latitude and Longitude************************************ */}
@@ -401,14 +435,14 @@ export default function SpotForm({ formType, spotId }) {
                 <h2 className="form-h2">Describe your place to guests</h2>
                 <h3 className="form-h3">
                   Mention the best features of your space, any special
-                  amentities like fast wif or parking, and what you love about
+                  amentities like fast wifi or parking, and what you love about
                   the neighborhood.
                 </h3>
               </div>
               <LabeledTextarea>
                 <textarea
                   id="description"
-                  placeholder="Description"
+                  placeholder="Please write at least 30 characters."
                   value={description}
                   onChange={handleInputChange(setDescription, "description")}
                   className={formType === "Edit" ? "edit-form-textarea" : ""}
@@ -432,6 +466,7 @@ export default function SpotForm({ formType, spotId }) {
                 value={name}
                 placeholder="Name of your spot"
                 onChange={handleInputChange(setName, "name")}
+                className="input-form"
               />
             </LabeledInput>
             {validationObj.name && <p className="errors">{validationObj.name}</p>}
@@ -445,13 +480,17 @@ export default function SpotForm({ formType, spotId }) {
               </h3>
             </div>
             <LabeledInput>
+              <div className="price-div-form">
+                <span className="dollar-sign">$</span>
               <TextInput
                 id="price"
                 type="number"
                 value={price}
                 placeholder="Price per night (USD)"
                 onChange={handleInputChange(setPrice, "price")}
+                className="input-form"
               />
+              </div>
             </LabeledInput>
             {validationObj.price && (<p className="errors">{validationObj.price}</p>)}
             <hr></hr>
@@ -477,6 +516,7 @@ export default function SpotForm({ formType, spotId }) {
                       setPreviewImage,
                       "previewImage"
                     )}
+                    className="input-form"
                   />
                 </LabeledInput>
                 {validationObj.previewImage && ( <p className="errors">{validationObj.previewImage}</p>)}
@@ -489,6 +529,7 @@ export default function SpotForm({ formType, spotId }) {
                     placeholder="Image URL"
                     value={imageUrl2}
                     onChange={handleInputChange(setImageUrl2, "imageUrl2")}
+                    className="input-form"
                   />
                 </LabeledInput>
                 {validationObj.imageUrl2 && <p className="errors">{validationObj.imageUrl2}</p>}
@@ -501,6 +542,7 @@ export default function SpotForm({ formType, spotId }) {
                     placeholder="Image URL"
                     value={imageUrl3}
                     onChange={handleInputChange(setImageUrl3, "imageUrl3")}
+                    className="input-form"
                   />
                 </LabeledInput>
                 {validationObj.imageUrl3 && <p className="errors">{validationObj.imageUrl3}</p>}
@@ -513,6 +555,7 @@ export default function SpotForm({ formType, spotId }) {
                     placeholder="Image URL"
                     value={imageUrl4}
                     onChange={handleInputChange(setImageUrl4, "imageUrl4")}
+                    className="input-form"
                   />
                 </LabeledInput>
                 {validationObj.imageUrl4 && <p className="errors">{validationObj.imageUrl4}</p>}
@@ -525,6 +568,7 @@ export default function SpotForm({ formType, spotId }) {
                     placeholder="Image URL"
                     value={imageUrl5}
                     onChange={handleInputChange(setImageUrl5, "imageUrl5")}
+                    className="input-form"
                   />
                 </LabeledInput>
                 {validationObj.imageUrl5 && <p className="errors">{validationObj.imageUrl5}</p>}
