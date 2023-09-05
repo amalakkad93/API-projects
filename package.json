@@ -13,7 +13,6 @@
     "start": "npm start --prefix backend",
     "build": "npm run build --prefix backend"
   },
-
   "repository": {
     "type": "git",
     "url": "git+https://github.com/amalakkad93/API-projects.git"
@@ -24,5 +23,8 @@
   "bugs": {
     "url": "https://github.com/amalakkad93/API-projects/issues"
   },
-  "homepage": "https://github.com/amalakkad93/API-projects#readme"
+  "homepage": "https://github.com/amalakkad93/API-projects#readme",
+  "dependencies": {
+    "lodash": "^4.17.21"
+  }
 }

@@ -30,7 +30,7 @@ export default function DeleteReviewModal({ reviewId, spotId, setReloadPage}) {
         </div>
         <div className="delete-keep-review-cancel-btn">
           <button id="delete-review-btn" onClick={handleDelete}>Yes (Delete Review)</button>
-          <button id="delete-review-btn" onClick={closeModal}>No (Keep Review)</button>
+          <button id="cancle-review-btn" onClick={closeModal}>No (Keep Review)</button>
         </div>
       </div>
     </>

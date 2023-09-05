@@ -46,17 +46,23 @@
 #delete-review-btn button[disabled] {
   background-color: grey;
   cursor: not-allowed;
-}{
+}
+
+#delete-review-btn:hover,
+#cancle-review-btn:hover{
   color: black;
 }
-#delete-review-btn:hover{
 
-  background-color:  #FF5A5F;
-
-}
-#delete-review-btn{
-  /* background-color:  #FF5A5F; */
+#cancle-review-btn {
   background-color: grey;
+}
+#delete-review-btn {
+  background-color:  #FF5A5F;
+}
+#delete-review-btn,
+#cancle-review-btn{
+  /* background-color:  #FF5A5F; */
+  /* background-color: grey; */
   border: black solid 1px;
   box-shadow: 3px 3px 2px black;
   margin-bottom: 20px;

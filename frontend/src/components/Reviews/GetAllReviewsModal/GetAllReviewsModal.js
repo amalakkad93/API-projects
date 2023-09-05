@@ -1,6 +1,6 @@
 import React from "react";
 import { useSelector } from "react-redux";
-import DeleteReviewModal from "./DeleteReviewModal"
+import DeleteReviewModal from "../DeleteReviewModal/DeleteReviewModal"
 import OpenModalButton from "../../OpenModalButton"
 import './GetAllReviewsModal.css'
 

@@ -1,9 +1,4 @@
-/* #model-content{
-  border-radius: 30px;
-
-} */
-
- .tile-parent-delete-spot{
+.tile-parent-delete-spot{
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -17,9 +12,7 @@
   margin-top: 0px;
   margin-bottom: 0px;
   padding:10px;
-
 }
-
 
 /* .delete-btn button {
   margin-left: 10px;
@@ -49,14 +42,26 @@
   cursor: not-allowed;
 } */
 
-
+#cancle-spot-btn:hover,
 #delete-spot-btn:hover{
-
-  background-color:  #FF5A5F;
-
+  color:black;
 }
+
 #delete-spot-btn{
-  /* background-color:  #FF5A5F; */
+  background-color:  #FF5A5F;
+  border: black solid 1px;
+  box-shadow: 3px 3px 2px black;
+  margin-bottom: 20px;
+  height: 30px;
+  color: white;
+  margin-right: 10px;
+  margin-left: 10px;
+  width: 90%;
+  height: 48px;
+  cursor: pointer;
+  }
+
+#cancle-spot-btn {
   background-color: grey;
   border: black solid 1px;
   box-shadow: 3px 3px 2px black;
@@ -86,7 +91,4 @@
     display:flex;
     justify-content: center;
     align-items: center
-    /* width: 90%; */
-    /* margin-top:10px; */
-    /* margin-top: -12px; */
   }

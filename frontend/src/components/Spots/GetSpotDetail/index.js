@@ -3,9 +3,9 @@ import { useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { getSpotDetailThunk } from "../../../store/spots";
 import { getAllReviewsThunk } from "../../../store/reviews";
-import GetAllReviewsModal from "../../Reviews/ReviewModals/GetAllReviewsModal"
 import OpenModalButton from "../../OpenModalButton";
-import CreateReviewModal from "../../Reviews/ReviewModals/CreateReviewModal";
+import GetAllReviewsModal from "../../Reviews/GetAllReviewsModal/GetAllReviewsModal"
+import CreateReviewModal from "../../Reviews/CreateReviewModal/CreateReviewModal";
 
 import "./GetSpotDetail.css";
 

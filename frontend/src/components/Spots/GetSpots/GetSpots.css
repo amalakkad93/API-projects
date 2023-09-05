@@ -47,7 +47,8 @@
   color: black;
   /* max-width: 300px; */
   margin: 0 auto;
-  height: 288px;
+  /* height: 288px; */
+  height: 257px;
 }
 
 .ownerSpot-box {
