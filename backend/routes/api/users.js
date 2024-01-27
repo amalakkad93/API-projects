@@ -41,24 +41,60 @@ const validateSignup = [
 ];
 
 // Sign up
+// router.post('/', validateSignup, async (req, res) => {
+//     const {firstName, lastName, email, password, username } = req.body;
+//     const hashedPassword = bcrypt.hashSync(password);
+//     const user = await User.create({ firstName, lastName, email, username, hashedPassword });
+
+//     const safeUser = {
+//       id: user.id,
+//       firstName: user.firstName,
+//       lastName: user.lastName,
+//       email: user.email,
+//       username: user.username,
+//     };
+
+//     await setTokenCookie(res, safeUser);
+
+//     return res.json({
+//       user: safeUser
+//     });
+//   });
 router.post('/', validateSignup, async (req, res) => {
-    const {firstName, lastName, email, password, username } = req.body;
-    const hashedPassword = bcrypt.hashSync(password);
-    const user = await User.create({ firstName, lastName, email, username, hashedPassword });
+  const {firstName, lastName, email, password, username } = req.body;
+  const hashedPassword = bcrypt.hashSync(password);
 
-    const safeUser = {
-      id: user.id,
-      firstName: user.firstName,
-      lastName: user.lastName,
-      email: user.email,
-      username: user.username,
-    };
+  try {
+      const user = await User.create({ firstName, lastName, email, username, hashedPassword });
 
-    await setTokenCookie(res, safeUser);
+      const safeUser = {
+        id: user.id,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        email: user.email,
+        username: user.username,
+      };
 
-    return res.json({
-      user: safeUser
-    });
-  });
+      await setTokenCookie(res, safeUser);
+
+      return res.json({
+        user: safeUser
+      });
+  } catch (error) {
+      // Handle errors e.g. unique constraint violations
+      if (error.name === 'SequelizeUniqueConstraintError') {
+          return res.status(400).json({
+              errors: {
+                  username: 'Username must be unique.',
+                  // email: 'The provided email is invalid.'
+              }
+          });
+      }
+
+      // Return a generic server error
+      return res.status(500).json({ message: 'Internal server error' });
+  }
+});
+
 
 module.exports = router;

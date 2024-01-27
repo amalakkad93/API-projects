@@ -56,7 +56,6 @@ export const getSpotDetailThunk = (spotId) => async (dispatch) => {
 
 // ***************************createSpotThunk***************************
 export const createSpotThunk = (newSpot, newSpotImage, sessionUser) => async (dispatch) => {
-
   const res = await csrfFetch("/api/spots", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -128,7 +127,7 @@ export const deleteSpotThunk = (spotId) => async (dispatch) => {
 // ***************************getOwnerAllSpotsThunk**************************
 // these functions hit routes
 export const getOwnerAllSpotsThunk = () => async (dispatch) => {
-  
+
   const res = await csrfFetch("/api/spots/current");
 
   if (res.ok) {

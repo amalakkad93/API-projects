@@ -1,0 +1,17 @@
+.form-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.input-wrapper, .textarea-wrapper {
+  flex: 1 1 100%;
+}
+
+.input-wrapper.half, .textarea-wrapper.half {
+  flex: 1 1 48%;
+}
+
+.input, textarea {
+  width: 100%;
+}

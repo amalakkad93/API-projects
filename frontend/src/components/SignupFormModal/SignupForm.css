@@ -13,7 +13,8 @@ input, label {
 .signup-h1-tag {
   display: flex;
   justify-content: center;
-  margin-top: -27px;
+   margin-bottom: 4px;
+  /* margin-top: -27px; */
 }
 
 .signup-form button[disabled] {
@@ -22,11 +23,11 @@ input, label {
 }
 
 
-.signup-form {
+/* .signup-form { */
   /* position: absolute; */
-  width: 289px;
+  /* width: 289px; */
   /* height: 401px; */
-  height: 343px;
+  /* height: 343px;
   background : white;
   z-index: 1000;
 
@@ -35,9 +36,35 @@ input, label {
   align-items: center;
   padding: 40px;
   border-radius: 4px;
-  box-shadow: 0 15px 35px rgba(0,0,0,9);
+  box-shadow: 0 15px 35px rgba(0,0,0,9); */
+/* } */
+.errors {
+  min-height: 0px;
+  font-size: 8pt;
+  display: inline-block;
+  position: absolute;
+  /* top: -34px; */
+  top: -27px;
+  left: 0;
+}
+.label-signup {
+  position: relative;
+  width: 300px;
 }
 
+.signup-form {
+  width: 289px;
+  background: white;
+  z-index: 1000;
+  display: grid;
+  gap: 20px;
+  justify-content: center;
+  align-items: center;
+  padding: 40px;
+  padding-top: 8px;
+  border-radius: 4px;
+  box-shadow: 0 15px 35px rgba(0,0,0,0.9);
+}
 /*
 .signup-formlabel {
   display: flex;

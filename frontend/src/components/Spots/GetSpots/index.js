@@ -59,7 +59,7 @@ export default function GetSpots({ ownerMode = false }) {
                         <p className="p-style"><span className="span-style">${spot.price}</span> night{" "}</p>
                       </div>
                     </div>
-                   
+
                   </div>
                 </Link>
                 {ownerMode && (
@@ -78,3 +78,83 @@ export default function GetSpots({ ownerMode = false }) {
   );
 }
 // className="p-card-style"
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// import React, { useEffect, useState } from "react";
+// import { useDispatch, useSelector } from "react-redux";
+// import { Link, useHistory, NavLink, useParams } from "react-router-dom";
+// import { thunkGetAllRestaurants, thunkGetRestaurantsUserOwns } from "../../../store/restaurants";
+// import OpenModalButton from "../../OpenModalButton/index";
+// import DeleteRestaurant from "../DeleteRestaurant";
+// import "./GetRestaurants.css";
+
+// export default function GetRestaurants({ ownerMode = false }) {
+//   const restaurants = Object.values(useSelector((state) => (state.restaurants.allRestaurants ? state.restaurants.allRestaurants : [])));
+//   const sessionUser = useSelector((state) => state.session.user);
+//   const dispatch = useDispatch();
+//   const history = useHistory();
+
+//   useEffect(() => {
+//     if (ownerMode) dispatch(thunkGetRestaurantsUserOwns());
+//     else dispatch(thunkGetAllRestaurants());
+//   }, [dispatch, ownerMode]);
+
+//   const restaurantsToDisplay = (ownerMode && sessionUser) ? restaurants.filter((restaurant) => restaurant.ownerId === sessionUser.id) : restaurants;
+//   const ownerRestaurants =  (ownerMode && sessionUser) ? restaurants.filter((restaurant) => restaurant.ownerId === sessionUser.id) : 1;
+
+//   if(!restaurants || !restaurantsToDisplay) return null;
+//   return (
+//     <>
+//       {ownerMode && (
+//         <div className="owner-div">
+//           <h2>Manage Your Restaurants</h2>
+//           <button>
+//             <NavLink to="/restaurants/new">Create a New Restaurant</NavLink>
+//           </button>
+//         </div>
+//       )}
+//       <div className="main-container">
+//         {restaurantsToDisplay.map((restaurant) => (
+//           <div key={restaurant.id}>
+//             <Link to={`/restaurants/${restaurant.id}`}>
+//               <div>
+//                   <img src={restaurant.previewImage} alt={restaurant.name} />
+//                   <div>
+//                       <p>{`${restaurant.city}, ${restaurant.state}`}</p>
+//                       <p>★{restaurant.avgRating ? restaurant.avgRating.toFixed(1) : 'New'}</p>
+//                       <div>
+//                         <p><span>${restaurant.price}</span> night</p>
+//                       </div>
+//                   </div>
+//               </div>
+//             </Link>
+//             {ownerMode && (
+//               <div>
+//                 <button onClick={() => history.push(`/restaurants/edit/${restaurant.id}`)}>Update</button>
+//                 <OpenModalButton buttonText="Delete" modalComponent={<DeleteRestaurant restaurantId={restaurant.id} />}/>
+//               </div>
+//             )}
+//           </div>
+//         ))}
+//       </div>
+//     </>
+//   );
+// }

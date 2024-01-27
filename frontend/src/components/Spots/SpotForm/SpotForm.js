@@ -512,10 +512,7 @@ export default function SpotForm({ formType, spotId }) {
                     type="url"
                     placeholder="Preview Image URL"
                     value={previewImage}
-                    onChange={handleInputChange(
-                      setPreviewImage,
-                      "previewImage"
-                    )}
+                    onChange={handleInputChange(setPreviewImage,"previewImage")}
                     className="input-form"
                   />
                 </LabeledInput>
