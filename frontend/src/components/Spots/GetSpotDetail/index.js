@@ -2,10 +2,12 @@ import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { getSpotDetailThunk } from "../../../store/spots";
+import { fetchBookingsForSpot } from "../../../store/bookings";
 import { getAllReviewsThunk } from "../../../store/reviews";
 import OpenModalButton from "../../OpenModalButton";
-import GetAllReviewsModal from "../../Reviews/GetAllReviewsModal/GetAllReviewsModal"
+import GetAllReviewsModal from "../../Reviews/GetAllReviewsModal/GetAllReviewsModal";
 import CreateReviewModal from "../../Reviews/CreateReviewModal/CreateReviewModal";
+import DatePicker from "./DatePicker";
 
 import "./GetSpotDetail.css";
 
@@ -14,19 +16,36 @@ export default function SpotDetail() {
   const dispatch = useDispatch();
   const [reloadPage, setReloadPage] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [selectedDates, setSelectedDates] = useState({
+    startDate: new Date(),
+    endDate: new Date(),
+  });
 
-  const spot = useSelector((state) => state.spots.singleSpot ? state.spots.singleSpot : null);
+  const spot = useSelector((state) =>
+    state.spots.singleSpot ? state.spots.singleSpot : null
+  );
   const sessionUser = useSelector((state) => state.session.user);
-  const reviews = useSelector((state) => state.reviews.reviews.spot ? state.reviews.reviews.spot : null);
-  const userSpotReview = (sessionUser) ? Object.values(reviews).find((currentReview) => currentReview.userId === sessionUser.id) : {};
+  const reviews = useSelector((state) =>
+    state.reviews.reviews.spot ? state.reviews.reviews.spot : null
+  );
+  const userSpotReview = sessionUser
+    ? Object.values(reviews).find(
+        (currentReview) => currentReview.userId === sessionUser.id
+      )
+    : {};
+    const bookingsForSpot = useSelector(state => Object.values(state.bookings.bookingsForSpot));
+
   // const userSpotReview = Object.values(reviews).find((currentReview) => currentReview && currentReview.User && currentReview.User.id === sessionUser.id);
-
-
 
   useEffect(() => {
     dispatch(getSpotDetailThunk(spotId));
     dispatch(getAllReviewsThunk(spotId)).finally(() => setLoading(false));
   }, [dispatch, spotId, reloadPage]);
+
+  useEffect(() => {
+    dispatch(fetchBookingsForSpot(spotId));
+}, [dispatch, spotId]);
+
 
   if (!spot || !spot.id) return null;
 
@@ -72,7 +91,10 @@ export default function SpotDetail() {
               Hosted by, {spot.User && spot.User.firstName}{" "}
               {spot.User && spot.User.lastName}
             </h2>
-          <div> <p className="p-tag-same-font">{spot.description}</p></div>
+            <div>
+              {" "}
+              <p className="p-tag-same-font">{spot.description}</p>
+            </div>
           </div>
 
           <div className="callout-information-box">
@@ -83,8 +105,13 @@ export default function SpotDetail() {
               <p className="avgRating-numberOfReviews-p-tag">
                 <span className="avgRating-numberOfReviews-span">
                   {/* ★ {spot.avgStarRating ? spot.avgStarRating.toFixed(1) : <span className="boldText">New</span>} */}
-                  ★ {(spot.avgStarRating !== null && spot.avgStarRating !== undefined) ? spot.avgStarRating.toFixed(1) : <span className="boldText">New</span>}
-
+                  ★{" "}
+                  {spot.avgStarRating !== null &&
+                  spot.avgStarRating !== undefined ? (
+                    spot.avgStarRating.toFixed(1)
+                  ) : (
+                    <span className="boldText">New</span>
+                  )}
                   {spot.numReviews > 0 && (
                     <>
                       {" "}
@@ -96,6 +123,12 @@ export default function SpotDetail() {
                   )}
                 </span>
               </p>
+            </div>
+            <div className="date-selection">
+              <DatePicker
+                onDateSelect={setSelectedDates}
+                existingBookings={bookingsForSpot}
+              />
             </div>
 
             <button
@@ -109,31 +142,37 @@ export default function SpotDetail() {
         </div>
         <hr></hr>
         <div className="review-and-post-Review-button">
-        <h2 className="avgRating-numofReviews">
-          {/* ★ {spot.avgStarRating.toFixed(1)} */}
-          {/* ★ {(spot.avgStarRating !== null && spot.avgStarRating !== undefined) ? spot.avgStarRating.toFixed(1) : ""} */}
+          <h2 className="avgRating-numofReviews">
+            {/* ★ {spot.avgStarRating.toFixed(1)} */}
+            {/* ★ {(spot.avgStarRating !== null && spot.avgStarRating !== undefined) ? spot.avgStarRating.toFixed(1) : ""} */}
+            ★{" "}
+            {spot.avgStarRating !== null && spot.avgStarRating !== undefined ? (
+              spot.avgStarRating.toFixed(1)
+            ) : (
+              <span className="boldText">New</span>
+            )}
+            {/* {spot?.numReviews > 0 && ` · ${spot.numReviews} ${spot.numReviews === 1 ? 'review' : 'reviews'}`} */}
+            {spot.numReviews > 0 &&
+              ` · ${spot.numReviews} ${
+                spot.numReviews === 1 ? "review" : "reviews"
+              }`}
+          </h2>
 
-          ★ {(spot.avgStarRating !== null && spot.avgStarRating !== undefined) ? spot.avgStarRating.toFixed(1) : <span className="boldText">New</span>}
-          {/* {spot?.numReviews > 0 && ` · ${spot.numReviews} ${spot.numReviews === 1 ? 'review' : 'reviews'}`} */}
-          {spot.numReviews > 0 && ` · ${spot.numReviews} ${spot.numReviews === 1 ? 'review' : 'reviews'}`}
+          {!userSpotReview && spot.User.id !== sessionUser.id && (
+            <OpenModalButton
+              className="post-delete-review-btn"
+              buttonText="Post Your Review"
+              modalComponent={
+                <CreateReviewModal
+                  spotId={spot.id}
+                  setReloadPage={setReloadPage}
+                />
+              }
+            />
+          )}
+        </div>
 
-        </h2>
-
-        {!userSpotReview && (spot.User.id !== sessionUser.id) &&
-          <OpenModalButton
-            className="post-delete-review-btn"
-            buttonText="Post Your Review"
-            modalComponent={
-              <CreateReviewModal
-                spotId={spot.id}
-                setReloadPage={setReloadPage}
-              />
-            }
-          />
-        }
-      </div>
-
-      <GetAllReviewsModal spot={spot} setReloadPage={setReloadPage} />
+        <GetAllReviewsModal spot={spot} setReloadPage={setReloadPage} />
       </div>
     </>
   );

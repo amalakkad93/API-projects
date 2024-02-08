@@ -19,51 +19,6 @@ p, span {
   margin-top: 36px;
 }
 
-
-/* .spot-images-container {
-  display: flex;
-  align-items: flex-start;
-  justify-content: center;
-}
-
-.left-spot-image-container, .right-image {
-  width: 50%;
-  padding-top: 36%;
-  display: inline-block;
-  position: relative;
-  overflow: hidden;
-}
-
-.left-rounded {
-  border-top-left-radius: 20px;
-  border-bottom-left-radius: 20px;
-}
-
-.right-spot-image-container {
-  display: inline-block;
-  flex-direction: column;
-  width: 49.6%;
-  gap: 2px;
-}
-
-.resize {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  padding: 5px;
-}
-
-.right-image.top-right-rounded {
-  border-radius: 0 20px 0 0;
-}
-
-.right-image.bottom-right-rounded {
-  border-radius: 0 0 20px 0;
-} */
-
 .spot-images-container {
   display: flex;
   align-items: stretch;
@@ -114,12 +69,6 @@ p, span {
 .right-image.bottom-right-rounded {
   border-bottom-right-radius: 20px;
 }
-
-
-
-
-
-
 
 .details-container {
   display: flex;
@@ -253,6 +202,20 @@ p, span {
 .review-and-post-Review-button, .reviews-container {
   margin-left: 9px;
 }
+
+.date-picker-container .react-datepicker-wrapper {
+  display: flex;
+  justify-content: space-between;
+  flex: 1;
+  gap: 20px;
+  width: calc(50% - 5px);
+}
+
+.date-picker {
+  flex: 1;
+  width: calc(50% - 5px);
+}
+
 /* Media Queries */
 
 @media (min-width: 1024px) {
