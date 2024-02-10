@@ -110,7 +110,8 @@ p, span {
   justify-content: space-between;
   flex-direction: column;
   /* width: 40%; */
-  width: 304px;
+  /* width: 304px; */
+  width: 522px;
   padding-bottom: 10px;
   align-items: center;
   border: 3px solid black;
@@ -203,18 +204,7 @@ p, span {
   margin-left: 9px;
 }
 
-.date-picker-container .react-datepicker-wrapper {
-  display: flex;
-  justify-content: space-between;
-  flex: 1;
-  gap: 20px;
-  width: calc(50% - 5px);
-}
 
-.date-picker {
-  flex: 1;
-  width: calc(50% - 5px);
-}
 
 /* Media Queries */
 
