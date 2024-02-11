@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { getSpotDetailThunk } from "../../../store/spots";
 import { fetchBookingsForSpot } from "../../../store/bookings";
@@ -7,11 +7,12 @@ import { getAllReviewsThunk } from "../../../store/reviews";
 import OpenModalButton from "../../OpenModalButton";
 import GetAllReviewsModal from "../../Reviews/GetAllReviewsModal/GetAllReviewsModal";
 import CreateReviewModal from "../../Reviews/CreateReviewModal/CreateReviewModal";
-import DatePicker from "./DatePicker";
+import DatePicker from "../../Booking/DatePicker/DatePicker";
 
 import "./GetSpotDetail.css";
 
 export default function SpotDetail() {
+  const navigate = useNavigate();
   const { spotId } = useParams();
   const dispatch = useDispatch();
   const [reloadPage, setReloadPage] = useState(false);
@@ -33,8 +34,18 @@ export default function SpotDetail() {
         (currentReview) => currentReview.userId === sessionUser.id
       )
     : {};
-    const bookingsForSpot = useSelector(state => Object.values(state.bookings.bookingsForSpot));
+  const bookingsForSpot = useSelector((state) =>
+    Object.values(state.bookings.bookingsForSpot)
+  );
 
+  // Function to calculate total price based on selected dates and spot price
+  const calculateTotalPrice = () => {
+    const oneDay = 24 * 60 * 60 * 1000; // hours*minutes*seconds*milliseconds
+    const diffDays = Math.round(
+      Math.abs((selectedDates.endDate - selectedDates.startDate) / oneDay)
+    );
+    return spot.price * diffDays;
+  };
   // const userSpotReview = Object.values(reviews).find((currentReview) => currentReview && currentReview.User && currentReview.User.id === sessionUser.id);
 
   useEffect(() => {
@@ -44,8 +55,7 @@ export default function SpotDetail() {
 
   useEffect(() => {
     dispatch(fetchBookingsForSpot(spotId));
-}, [dispatch, spotId]);
-
+  }, [dispatch, spotId]);
 
   if (!spot || !spot.id) return null;
 
@@ -134,7 +144,17 @@ export default function SpotDetail() {
             <button
               className="reserve-btn"
               type="button"
-              onClick={() => alert("Feature Coming Soon...")}
+              onClick={() => {
+                // alert("Feature Coming Soon...")
+                const totalPrice = calculateTotalPrice();
+                
+                navigate(`/booking-summary/${spotId}`, {
+                  replace: true,
+                  state: { spot, selectedDates, totalPrice }
+                });
+
+
+              }}
             >
               Reserve
             </button>

@@ -139,15 +139,21 @@ p, span {
   height: 40px;
   border-radius: 5px;
   border: none;
-  background-color: #FF5A5F;
+  background: linear-gradient(to right, #e61e4d 0%, #e31c5f 50%, #d70466 100%);
+  transition: background 0.3s ease-in-out, transform 0.2s ease;
   box-shadow: 1px 1px 1px black;
   color: white;
   font-size: 16px;
   font-weight: bold;
   cursor: pointer;
 }
-
-
+.reserve-btn:hover {
+  background: linear-gradient(to left, #e61e4d 0%, #e31c5f 50%, #d70466 100%);
+  transform: scale(1.05);
+}
+.reserve-btn:active {
+  background: linear-gradient(to right, #bd1e59 0%, #92174d 50%, #861453 100%);
+}
 .avgRating-numofReviews {
   font-size: 18pt;
   font-weight: bold;

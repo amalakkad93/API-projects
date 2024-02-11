@@ -463,10 +463,10 @@ router.post('/:spotId/bookings', requireAuth, authCatch, validateBooking, displa
   else if (startBooking && endBooking) {
       res.status(403)
       res.json({
-          message: "Sorry, this spot is already booked for the specified dates",
+          message: "Sorry, this spot is already booked for the specified dates.",
           errors: {
-              startDate: "Start date conflicts with an existing booking",
-              endDate: "End date conflicts with an existing booking",
+              startDate: "Start date conflicts with an existing booking.",
+              endDate: "End date conflicts with an existing booking.",
           }
       })
   }
@@ -474,18 +474,18 @@ router.post('/:spotId/bookings', requireAuth, authCatch, validateBooking, displa
   else if (startBooking) {
       res.status(403);
       res.json({
-          message: "Sorry, this spot is already booked for the specified dates",
+          message: "Sorry, this spot is already booked for the specified dates.",
           errors: {
-              endDate: "Start date conflicts with an existing booking",
+              endDate: "Start date conflicts with an existing booking.",
           }
       })
   }
   else if (endBooking) {
       res.status(403);
       res.json({
-          message: "Sorry, this spot is already booked for the specified dates",
+          message: "Sorry, this spot is already booked for the specified dates.",
           errors: {
-              endDate: "End date conflicts with an existing booking",
+              endDate: "End date conflicts with an existing booking.",
           }
       })
   }
