@@ -82,6 +82,23 @@ p {
   line-height: 1.5;
 }
 
+.dates-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-weight: bold;
+}
+
+.edit-dates-text {
+  cursor: pointer;
+  text-decoration: underline;
+  font-weight: bold;
+}
+
+.dates-display p {
+  margin-left: auto;
+}
+
 .confirm-booking-btn {
   font-family: inherit;
   font-size: 16px;

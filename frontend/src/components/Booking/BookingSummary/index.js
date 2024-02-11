@@ -2,7 +2,9 @@ import React, { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchBookingsForSpot, createBooking } from "../../../store/bookings";
+import { useModal } from "../../../context/Modal";
 import DatePicker from "../DatePicker/DatePicker";
+import DateSelection from "../DatePicker/DateSelection";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faAngleLeft } from "@fortawesome/free-solid-svg-icons";
 import "./BookingSummary.css";
@@ -11,6 +13,7 @@ const BookingSummary = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const { setModalContent, setOnModalClose } = useModal();
 
   const {
     spot = {},
@@ -52,7 +55,20 @@ const BookingSummary = () => {
   const initialPayment = calculatedTotalPrice * downPaymentPercentage;
   const remainingPayment = calculatedTotalPrice - initialPayment;
   const monthlyPaymentOption = calculatedTotalPrice / 12;
-
+  const handleEditDatesClick = () => {
+    setModalContent(
+      <DateSelection
+        initialStartDate={selectedDates.startDate}
+        initialEndDate={selectedDates.endDate}
+        onDatesSelected={({ startDate, endDate }) => {
+          setSelectedDates({ startDate, endDate });
+        }}
+      />
+    );
+    setOnModalClose(() => {
+      console.log("Modal closed");
+    });
+  };
   useEffect(() => {
     if (spot.id) {
       dispatch(fetchBookingsForSpot(spot.id)).then(() => {
@@ -108,40 +124,17 @@ const BookingSummary = () => {
         <div className="left-column">
           <h2>Your trip</h2>
           <div className="dates">
-            <p>Dates</p>
-            <button
-              // onClick={() => setIsDatePickerVisible(!isDatePickerVisible)}
-              onClick={() =>
-                setIsDatePickerVisible((prevVisibility) => !prevVisibility)
-              }
-              className="edit-dates-btn"
-            >
-              Edit
-            </button>
-
-            {isDatePickerVisible && (
-              <DatePicker
-                initialStartDate={new Date(selectedDates.startDate)}
-                initialEndDate={new Date(selectedDates.endDate)}
-                onDateSelect={(dates) => {
-                  setSelectedDates(dates);
-                  setIsDatePickerVisible(false);
-                }}
-                existingBookings={existingBookings}
-              />
-            )}
-            {!isDatePickerVisible && (
-              <>
-                <p>
-                  Check-in:{" "}
-                  {new Date(selectedDates.startDate).toLocaleDateString()}
-                </p>
-                <p>
-                  Check-out:{" "}
-                  {new Date(selectedDates.endDate).toLocaleDateString()}
-                </p>
-              </>
-            )}
+            <div className="dates-header">
+              <h3>Dates</h3>
+              <span onClick={handleEditDatesClick} className="edit-dates-text">
+                Edit
+              </span>
+            </div>
+            <div className="dates-display">
+              <p>
+                {checkInDate} - {checkOutDate}
+              </p>
+            </div>
           </div>
 
           <div className="payment-options">
