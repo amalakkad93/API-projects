@@ -3,23 +3,25 @@ import ReactDatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import "./DatePicker.css";
 
-const DatePicker = ({ onDateSelect, existingBookings }) => {
-  const [startDate, setStartDate] = useState(new Date());
-  const [endDate, setEndDate] = useState(new Date());
+const DatePicker = ({ onDateSelect, existingBookings, initialStartDate, initialEndDate }) => {
+  const [startDate, setStartDate] = useState(initialStartDate || new Date());
+  const [endDate, setEndDate] = useState(initialEndDate || new Date());
   const [error, setError] = useState("");
 
-  // Function to check for booking conflicts
-  const isDateConflict = (start, end) => {
-    return existingBookings.some((booking) => {
-      const bookingStart = new Date(booking.startDate);
-      const bookingEnd = new Date(booking.endDate);
-      return (
-        (start <= bookingEnd && start >= bookingStart) ||
-        (end >= bookingStart && end <= bookingEnd) ||
-        (start <= bookingStart && end >= bookingEnd)
-      );
-    });
-  };
+ // Function to check for booking conflicts
+const isDateConflict = (start, end) => {
+  const bookings = existingBookings || [];
+  return bookings.some((booking) => {
+    const bookingStart = new Date(booking.startDate);
+    const bookingEnd = new Date(booking.endDate);
+    return (
+      (start <= bookingEnd && start >= bookingStart) ||
+      (end >= bookingStart && end <= bookingEnd) ||
+      (start <= bookingStart && end >= bookingEnd)
+    );
+  });
+};
+
 
   useEffect(() => {
     if (isDateConflict(startDate, endDate)) {
