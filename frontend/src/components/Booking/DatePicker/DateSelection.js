@@ -5,10 +5,12 @@ import { useModal } from '../../../context/Modal';
 
 import './DateSelection.css';
 
-const DateSelection = ({ initialStartDate, initialEndDate, onDatesSelected }) => {
+const DateSelection = ({ initialStartDate, initialEndDate, onDatesSelected, bookedDates }) => {
   const [startDate, setStartDate] = useState(initialStartDate);
   const [endDate, setEndDate] = useState(initialEndDate);
   const { closeModal } = useModal();
+
+  const highlightedDates = bookedDates.map(date => new Date(date));
 
   const handleDateChange = (dates) => {
     const [start, end] = dates;
@@ -34,12 +36,13 @@ const DateSelection = ({ initialStartDate, initialEndDate, onDatesSelected }) =>
           endDate={endDate}
           selectsRange
           inline
+          minDate={new Date()} 
+          highlightDates={[{ 'react-datepicker__day--highlighted-custom': highlightedDates }]}
         />
         <button className='date-save-btn' onClick={handleSubmit}>Dates</button>
       </div>
     </div>
   );
-
 };
 
 export default DateSelection;

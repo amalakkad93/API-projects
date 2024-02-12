@@ -57,6 +57,10 @@ export default function SpotDetail() {
     dispatch(fetchBookingsForSpot(spotId));
   }, [dispatch, spotId]);
 
+  useEffect(() => {
+    console.log("--Bookings for Spot from State:", bookingsForSpot);
+  }, [bookingsForSpot]);
+
   if (!spot || !spot.id) return null;
 
   return (
@@ -147,7 +151,7 @@ export default function SpotDetail() {
               onClick={() => {
                 // alert("Feature Coming Soon...")
                 const totalPrice = calculateTotalPrice();
-                
+
                 navigate(`/booking-summary/${spotId}`, {
                   replace: true,
                   state: { spot, selectedDates, totalPrice }
