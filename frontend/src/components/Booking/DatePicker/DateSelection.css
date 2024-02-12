@@ -50,6 +50,11 @@
   border-left-color: #000;
 }
 
+.react-datepicker__day--highlighted-custom {
+  background-color: red !important;
+  color: white;
+}
+
 .date-selection-container {
   display: flex;
   flex-direction: column;

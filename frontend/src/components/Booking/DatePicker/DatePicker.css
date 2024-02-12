@@ -49,3 +49,12 @@
 .date-picker-section.focused {
   border: 2px solid #00A699;
 }
+
+.react-datepicker__day--highlighted {
+  background-color: #ff6868 !important;
+  color: white !important;
+}
+
+.react-datepicker__day--disabled {
+  color: grey !important;
+}

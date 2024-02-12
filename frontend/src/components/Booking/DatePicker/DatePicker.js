@@ -1,76 +1,89 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import ReactDatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import "./DatePicker.css";
 
-const DatePicker = ({ onDateSelect, existingBookings, initialStartDate, initialEndDate }) => {
-  const [startDate, setStartDate] = useState(initialStartDate || new Date());
-  const [endDate, setEndDate] = useState(initialEndDate || new Date());
-  const [error, setError] = useState("");
-
- // Function to check for booking conflicts
-const isDateConflict = (start, end) => {
-  const bookings = existingBookings || [];
-  return bookings.some((booking) => {
-    const bookingStart = new Date(booking.startDate);
-    const bookingEnd = new Date(booking.endDate);
-    return (
-      (start <= bookingEnd && start >= bookingStart) ||
-      (end >= bookingStart && end <= bookingEnd) ||
-      (start <= bookingStart && end >= bookingEnd)
-    );
-  });
-};
-
+const DatePicker = ({ onDateSelect, existingBookings }) => {
+  const [startDate, setStartDate] = useState(null);
+  const [endDate, setEndDate] = useState(null);
 
   useEffect(() => {
-    if (isDateConflict(startDate, endDate)) {
-      setError("Selected dates conflict with an existing booking.");
-    } else {
-      setError(""); // Clear error if dates are okay
-      onDateSelect({ startDate, endDate });
+
+    const bookings = existingBookings.map(booking => ({
+      start: new Date(booking.startDate),
+      end: new Date(booking.endDate)
+    })).sort((a, b) => a.start - b.start);
+
+    let firstAvailableDate = new Date();
+    firstAvailableDate.setHours(0, 0, 0, 0);
+
+    for (let i = 0; i < bookings.length; i++) {
+      const booking = bookings[i];
+
+      if (firstAvailableDate < booking.start) {
+        break;
+      } else if (firstAvailableDate <= booking.end) {
+
+        firstAvailableDate = new Date(booking.end);
+        firstAvailableDate.setDate(firstAvailableDate.getDate() + 1);
+      }
     }
-  }, [startDate, endDate, existingBookings, onDateSelect]);
+
+    setStartDate(firstAvailableDate);
+    setEndDate(new Date(firstAvailableDate));
+  }, [existingBookings]);
+
+  const highlightedDates = useMemo(() => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    return existingBookings.reduce((acc, booking) => {
+      let currentDate = new Date(booking.startDate);
+      const endDate = new Date(booking.endDate);
+
+      while (currentDate <= endDate) {
+        if (currentDate >= today) {
+          acc.push(currentDate);
+        }
+        currentDate = new Date(currentDate.setDate(currentDate.getDate() + 1));
+      }
+      return acc;
+    }, []);
+  }, [existingBookings]);
+
 
   return (
-    // <div className="date-picker-container" style={{ display: "flex", justifyContent: "space-between", width: "100%" }}>
-
     <div className="date-pickers-container">
+
       <div className="date-picker-section">
-        <label htmlFor="startDate" className="date-picker-label">
-          CHECK-IN
-        </label>
         <ReactDatePicker
-          id="startDate"
           selected={startDate}
-          onChange={(date) => {
+          onChange={date => {
             setStartDate(date);
             onDateSelect({ startDate: date, endDate });
           }}
-          dateFormat="dd/MM/yyyy"
-          wrapperClassName="date-picker-wrapper"
-          className="date-picker-input"
-          onFocus={(e) => e.currentTarget.parentNode.classList.add('focused')}
-          onBlur={(e) => e.currentTarget.parentNode.classList.remove('focused')}
-
+          startDate={startDate}
+          endDate={endDate}
+          selectsStart
+          dateFormat="MM/dd/yyyy"
+          minDate={new Date()}
+          highlightDates={highlightedDates}
         />
       </div>
+
       <div className="date-picker-section">
-        <label htmlFor="endDate" className="date-picker-label">
-          CHECKOUT
-        </label>
         <ReactDatePicker
-          id="endDate"
           selected={endDate}
-          onChange={(date) => {
+          onChange={date => {
             setEndDate(date);
             onDateSelect({ startDate, endDate: date });
           }}
-          dateFormat="dd/MM/yyyy"
-          wrapperClassName="date-picker-wrapper"
-          className="date-picker-input"
-          onFocus={(e) => e.currentTarget.parentNode.classList.add('focused')}
-          onBlur={(e) => e.currentTarget.parentNode.classList.remove('focused')}
+          startDate={startDate}
+          endDate={endDate}
+          selectsEnd
+          dateFormat="MM/dd/yyyy"
+          minDate={startDate || new Date()}
+          highlightDates={highlightedDates}
         />
       </div>
     </div>
@@ -78,3 +91,95 @@ const isDateConflict = (start, end) => {
 };
 
 export default DatePicker;
+
+
+
+//==================================
+// import React, { useState, useMemo, useEffect } from "react";
+// import ReactDatePicker from "react-datepicker";
+// import "react-datepicker/dist/react-datepicker.css";
+// import "./DatePicker.css";
+
+// const DatePicker = ({ onDateSelect, existingBookings }) => {
+
+//   const [startDate, setStartDate] = useState(null);
+//   const [endDate, setEndDate] = useState(null);
+
+
+//   useEffect(() => {
+
+//     const bookings = existingBookings.map(booking => ({
+//       start: new Date(booking.startDate),
+//       end: new Date(booking.endDate)
+//     })).sort((a, b) => a.start - b.start);
+
+//     let firstAvailableDate = new Date();
+//     firstAvailableDate.setHours(0, 0, 0, 0);
+
+//     for (let i = 0; i < bookings.length; i++) {
+//       const booking = bookings[i];
+
+//       if (firstAvailableDate < booking.start) {
+//         break;
+//       } else if (firstAvailableDate <= booking.end) {
+
+//         firstAvailableDate = new Date(booking.end);
+//         firstAvailableDate.setDate(firstAvailableDate.getDate() + 1);
+//       }
+//     }
+
+//     setStartDate(firstAvailableDate);
+//     setEndDate(new Date(firstAvailableDate));
+//   }, [existingBookings]);
+
+//   const highlightedDates = useMemo(() => existingBookings.reduce((acc, booking) => {
+//     let currentDate = new Date(booking.startDate);
+//     const endDate = new Date(booking.endDate);
+
+//     while (currentDate <= endDate) {
+//       acc.push(new Date(currentDate));
+//       currentDate.setDate(currentDate.getDate() + 1);
+//     }
+
+//     return acc;
+//   }, []), [existingBookings]);
+
+
+
+//   return (
+//     <div className="date-pickers-container">
+//       <div className="date-picker-section">
+//         <ReactDatePicker
+//           selected={startDate}
+//           onChange={date => {
+//             setStartDate(date);
+//             onDateSelect({ startDate: date, endDate });
+//           }}
+//           startDate={startDate}
+//           endDate={endDate}
+//           selectsStart
+//           dateFormat="MM/dd/yyyy"
+//           minDate={new Date()}
+//           highlightDates={highlightedDates}
+//         />
+//       </div>
+//       <div className="date-picker-section">
+//         <ReactDatePicker
+//           selected={endDate}
+//           onChange={date => {
+//             setEndDate(date);
+//             onDateSelect({ startDate, endDate: date });
+//           }}
+//           startDate={startDate}
+//           endDate={endDate}
+//           selectsEnd
+//           dateFormat="MM/dd/yyyy"
+//           minDate={startDate || new Date()}
+//           highlightDates={highlightedDates}
+//         />
+//       </div>
+//     </div>
+//   );
+// };
+
+// export default DatePicker;

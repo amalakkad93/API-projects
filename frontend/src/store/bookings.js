@@ -25,6 +25,7 @@ export const fetchBookingsForSpot = (spotId) => async (dispatch) => {
   const response = await csrfFetch(`/api/spots/${spotId}/bookings`);
   if (response.ok) {
     const { Bookings } = await response.json();
+    console.log("--Fetched Bookings for Spot:", Bookings);
     dispatch(actionGetBookingsForSpot(Bookings));
     return Bookings;
   } else {
@@ -115,8 +116,10 @@ export default function bookingReducer(state = initialState, action) {
   let newState;
   switch (action.type) {
     case GET_BOOKINGS_FOR_SPOT:
-      newState = { ...state, bookingsForSpot: {} };
-      newState.bookingsForSpot = normalizeArr(action.bookings);
+      // newState = { ...state, bookingsForSpot: {} };
+      // newState.bookingsForSpot = normalizeArr(action.bookings);
+      // return newState;
+      newState = { ...state, bookingsForSpot: action.bookings };
       return newState;
 
     case CREATE_BOOKING:

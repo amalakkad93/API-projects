@@ -3,6 +3,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchBookingsForSpot, createBooking } from "../../../store/bookings";
 import { useModal } from "../../../context/Modal";
+import { addDays, isAfter } from 'date-fns';
 import DatePicker from "../DatePicker/DatePicker";
 import DateSelection from "../DatePicker/DateSelection";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -20,10 +21,7 @@ const BookingSummary = () => {
     selectedDates: initialDates,
     spotId,
   } = location.state || {};
-  console.log("location.state", location.state);
-  console.log(
-    "****************************************************************"
-  );
+
   const existingBookings = useSelector((state) =>
     Object.values(state.bookings.bookingsForSpot)
   );
@@ -55,20 +53,8 @@ const BookingSummary = () => {
   const initialPayment = calculatedTotalPrice * downPaymentPercentage;
   const remainingPayment = calculatedTotalPrice - initialPayment;
   const monthlyPaymentOption = calculatedTotalPrice / 12;
-  const handleEditDatesClick = () => {
-    setModalContent(
-      <DateSelection
-        initialStartDate={selectedDates.startDate}
-        initialEndDate={selectedDates.endDate}
-        onDatesSelected={({ startDate, endDate }) => {
-          setSelectedDates({ startDate, endDate });
-        }}
-      />
-    );
-    setOnModalClose(() => {
-      console.log("Modal closed");
-    });
-  };
+
+
   useEffect(() => {
     if (spot.id) {
       dispatch(fetchBookingsForSpot(spot.id)).then(() => {
@@ -76,6 +62,34 @@ const BookingSummary = () => {
       });
     }
   }, [spot.id, dispatch]);
+
+
+  const handleEditDatesClick = () => {
+    const bookedDates = existingBookings.reduce((acc, booking) => {
+      let currentDate = new Date(booking.startDate);
+      const endDate = new Date(booking.endDate);
+
+      while (currentDate <= endDate) {
+        if (isAfter(currentDate, new Date())) {
+          acc.push(currentDate.toISOString().split('T')[0]);
+        }
+        currentDate = addDays(currentDate, 1);
+      }
+
+      return acc;
+    }, []);
+
+    setModalContent(
+      <DateSelection
+        initialStartDate={selectedDates.startDate}
+        initialEndDate={selectedDates.endDate}
+        onDatesSelected={({ startDate, endDate }) => {
+          setSelectedDates({ startDate, endDate });
+        }}
+        bookedDates={bookedDates}
+      />
+    );
+  };
 
   const confirmBooking = async () => {
     const newBooking = {
@@ -109,7 +123,7 @@ const BookingSummary = () => {
       }
     }
   };
-  console.log("DatePicker Visible:", isDatePickerVisible);
+
   return (
     <div className="booking-container">
       <h1
