@@ -3,7 +3,7 @@ const express = require('express');
 const bcrypt = require('bcryptjs');
 
 const { setTokenCookie, requireAuth } = require('../../utils/auth');
-const { User } = require('../../db/models');
+const { Booking, Spot, SpotImage, User } = require('../../db/models');
 
 const { check } = require('express-validator');
 const { handleValidationErrors } = require('../../utils/validation');
@@ -93,6 +93,41 @@ router.post('/', validateSignup, async (req, res) => {
 
       // Return a generic server error
       return res.status(500).json({ message: 'Internal server error' });
+  }
+});
+
+// Route to get all bookings for a specific user
+router.get('/:userId/bookings', requireAuth, async (req, res, next) => {
+  if (req.user.id !== parseInt(req.params.userId, 10)) {
+      return res.status(403).json({
+          message: "Forbidden access. You can only access your own bookings."
+      });
+  }
+
+  try {
+      const bookings = await Booking.findAll({
+          where: { userId: req.params.userId },
+          include: [{
+              model: Spot,
+              include: [{
+                  model: SpotImage,
+                  attributes: ['url', 'preview'],
+                  // where: { preview: true },
+                  // required: false
+              }]
+          }],
+          order: [['startDate', 'ASC']]
+      });
+
+      if (!bookings || bookings.length === 0) {
+          return res.status(404).json({
+              message: "No bookings found for the user."
+          });
+      }
+
+      res.json({ Bookings: bookings });
+  } catch (error) {
+      next(error);
   }
 });
 
