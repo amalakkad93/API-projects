@@ -91,6 +91,38 @@ const BookingSummary = () => {
     );
   };
 
+  // const confirmBooking = async () => {
+  //   const newBooking = {
+  //     spotId: spot.id,
+  //     startDate: selectedDates.startDate,
+  //     endDate: selectedDates.endDate,
+  //   };
+
+  //   try {
+  //     await dispatch(createBooking(spot.id, newBooking));
+
+  //     setIsConfirmed(true);
+
+  //     console.log("Booking confirmed:", isConfirmed);
+  //   } catch (error) {
+  //     if (!error.ok) {
+  //       const errorData = await error.json(); // Convert the error response into JSON
+
+  //       // Construct an error message from the response
+  //       let errorMessage =
+  //         errorData.message || "Failed to confirm booking. Please try again.";
+  //       if (errorData.errors) {
+  //         // Extract and concatenate all error messages
+  //         const detailedErrors = Object.values(errorData.errors).join(". ");
+  //         errorMessage += ` ${detailedErrors}`;
+  //       }
+  //       setBookingError(errorMessage);
+  //     } else {
+  //       // Handle unexpected errors
+  //       setBookingError("An unexpected error occurred. Please try again.");
+  //     }
+  //   }
+  // };
   const confirmBooking = async () => {
     const newBooking = {
       spotId: spot.id,
@@ -100,27 +132,36 @@ const BookingSummary = () => {
 
     try {
       await dispatch(createBooking(spot.id, newBooking));
-
       setIsConfirmed(true);
-
-      console.log("Booking confirmed:", isConfirmed);
+      // Show confirmation modal
+      setModalContent(
+        <div>
+          <p>Your booking is confirmed!</p>
+          <button onClick={() => navigateToBookingHistory()}>OK</button>
+        </div>
+      );
     } catch (error) {
-      if (!error.ok) {
-        const errorData = await error.json(); // Convert the error response into JSON
+      handleBookingError(error);
+    }
+  };
 
-        // Construct an error message from the response
-        let errorMessage =
-          errorData.message || "Failed to confirm booking. Please try again.";
-        if (errorData.errors) {
-          // Extract and concatenate all error messages
-          const detailedErrors = Object.values(errorData.errors).join(". ");
-          errorMessage += ` ${detailedErrors}`;
-        }
-        setBookingError(errorMessage);
-      } else {
-        // Handle unexpected errors
-        setBookingError("An unexpected error occurred. Please try again.");
+  const navigateToBookingHistory = () => {
+    // Close the modal if needed
+    // Navigate to the user's booking history page
+    navigate('/user/bookings');
+  };
+
+  const handleBookingError = async (error) => {
+    if (!error.ok) {
+      const errorData = await error.json();
+      let errorMessage = errorData.message || "Failed to confirm booking. Please try again.";
+      if (errorData.errors) {
+        const detailedErrors = Object.values(errorData.errors).join(". ");
+        errorMessage += ` ${detailedErrors}`;
       }
+      setBookingError(errorMessage);
+    } else {
+      setBookingError("An unexpected error occurred. Please try again.");
     }
   };
 

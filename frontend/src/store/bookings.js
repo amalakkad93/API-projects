@@ -87,11 +87,12 @@ export const deleteBooking = (bookingId) => async (dispatch) => {
   }
 };
 
-export const getUserBookings = () => async (dispatch) => {
-  const response = await csrfFetch("/api/bookings/user");
+export const getUserBookings = (userId) => async (dispatch) => {
+  const response = await csrfFetch(`/api/users/${userId}/bookings`);
 
   if (response.ok) {
     const { Bookings } = await response.json();
+    console.log("Received Bookings from backend:", Bookings);
     dispatch(actionGetUserBookings(Bookings));
     return Bookings;
   } else {
@@ -99,6 +100,8 @@ export const getUserBookings = () => async (dispatch) => {
     return errors;
   }
 };
+
+
 
 function normalizeArr(bookings) {
   const normalizedBookings = {};
@@ -116,9 +119,6 @@ export default function bookingReducer(state = initialState, action) {
   let newState;
   switch (action.type) {
     case GET_BOOKINGS_FOR_SPOT:
-      // newState = { ...state, bookingsForSpot: {} };
-      // newState.bookingsForSpot = normalizeArr(action.bookings);
-      // return newState;
       newState = { ...state, bookingsForSpot: action.bookings };
       return newState;
 
