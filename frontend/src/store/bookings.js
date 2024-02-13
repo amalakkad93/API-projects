@@ -5,6 +5,8 @@ const CREATE_BOOKING = "/bookings/create";
 const UPDATE_BOOKING = "/bookings/update";
 const DELETE_BOOKING = "/bookings/delete";
 const GET_USER_BOOKINGS = "/bookings/getUserBookings";
+const CANCEL_BOOKING = "/bookings/cancel";
+const CLEAR_BOOKING = "/bookings/clear";
 
 const actionGetBookingsForSpot = (bookings) => ({
   type: GET_BOOKINGS_FOR_SPOT,
@@ -20,6 +22,14 @@ const actionGetUserBookings = (bookings) => ({
   type: GET_USER_BOOKINGS,
   bookings,
 });
+const actionCancelBooking = (bookingId) => ({
+  type: CANCEL_BOOKING,
+  bookingId,
+});
+export const clearBooking = (bookingId) => ({
+  type: CLEAR_BOOKING,
+  bookingId,
+});
 
 export const fetchBookingsForSpot = (spotId) => async (dispatch) => {
   const response = await csrfFetch(`/api/spots/${spotId}/bookings`);
@@ -34,27 +44,25 @@ export const fetchBookingsForSpot = (spotId) => async (dispatch) => {
   }
 };
 
-export const createBooking = (spotId, bookingData) => async dispatch => {
+export const createBooking = (spotId, bookingData) => async (dispatch) => {
   const response = await csrfFetch(`/api/spots/${spotId}/bookings`, {
     method: "POST",
     headers: {
-      "Content-Type": "application/json"
+      "Content-Type": "application/json",
     },
-    body: JSON.stringify(bookingData)
+    body: JSON.stringify(bookingData),
   });
 
   const data = await response.json();
 
   if (!response.ok) {
     // Throw an error with the response so it can be caught
-    throw {ok: response.ok, ...data};
+    throw { ok: response.ok, ...data };
   }
 
   dispatch(actionCreateBooking(data));
   return data;
 };
-
-
 
 export const updateBooking = (updatedBooking) => async (dispatch) => {
   const response = await csrfFetch(`/api/bookings/${updatedBooking.id}`, {
@@ -101,7 +109,15 @@ export const getUserBookings = (userId) => async (dispatch) => {
   }
 };
 
+export const cancelBooking = (bookingId) => async (dispatch) => {
+  const response = await csrfFetch(`/api/bookings/${bookingId}`, {
+    method: "DELETE",
+  });
 
+  if (response.ok) {
+    dispatch(actionCancelBooking(bookingId));
+  }
+};
 
 function normalizeArr(bookings) {
   const normalizedBookings = {};
@@ -142,6 +158,15 @@ export default function bookingReducer(state = initialState, action) {
       newState.userBookings = normalizeArr(action.bookings);
       return newState;
 
+    case CANCEL_BOOKING:
+      newState = { ...state, userBookings: { ...state.userBookings } };
+      delete newState.userBookings[action.bookingId];
+      return newState;
+      
+    case CLEAR_BOOKING:
+      newState = { ...state };
+      delete newState.userBookings[action.bookingId];
+      return newState;
     default:
       return state;
   }

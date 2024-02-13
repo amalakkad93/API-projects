@@ -2,6 +2,8 @@ import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { getUserBookings } from "../../../store/bookings";
 import BookingDetailModal from "./BookingDetailModal";
+import CancelBooking from "../CancelBooking";
+import ClearBooking from "../ClearBooking";
 import "./UserBookings.css";
 
 const UserBookings = () => {
@@ -11,12 +13,21 @@ const UserBookings = () => {
     (state) => state.bookings.userBookings || {}
   );
   const [selectedBooking, setSelectedBooking] = useState(null);
+  const [bookings, setBookings] = useState([]);
 
   useEffect(() => {
     if (sessionUser) {
-      dispatch(getUserBookings(sessionUser.id));
+      dispatch(getUserBookings(sessionUser.id)).then((bookingsFromStore) => {
+        setBookings(bookingsFromStore);
+      });
     }
   }, [dispatch, sessionUser]);
+
+  const isPastEndDate = (endDate) => {
+    const today = new Date();
+    const end = new Date(endDate);
+    return end < today;
+  };
 
   const getPreviewImageUrl = (spotImages) => {
     const previewImage =
@@ -27,8 +38,8 @@ const UserBookings = () => {
     <div className="user-bookings-container">
       <h2>Your Bookings</h2>
       <div className="bookings-grid">
-        {Object.keys(userBookings).length > 0 ? (
-          Object.values(userBookings).map((booking, index) => (
+        {bookings.length > 0 ? (
+          bookings.map((booking, index) => (
             <div
               key={index}
               className="booking-card"
@@ -47,6 +58,16 @@ const UserBookings = () => {
                 <p>Check-in: {booking.startDate}</p>
                 <p>Check-out: {booking.endDate}</p>
               </div>
+              {isPastEndDate(booking.endDate) && (
+                <ClearBooking bookingId={booking.id} onClearSuccess={() => dispatch(getUserBookings(sessionUser.id))} />
+              )}
+              <CancelBooking
+                bookingId={booking.id}
+                startDate={booking.startDate}
+                onCancellationSuccess={() =>
+                  dispatch(getUserBookings(sessionUser.id))
+                }
+              />
             </div>
           ))
         ) : (
