@@ -12,16 +12,25 @@ const UserBookings = () => {
   const userBookings = useSelector(
     (state) => state.bookings.userBookings || {}
   );
+  // const [bookings, setBookings] = useState([]);
+  const bookings = useSelector((state) =>
+    Object.values(state.bookings.userBookings || {})
+  );
   const [selectedBooking, setSelectedBooking] = useState(null);
-  const [bookings, setBookings] = useState([]);
-
+  const [clearedBookings, setClearedBookings] = useState([]);
   useEffect(() => {
     if (sessionUser) {
-      dispatch(getUserBookings(sessionUser.id)).then((bookingsFromStore) => {
-        setBookings(bookingsFromStore);
-      });
+      dispatch(getUserBookings(sessionUser.id));
     }
   }, [dispatch, sessionUser]);
+
+  // useEffect(() => {
+  //   if (sessionUser) {
+  //     dispatch(getUserBookings(sessionUser.id)).then((bookingsFromStore) => {
+  //       setBookings(bookingsFromStore);
+  //     });
+  //   }
+  // }, [dispatch, sessionUser]);
 
   const isPastEndDate = (endDate) => {
     const today = new Date();
@@ -34,42 +43,60 @@ const UserBookings = () => {
       spotImages.find((image) => image.preview) || spotImages[0];
     return previewImage ? previewImage.url : "default-image-url.jpg";
   };
+
+  const handleClearLocal = (bookingId) => {
+    setClearedBookings((prevCleared) => [...prevCleared, bookingId]);
+  };
+
   return (
     <div className="user-bookings-container">
       <h2>Your Bookings</h2>
       <div className="bookings-grid">
         {bookings.length > 0 ? (
-          bookings.map((booking, index) => (
-            <div
-              key={index}
-              className="booking-card"
-              onClick={() => setSelectedBooking(booking)}
-            >
-              <img
-                src={getPreviewImageUrl(booking.Spot.SpotImages)}
-                alt="Spot"
-                className="booking-image"
-              />
-              <div className="booking-details">
-                <h3>{booking.Spot.name}</h3>
-                <p>
-                  {booking.Spot.city}, {booking.Spot.state}
-                </p>
-                <p>Check-in: {booking.startDate}</p>
-                <p>Check-out: {booking.endDate}</p>
+          bookings
+            .filter((booking) => !clearedBookings.includes(booking.id))
+            .map((booking, index) => (
+              <div
+                key={index}
+                className="booking-card"
+                onClick={() => setSelectedBooking(booking)}
+              >
+                <img
+                  src={getPreviewImageUrl(booking.Spot.SpotImages)}
+                  alt="Spot"
+                  className="booking-image"
+                />
+                <div className="booking-details">
+                  <h3>{booking.Spot.name}</h3>
+                  <p>
+                    {booking.Spot.city}, {booking.Spot.state}
+                  </p>
+                  <p>Check-in: {booking.startDate}</p>
+                  <p>Check-out: {booking.endDate}</p>
+                </div>
+                {/* Conditional rendering for past end date */}
+                {/* {isPastEndDate(booking.endDate) && (
+                  <div onClick={(e) => e.stopPropagation()}>
+                    <ClearBooking
+                      bookingId={booking.id}
+                      onClearSuccess={() => {
+                        dispatch(getUserBookings(sessionUser.id));
+                      }}
+                      onClear={() => handleClearLocal(booking.id)}
+                    />
+                  </div>
+                )} */}
+                <div onClick={(e) => e.stopPropagation()}>
+                  <CancelBooking
+                    bookingId={booking.id}
+                    startDate={booking.startDate}
+                    onCancellationSuccess={() => {
+                      dispatch(getUserBookings(sessionUser.id));
+                    }}
+                  />
+                </div>
               </div>
-              {isPastEndDate(booking.endDate) && (
-                <ClearBooking bookingId={booking.id} onClearSuccess={() => dispatch(getUserBookings(sessionUser.id))} />
-              )}
-              <CancelBooking
-                bookingId={booking.id}
-                startDate={booking.startDate}
-                onCancellationSuccess={() =>
-                  dispatch(getUserBookings(sessionUser.id))
-                }
-              />
-            </div>
-          ))
+            ))
         ) : (
           <p>You have no bookings.</p>
         )}
