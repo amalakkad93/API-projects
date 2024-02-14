@@ -162,11 +162,15 @@ export default function bookingReducer(state = initialState, action) {
       newState = { ...state, userBookings: { ...state.userBookings } };
       delete newState.userBookings[action.bookingId];
       return newState;
-      
+
     case CLEAR_BOOKING:
-      newState = { ...state };
-      delete newState.userBookings[action.bookingId];
-      return newState;
+      const updatedUserBookings = { ...state.userBookings };
+      delete updatedUserBookings[action.bookingId];
+      return {
+        ...state,
+        userBookings: updatedUserBookings,
+      };
+
     default:
       return state;
   }

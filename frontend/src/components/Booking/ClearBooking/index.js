@@ -2,7 +2,7 @@ import React from 'react';
 import { useDispatch } from 'react-redux';
 import { clearBooking } from '../../../store/bookings';
 
-const ClearBooking= ({ bookingId, onClearSuccess }) => {
+const ClearBooking= ({ bookingId, onClearSuccess, onClear }) => {
   const dispatch = useDispatch();
 
   const handleClearBooking = async () => {
@@ -11,7 +11,8 @@ const ClearBooking= ({ bookingId, onClearSuccess }) => {
   };
 
   return (
-    <button onClick={handleClearBooking} className="clear-booking-btn">
+    // <button onClick={handleClearBooking} className="clear-booking-btn">
+    <button onClick={() => onClear()} className="clear-booking-btn">
       Clear
     </button>
   );

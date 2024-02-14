@@ -3,7 +3,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchBookingsForSpot, createBooking } from "../../../store/bookings";
 import { useModal } from "../../../context/Modal";
-import { addDays, isAfter } from 'date-fns';
+import { addDays, isAfter } from "date-fns";
 import DatePicker from "../DatePicker/DatePicker";
 import DateSelection from "../DatePicker/DateSelection";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -54,7 +54,6 @@ const BookingSummary = () => {
   const remainingPayment = calculatedTotalPrice - initialPayment;
   const monthlyPaymentOption = calculatedTotalPrice / 12;
 
-
   useEffect(() => {
     if (spot.id) {
       dispatch(fetchBookingsForSpot(spot.id)).then(() => {
@@ -63,7 +62,6 @@ const BookingSummary = () => {
     }
   }, [spot.id, dispatch]);
 
-
   const handleEditDatesClick = () => {
     const bookedDates = existingBookings.reduce((acc, booking) => {
       let currentDate = new Date(booking.startDate);
@@ -71,7 +69,7 @@ const BookingSummary = () => {
 
       while (currentDate <= endDate) {
         if (isAfter(currentDate, new Date())) {
-          acc.push(currentDate.toISOString().split('T')[0]);
+          acc.push(currentDate.toISOString().split("T")[0]);
         }
         currentDate = addDays(currentDate, 1);
       }
@@ -91,53 +89,27 @@ const BookingSummary = () => {
     );
   };
 
-  // const confirmBooking = async () => {
-  //   const newBooking = {
-  //     spotId: spot.id,
-  //     startDate: selectedDates.startDate,
-  //     endDate: selectedDates.endDate,
-  //   };
-
-  //   try {
-  //     await dispatch(createBooking(spot.id, newBooking));
-
-  //     setIsConfirmed(true);
-
-  //     console.log("Booking confirmed:", isConfirmed);
-  //   } catch (error) {
-  //     if (!error.ok) {
-  //       const errorData = await error.json(); // Convert the error response into JSON
-
-  //       // Construct an error message from the response
-  //       let errorMessage =
-  //         errorData.message || "Failed to confirm booking. Please try again.";
-  //       if (errorData.errors) {
-  //         // Extract and concatenate all error messages
-  //         const detailedErrors = Object.values(errorData.errors).join(". ");
-  //         errorMessage += ` ${detailedErrors}`;
-  //       }
-  //       setBookingError(errorMessage);
-  //     } else {
-  //       // Handle unexpected errors
-  //       setBookingError("An unexpected error occurred. Please try again.");
-  //     }
-  //   }
-  // };
   const confirmBooking = async () => {
+    const formattedStartDate = startDate.toISOString().split("T")[0];
+    const formattedEndDate = endDate.toISOString().split("T")[0];
+
     const newBooking = {
       spotId: spot.id,
-      startDate: selectedDates.startDate,
-      endDate: selectedDates.endDate,
+      startDate: formattedStartDate,
+      endDate: formattedEndDate,
     };
 
     try {
       await dispatch(createBooking(spot.id, newBooking));
       setIsConfirmed(true);
-      // Show confirmation modal
       setModalContent(
         <div>
           <p>Your booking is confirmed!</p>
-          <button onClick={() => navigateToBookingHistory()}>OK</button>
+          <button onClick={() => {
+            navigate("/user/bookings")
+            setModalContent(null);
+            if (setOnModalClose) setOnModalClose(() => {});
+          }}>OK</button>
         </div>
       );
     } catch (error) {
@@ -145,16 +117,11 @@ const BookingSummary = () => {
     }
   };
 
-  const navigateToBookingHistory = () => {
-    // Close the modal if needed
-    // Navigate to the user's booking history page
-    navigate('/user/bookings');
-  };
-
   const handleBookingError = async (error) => {
     if (!error.ok) {
       const errorData = await error.json();
-      let errorMessage = errorData.message || "Failed to confirm booking. Please try again.";
+      let errorMessage =
+        errorData.message || "Failed to confirm booking. Please try again.";
       if (errorData.errors) {
         const detailedErrors = Object.values(errorData.errors).join(". ");
         errorMessage += ` ${detailedErrors}`;
