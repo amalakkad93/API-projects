@@ -400,6 +400,13 @@ router.post('/:spotId/reviews', requireAuth, authCatch, validateReview, async (r
 //*********************************************************************************************************** */
 //*********************************************************************************************************** */
 
+
+// Helper function to format dates
+const formatDate = (dateString) => {
+  const date = new Date(dateString);
+  return `${date.getMonth() + 1}/${date.getDate()}/${date.getFullYear()}`;
+};
+
 //======== Get all Bookings for a Spot based on the Spot's id ========
 router.get('/:spotId/bookings', requireAuth, authCatch, async (req, res) => {
   const spot = await Spot.findByPk(req.params.spotId);
@@ -424,7 +431,6 @@ router.get('/:spotId/bookings', requireAuth, authCatch, async (req, res) => {
 
   res.json({ Bookings: bookings });
 });
-
 //======== Create a Booking from a Spot based on the Spot's id ========
 router.post('/:spotId/bookings', requireAuth, authCatch, validateBooking, displayvaldErr, async (req, res) => {
   const { startDate, endDate } = req.body;
