@@ -63,3 +63,39 @@
   font-weight: bold;
   margin-top: 10px;
 }
+
+
+.booking-action-buttons {
+  display: flex;
+  justify-content: space-between;
+  padding: 0 16px 16px;
+}
+
+.edit-booking-button,
+.cancel-booking-button {
+  border: none;
+  color: white;
+  padding: 8px 16px;
+  font-size: 14px;
+  border-radius: 8px;
+  cursor: pointer;
+  outline: none;
+  transition: background-color 0.2s ease;
+}
+
+.cancel-booking-button {
+  background-color: #FF5A5F; 
+  margin-left: 10px;
+}
+
+.cancel-booking-button:hover {
+  background-color: #E5595E;
+}
+
+.edit-booking-button {
+  background-color: #008489;
+}
+
+.edit-booking-button:hover {
+  background-color: #007A78;
+}

@@ -99,13 +99,17 @@ const UserBookings = () => {
                   </p>
                 </div>
 
-                <div onClick={(e) => e.stopPropagation()}>
+                <div
+                  className="booking-action-buttons"
+                  onClick={(e) => e.stopPropagation()}
+                >
                   <CancelBooking
                     bookingId={booking.id}
                     startDate={booking.startDate}
                     onCancellationSuccess={() => {
                       dispatch(getUserBookings(sessionUser.id));
                     }}
+                    className="cancel-booking-button"
                   />
                   {new Date(booking.endDate) > new Date() && (
                     <button
