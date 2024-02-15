@@ -1,17 +1,18 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faMapMarkerAlt, faSignInAlt, faSignOutAlt } from '@fortawesome/free-solid-svg-icons';
 import { getUserBookings } from "../../../store/bookings";
+import { formatDate } from ".././../../assets/HelperFunctions";
 import BookingDetailModal from "./BookingDetailModal";
 import CancelBooking from "../CancelBooking";
 import ClearBooking from "../ClearBooking";
+
 import "./UserBookings.css";
 
 const UserBookings = () => {
   const dispatch = useDispatch();
   const sessionUser = useSelector((state) => state.session.user);
-  const userBookings = useSelector(
-    (state) => state.bookings.userBookings || {}
-  );
   // const [bookings, setBookings] = useState([]);
   const bookings = useSelector((state) =>
     Object.values(state.bookings.userBookings || {})
@@ -24,28 +25,10 @@ const UserBookings = () => {
     }
   }, [dispatch, sessionUser]);
 
-  // useEffect(() => {
-  //   if (sessionUser) {
-  //     dispatch(getUserBookings(sessionUser.id)).then((bookingsFromStore) => {
-  //       setBookings(bookingsFromStore);
-  //     });
-  //   }
-  // }, [dispatch, sessionUser]);
-
-  const isPastEndDate = (endDate) => {
-    const today = new Date();
-    const end = new Date(endDate);
-    return end < today;
-  };
-
   const getPreviewImageUrl = (spotImages) => {
     const previewImage =
       spotImages.find((image) => image.preview) || spotImages[0];
     return previewImage ? previewImage.url : "default-image-url.jpg";
-  };
-
-  const handleClearLocal = (bookingId) => {
-    setClearedBookings((prevCleared) => [...prevCleared, bookingId]);
   };
 
   return (
@@ -66,26 +49,37 @@ const UserBookings = () => {
                   alt="Spot"
                   className="booking-image"
                 />
-                <div className="booking-details">
+                {/* <div className="booking-details">
                   <h3>{booking.Spot.name}</h3>
                   <p>
                     {booking.Spot.city}, {booking.Spot.state}
                   </p>
-                  <p>Check-in: {booking.startDate}</p>
-                  <p>Check-out: {booking.endDate}</p>
+                  <p>Check-in: {formatDate(booking.startDate)}</p>
+                  <p>Check-out: {formatDate(booking.endDate)}</p>
+                </div> */}
+
+                <div className="booking-details">
+                  <h3>{booking.Spot.name}</h3>
+                  <p>
+                    <span className="booking-detail-icon">
+                      <FontAwesomeIcon icon={faMapMarkerAlt} />
+                    </span>
+                    {booking.Spot.city}, {booking.Spot.state}
+                  </p>
+                  <p>
+                    <span className="booking-detail-icon">
+                      <FontAwesomeIcon icon={faSignInAlt} />
+                    </span>
+                    Check-in: {formatDate(booking.startDate)}
+                  </p>
+                  <p>
+                    <span className="booking-detail-icon">
+                      <FontAwesomeIcon icon={faSignOutAlt} />
+                    </span>
+                    Check-out: {formatDate(booking.endDate)}
+                  </p>
                 </div>
-                {/* Conditional rendering for past end date */}
-                {/* {isPastEndDate(booking.endDate) && (
-                  <div onClick={(e) => e.stopPropagation()}>
-                    <ClearBooking
-                      bookingId={booking.id}
-                      onClearSuccess={() => {
-                        dispatch(getUserBookings(sessionUser.id));
-                      }}
-                      onClear={() => handleClearLocal(booking.id)}
-                    />
-                  </div>
-                )} */}
+
                 <div onClick={(e) => e.stopPropagation()}>
                   <CancelBooking
                     bookingId={booking.id}

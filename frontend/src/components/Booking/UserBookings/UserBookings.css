@@ -1,39 +1,65 @@
 .user-bookings-container {
-  padding: 20px;
+  padding: 40px;
+  max-width: 1200px;
+  margin: 0 auto;
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
 }
 
 .bookings-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-  gap: 20px;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 32px;
 }
 
 .booking-card {
-  border: 1px solid #ccc;
-  border-radius: 8px;
+  border: none;
+  border-radius: 12px;
   overflow: hidden;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+  transition: box-shadow 0.3s ease-in-out;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+}
+
+.booking-card:hover {
+  box-shadow: 0 6px 12px rgba(0,0,0,0.15);
 }
 
 .booking-image {
   width: 100%;
-  height: 200px;
+  height: 220px;
   object-fit: cover;
 }
 
 .booking-details {
-  padding: 15px;
+  padding: 16px;
+  background-color: #fff;
+  color: #484848;
+  font-size: 14px;
 }
 
 .booking-details h3 {
-  margin: 0 0 10px 0;
+  color: black;
+  font-size: 22px;
+  margin-bottom: 10px;
 }
 
 .booking-details p {
-  margin: 4px 0;
-  color: #333;
+  display: flex;
+  align-items: center;
+  margin: 8px 0;
+  font-size: 16px;
+  color: #484848;
 }
+
+.booking-detail-icon {
+  margin-right: 8px;
+  color: #FF5A5F;
+}
+
 .booking-started-message {
-  color: #d9534f; 
+  color: #d9534f;
   font-weight: bold;
   margin-top: 10px;
 }
