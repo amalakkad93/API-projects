@@ -36,30 +36,54 @@
 }
 
 .right-column {
-  flex-basis: 60%;
-  display: flex;
-  flex-direction: column;
+  flex: 1.5;
+  background: #fff;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  border-radius: 12px;
+  padding: 24px;
+  margin-bottom: 88px;
 }
 .spot-summary-section {
   display: flex;
   align-items: center;
   margin-bottom: 20px;
+  background: #f7f7f7;
+  padding: 16px;
+  border-radius: 8px;
 }
 
+.spot-summary-section, .price-details {
+  background: #f9f9f9;
+  padding: 15px;
+  margin-bottom: 20px;
+  border-radius: 8px;
+}
+
+.spot-summary-section:not(:last-child) {
+  border-bottom: 1px solid #eee;
+}
+
+
+
 .spot-image-container {
-  flex: 1;
+  /* flex: 1; */
+  width: 100%;
+  max-width: 200px;
+  margin-right: 20px;
 }
 
 .spot-image {
   width: 100%;
-  max-width: 200px;
   height: auto;
   border-radius: 8px;
 }
 
 .spot-info {
-  flex: 2;
-  padding-left: 20px;
+  /* flex: 2;
+  padding-left: 20px; */
+
+  display: flex;
+  flex-direction: column;
 }
 .price-details {
   margin-bottom: 20px;
@@ -82,6 +106,44 @@ p {
   line-height: 1.5;
 }
 
+.spot-info h3 {
+  margin-bottom: 8px;
+  font-size: 18px;
+}
+
+.spot-info div {
+  font-size: 16px;
+  color: #666;
+}
+
+.price-details {
+  background: #f9f9f9;
+  border-radius: 8px;
+  padding: 16px;
+  margin-top: 20px;
+}
+
+.price-details div {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.price-details div:last-child {
+  font-weight: bold;
+  border-top: 1px solid #eee;
+  padding-top: 8px;
+}
+ .total-description, .total-amount {
+  font-weight: 600;
+  color: #222222;
+}
+
+.total-price {
+  font-size: 18px;
+  border-top: 1px solid #ebebeb;
+  padding-top: 8px;
+}
 .dates-header {
   display: flex;
   justify-content: space-between;
@@ -167,4 +229,64 @@ p {
 .payment-option p {
   color: #666;
   margin-top: 0;
+}
+
+
+
+
+
+.modal-container {
+  background-color: white;
+  border-radius: 12px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+  padding: 20px;
+  max-width: 500px;
+  margin: auto;
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+}
+
+.modal-header {
+  font-size: 24px;
+  color: #333;
+  margin-bottom: 20px;
+}
+
+.modal-body {
+  font-size: 16px;
+  color: #555;
+  margin-bottom: 20px;
+  line-height: 1.6;
+}
+
+.modal-footer {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.modal-confirm-btn, .modal-cancel-btn {
+  font-size: 16px;
+  padding: 10px 20px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  margin-left: 10px;
+}
+
+.modal-confirm-btn {
+  background-color: #FF5A5F;
+  color: white;
+}
+
+.modal-confirm-btn:hover {
+  background-color: #E5595E;
+}
+
+.modal-cancel-btn {
+  background-color: #ccc;
+  color: #333;
+}
+
+.modal-cancel-btn:hover {
+  background-color: #bbb;
 }

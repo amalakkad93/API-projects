@@ -10,7 +10,8 @@ const DateSelection = ({ initialStartDate, initialEndDate, onDatesSelected, book
   const [endDate, setEndDate] = useState(initialEndDate);
   const { closeModal } = useModal();
 
-  const highlightedDates = bookedDates.map(date => new Date(date));
+  // const highlightedDates = bookedDates.map(date => new Date(date));
+  const highlightedDates = (bookedDates || []).map(date => new Date(date));
 
   const handleDateChange = (dates) => {
     const [start, end] = dates;
@@ -36,7 +37,7 @@ const DateSelection = ({ initialStartDate, initialEndDate, onDatesSelected, book
           endDate={endDate}
           selectsRange
           inline
-          minDate={new Date()} 
+          minDate={new Date()}
           highlightDates={[{ 'react-datepicker__day--highlighted-custom': highlightedDates }]}
         />
         <button className='date-save-btn' onClick={handleSubmit}>Dates</button>

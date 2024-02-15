@@ -1,6 +1,7 @@
 import React from 'react';
 import { useDispatch } from 'react-redux';
 import { cancelBooking } from '../../../store/bookings';
+import './CancelBooking.css';
 
 const CancelBooking = ({ bookingId, startDate, onCancellationSuccess }) => {
   const dispatch = useDispatch();

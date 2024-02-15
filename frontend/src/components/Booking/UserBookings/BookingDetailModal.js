@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { formatDate } from ".././../../assets/HelperFunctions";
 import "./BookingDetailModal.css";
 
 const BookingDetailModal = ({ booking, onClose }) => {
@@ -42,15 +43,12 @@ const BookingDetailModal = ({ booking, onClose }) => {
             <strong>Location:</strong> {booking.Spot.city}, {booking.Spot.state}
           </p>
           <p>
-            <strong>Check-in:</strong> {booking.startDate}
+            <strong>Check-in:</strong> {formatDate(booking.startDate)}
           </p>
           <p>
-            <strong>Check-out:</strong> {booking.endDate}
+            <strong>Check-out:</strong> {formatDate(booking.endDate)}
           </p>
         </div>
-        <button onClick={onClose} className="modal-close-btn">
-          Close
-        </button>
       </div>
     </div>
   );

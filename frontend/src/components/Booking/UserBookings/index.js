@@ -1,41 +1,43 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faMapMarkerAlt,
+  faSignInAlt,
+  faSignOutAlt,
+  faEdit,
+} from "@fortawesome/free-solid-svg-icons";
 import { getUserBookings } from "../../../store/bookings";
+import { formatDate } from ".././../../assets/HelperFunctions";
 import BookingDetailModal from "./BookingDetailModal";
 import CancelBooking from "../CancelBooking";
-import ClearBooking from "../ClearBooking";
+import EditBooking from "../EditBooking";
+
 import "./UserBookings.css";
 
 const UserBookings = () => {
   const dispatch = useDispatch();
   const sessionUser = useSelector((state) => state.session.user);
-  const userBookings = useSelector(
-    (state) => state.bookings.userBookings || {}
-  );
-  // const [bookings, setBookings] = useState([]);
   const bookings = useSelector((state) =>
     Object.values(state.bookings.userBookings || {})
   );
   const [selectedBooking, setSelectedBooking] = useState(null);
   const [clearedBookings, setClearedBookings] = useState([]);
+  const [editMode, setEditMode] = useState(null);
+
   useEffect(() => {
     if (sessionUser) {
       dispatch(getUserBookings(sessionUser.id));
     }
   }, [dispatch, sessionUser]);
 
-  // useEffect(() => {
-  //   if (sessionUser) {
-  //     dispatch(getUserBookings(sessionUser.id)).then((bookingsFromStore) => {
-  //       setBookings(bookingsFromStore);
-  //     });
-  //   }
-  // }, [dispatch, sessionUser]);
-
-  const isPastEndDate = (endDate) => {
-    const today = new Date();
-    const end = new Date(endDate);
-    return end < today;
+  const toggleEditMode = (bookingId, e) => {
+    e.stopPropagation();
+    if (editMode === bookingId) {
+      setEditMode(null);
+    } else {
+      setEditMode(bookingId);
+    }
   };
 
   const getPreviewImageUrl = (spotImages) => {
@@ -44,8 +46,17 @@ const UserBookings = () => {
     return previewImage ? previewImage.url : "default-image-url.jpg";
   };
 
-  const handleClearLocal = (bookingId) => {
-    setClearedBookings((prevCleared) => [...prevCleared, bookingId]);
+  const getBookedDatesForSpot = (currentBookingId, spotId) => {
+    return bookings
+      .filter(
+        (booking) =>
+          booking.spotId === spotId && booking.id !== currentBookingId
+      )
+      .reduce((dates, booking) => {
+        dates.push(new Date(booking.startDate));
+        dates.push(new Date(booking.endDate));
+        return dates;
+      }, []);
   };
 
   return (
@@ -69,32 +80,61 @@ const UserBookings = () => {
                 <div className="booking-details">
                   <h3>{booking.Spot.name}</h3>
                   <p>
+                    <span className="booking-detail-icon">
+                      <FontAwesomeIcon icon={faMapMarkerAlt} />
+                    </span>
                     {booking.Spot.city}, {booking.Spot.state}
                   </p>
-                  <p>Check-in: {booking.startDate}</p>
-                  <p>Check-out: {booking.endDate}</p>
+                  <p>
+                    <span className="booking-detail-icon">
+                      <FontAwesomeIcon icon={faSignInAlt} />
+                    </span>
+                    Check-in: {formatDate(booking.startDate)}
+                  </p>
+                  <p>
+                    <span className="booking-detail-icon">
+                      <FontAwesomeIcon icon={faSignOutAlt} />
+                    </span>
+                    Check-out: {formatDate(booking.endDate)}
+                  </p>
                 </div>
-                {/* Conditional rendering for past end date */}
-                {/* {isPastEndDate(booking.endDate) && (
-                  <div onClick={(e) => e.stopPropagation()}>
-                    <ClearBooking
-                      bookingId={booking.id}
-                      onClearSuccess={() => {
-                        dispatch(getUserBookings(sessionUser.id));
-                      }}
-                      onClear={() => handleClearLocal(booking.id)}
-                    />
-                  </div>
-                )} */}
-                <div onClick={(e) => e.stopPropagation()}>
+
+                <div
+                  className="booking-action-buttons"
+                  onClick={(e) => e.stopPropagation()}
+                >
                   <CancelBooking
                     bookingId={booking.id}
                     startDate={booking.startDate}
                     onCancellationSuccess={() => {
                       dispatch(getUserBookings(sessionUser.id));
                     }}
+                    className="cancel-booking-button"
                   />
+                  {new Date(booking.endDate) > new Date() && (
+                    <button
+                      onClick={(e) => toggleEditMode(booking.id, e)}
+                      className="edit-booking-button"
+                    >
+                      <FontAwesomeIcon icon={faEdit} /> Edit
+                    </button>
+                  )}
                 </div>
+                {editMode === booking.id && (
+                  <EditBooking
+                    bookingId={booking.id}
+                    spotId={booking.spotId}
+                    userId={sessionUser.id}
+                    bookedDates={getBookedDatesForSpot(
+                      booking.id,
+                      booking.spotId
+                    )}
+                    onSuccess={() => {
+                      dispatch(getUserBookings(sessionUser.id));
+                      setEditMode(null);
+                    }}
+                  />
+                )}
               </div>
             ))
         ) : (
