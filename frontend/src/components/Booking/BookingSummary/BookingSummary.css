@@ -36,30 +36,54 @@
 }
 
 .right-column {
-  flex-basis: 60%;
-  display: flex;
-  flex-direction: column;
+  flex: 1.5;
+  background: #fff;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  border-radius: 12px;
+  padding: 24px;
+  margin-bottom: 88px;
 }
 .spot-summary-section {
   display: flex;
   align-items: center;
   margin-bottom: 20px;
+  background: #f7f7f7;
+  padding: 16px;
+  border-radius: 8px;
 }
 
+.spot-summary-section, .price-details {
+  background: #f9f9f9;
+  padding: 15px;
+  margin-bottom: 20px;
+  border-radius: 8px;
+}
+
+.spot-summary-section:not(:last-child) {
+  border-bottom: 1px solid #eee;
+}
+
+
+
 .spot-image-container {
-  flex: 1;
+  /* flex: 1; */
+  width: 100%;
+  max-width: 200px;
+  margin-right: 20px;
 }
 
 .spot-image {
   width: 100%;
-  max-width: 200px;
   height: auto;
   border-radius: 8px;
 }
 
 .spot-info {
-  flex: 2;
-  padding-left: 20px;
+  /* flex: 2;
+  padding-left: 20px; */
+
+  display: flex;
+  flex-direction: column;
 }
 .price-details {
   margin-bottom: 20px;
@@ -82,6 +106,44 @@ p {
   line-height: 1.5;
 }
 
+.spot-info h3 {
+  margin-bottom: 8px;
+  font-size: 18px;
+}
+
+.spot-info div {
+  font-size: 16px;
+  color: #666;
+}
+
+.price-details {
+  background: #f9f9f9;
+  border-radius: 8px;
+  padding: 16px;
+  margin-top: 20px;
+}
+
+.price-details div {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.price-details div:last-child {
+  font-weight: bold;
+  border-top: 1px solid #eee;
+  padding-top: 8px;
+}
+ .total-description, .total-amount {
+  font-weight: 600;
+  color: #222222;
+}
+
+.total-price {
+  font-size: 18px;
+  border-top: 1px solid #ebebeb;
+  padding-top: 8px;
+}
 .dates-header {
   display: flex;
   justify-content: space-between;

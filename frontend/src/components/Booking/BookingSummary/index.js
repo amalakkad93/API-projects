@@ -47,8 +47,9 @@ const BookingSummary = () => {
 
   let totalNights = Math.ceil((endDate - startDate) / (1000 * 60 * 60 * 24));
   totalNights = Math.max(totalNights, 1);
-  const totalPrice =
-    spot && spot.price ? (spot.price * totalNights).toFixed(2) : "N/A";
+  // const totalPrice =
+  //   spot && spot.price ? (spot.price * totalNights).toFixed(2) : "N/A";
+  const totalPrice = spot && spot.price ? spot.price * totalNights : 0;
 
   const downPaymentPercentage = 0.2;
   const monthlyPayment = totalPrice / 12;
@@ -57,6 +58,14 @@ const BookingSummary = () => {
   const initialPayment = calculatedTotalPrice * downPaymentPercentage;
   const remainingPayment = calculatedTotalPrice - initialPayment;
   const monthlyPaymentOption = calculatedTotalPrice / 12;
+
+  const cleaningFee = 125.0;
+  const serviceFee = 60.42;
+  const taxRate = 0.1;
+
+  const taxAmount = totalPrice * taxRate;
+  const total = totalPrice + cleaningFee + serviceFee + taxAmount;
+
 
   useEffect(() => {
     if (spot.id) {
@@ -343,7 +352,7 @@ const BookingSummary = () => {
         </div>
 
         <div className="right-column">
-          <h2>Booking Summary</h2>
+          {/* <h2>Booking Summary</h2> */}
 
           <div className="spot-summary-section">
             <div className="spot-image-container">
@@ -374,15 +383,28 @@ const BookingSummary = () => {
 
           <div className="price-details">
             <h3>Price Details</h3>
-
-            {totalNights > 0 && (
-              <>
-                <p>
-                  ${spot.price?.toFixed(2)} x {totalNights} nights
-                </p>
-                <p>Total (USD): ${totalPrice}</p>
-              </>
-            )}
+            <div className="price-item">
+              <span className="price-description">
+                ${spot.price?.toFixed(2)} x {totalNights} nights
+              </span>
+              <span className="price-amount">${totalPrice}</span>
+            </div>
+            <div className="price-item">
+              <span className="price-description">Cleaning fee</span>
+              <span className="price-amount">${cleaningFee.toFixed(2)}</span>
+            </div>
+            <div className="price-item">
+              <span className="price-description">Service fee</span>
+              <span className="price-amount">${serviceFee?.toFixed(2)}</span>
+            </div>
+            <div className="price-item">
+              <span className="price-description">Taxes</span>
+              <span className="price-amount">${taxAmount?.toFixed(2)}</span>
+            </div>
+            <div className="total-price">
+              <span className="total-description">Total (USD)</span>
+              <span className="total-amount">${total.toFixed(2)}</span>
+            </div>
           </div>
         </div>
       </div>
