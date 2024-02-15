@@ -168,3 +168,63 @@ p {
   color: #666;
   margin-top: 0;
 }
+
+
+
+
+
+.modal-container {
+  background-color: white;
+  border-radius: 12px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+  padding: 20px;
+  max-width: 500px;
+  margin: auto;
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+}
+
+.modal-header {
+  font-size: 24px;
+  color: #333;
+  margin-bottom: 20px;
+}
+
+.modal-body {
+  font-size: 16px;
+  color: #555;
+  margin-bottom: 20px;
+  line-height: 1.6;
+}
+
+.modal-footer {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.modal-confirm-btn, .modal-cancel-btn {
+  font-size: 16px;
+  padding: 10px 20px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  margin-left: 10px;
+}
+
+.modal-confirm-btn {
+  background-color: #FF5A5F;
+  color: white;
+}
+
+.modal-confirm-btn:hover {
+  background-color: #E5595E;
+}
+
+.modal-cancel-btn {
+  background-color: #ccc;
+  color: #333;
+}
+
+.modal-cancel-btn:hover {
+  background-color: #bbb;
+}

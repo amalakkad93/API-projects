@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { fetchBookingsForSpot, createBooking } from "../../../store/bookings";
 import { useModal } from "../../../context/Modal";
 import { addDays, isAfter } from "date-fns";
+import { format } from "date-fns";
 import DatePicker from "../DatePicker/DatePicker";
 import DateSelection from "../DatePicker/DateSelection";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -41,6 +42,9 @@ const BookingSummary = () => {
 
   const startDate = new Date(selectedDates.startDate);
   const endDate = new Date(selectedDates.endDate);
+  const futureDate = addDays(new Date(), 30);
+  const dueDateFormatted = format(futureDate, "MMM dd, yyyy");
+
   let totalNights = Math.ceil((endDate - startDate) / (1000 * 60 * 60 * 24));
   totalNights = Math.max(totalNights, 1);
   const totalPrice =
@@ -61,6 +65,18 @@ const BookingSummary = () => {
       });
     }
   }, [spot.id, dispatch]);
+
+  const isDateAvailable = (startDate, endDate, bookings) => {
+    const start = new Date(startDate).getTime();
+    const end = new Date(endDate).getTime();
+
+    return !bookings.some((booking) => {
+      const bookingStart = new Date(booking.startDate).getTime();
+      const bookingEnd = new Date(booking.endDate).getTime();
+
+      return start < bookingEnd && end > bookingStart;
+    });
+  };
 
   const handleEditDatesClick = () => {
     const bookedDates = existingBookings.reduce((acc, booking) => {
@@ -90,6 +106,16 @@ const BookingSummary = () => {
   };
 
   const confirmBooking = async () => {
+    if (bookingError) {
+      console.error(
+        "Attempted to confirm booking with existing error:",
+        bookingError
+      );
+      return;
+    }
+
+    if (isConfirmed) return;
+
     const formattedStartDate = startDate.toISOString().split("T")[0];
     const formattedEndDate = endDate.toISOString().split("T")[0];
 
@@ -102,19 +128,81 @@ const BookingSummary = () => {
     try {
       await dispatch(createBooking(spot.id, newBooking));
       setIsConfirmed(true);
-      setModalContent(
-        <div>
-          <p>Your booking is confirmed!</p>
-          <button onClick={() => {
-            navigate("/user/bookings")
-            setModalContent(null);
-            if (setOnModalClose) setOnModalClose(() => {});
-          }}>OK</button>
-        </div>
-      );
+
+      if (setOnModalClose) {
+        setOnModalClose(() => {});
+      }
+
+      setModalContent(null);
+
+      navigate("/user/bookings");
     } catch (error) {
       handleBookingError(error);
     }
+  };
+
+  const showModalForConfirmation = () => {
+    if (bookingError) return;
+
+    setModalContent(
+      <div className="modal-container">
+        <div className="modal-header">Confirm Your Booking</div>
+        <div className="modal-body">
+          <p>
+            Are you sure you want to book <strong>{spot.name}</strong> for the
+            dates of <strong>{checkInDate}</strong> to{" "}
+            <strong>{checkOutDate}</strong>?
+          </p>
+          <p>
+            The total price will be <strong>${totalPrice}</strong>.
+          </p>
+        </div>
+        <div className="modal-footer">
+          <button
+            onClick={() => {
+              setModalContent(null);
+              if (setOnModalClose) setOnModalClose(() => {});
+            }}
+            className="modal-cancel-btn"
+          >
+            Cancel
+          </button>
+          <button
+            onClick={() => confirmBooking()}
+            className="modal-confirm-btn"
+          >
+            Confirm Booking
+          </button>
+        </div>
+      </div>
+    );
+  };
+
+  const handleBookingAttempt = () => {
+    setBookingError("");
+
+    if (!selectedDates.startDate || !selectedDates.endDate) {
+      setBookingError("Please select valid start and end dates.");
+      return;
+    }
+    if (
+      !isDateAvailable(
+        selectedDates.startDate,
+        selectedDates.endDate,
+        existingBookings
+      )
+    ) {
+      setBookingError(
+        "The selected dates are not available. Please choose different dates."
+      );
+      return;
+    }
+    if (!spot.id) {
+      setBookingError("Please select a valid spot.");
+      return;
+    }
+
+    showModalForConfirmation();
   };
 
   const handleBookingError = async (error) => {
@@ -197,7 +285,8 @@ const BookingSummary = () => {
                 </label>
                 <p>
                   ${initialPayment.toFixed(2)} due today, $
-                  {remainingPayment.toFixed(2)} on Feb 22, 2024. No extra fees.
+                  {remainingPayment.toFixed(2)} on {dueDateFormatted}. No extra
+                  fees.
                 </p>
               </div>
               <input
@@ -241,7 +330,10 @@ const BookingSummary = () => {
               Your booking is confirmed!
             </div>
           ) : (
-            <button onClick={confirmBooking} className="confirm-booking-btn">
+            <button
+              onClick={handleBookingAttempt}
+              className="confirm-booking-btn"
+            >
               Request to book
             </button>
           )}
