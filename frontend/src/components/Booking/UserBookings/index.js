@@ -31,13 +31,10 @@ const UserBookings = () => {
     }
   }, [dispatch, sessionUser]);
 
+
   const toggleEditMode = (bookingId, e) => {
     e.stopPropagation();
-    if (editMode === bookingId) {
-      setEditMode(null);
-    } else {
-      setEditMode(bookingId);
-    }
+    setEditMode(editMode === bookingId ? null : bookingId);
   };
 
   const getPreviewImageUrl = (spotImages) => {
@@ -58,7 +55,7 @@ const UserBookings = () => {
         return dates;
       }, []);
   };
-
+console.log(bookings)
   return (
     <div className="user-bookings-container">
       <h2>Your Bookings</h2>
@@ -111,7 +108,7 @@ const UserBookings = () => {
                     }}
                     className="cancel-booking-button"
                   />
-                  {new Date(booking.endDate) > new Date() && (
+                  {new Date(booking.startDate) > new Date() && (
                     <button
                       onClick={(e) => toggleEditMode(booking.id, e)}
                       className="edit-booking-button"
@@ -125,6 +122,8 @@ const UserBookings = () => {
                     bookingId={booking.id}
                     spotId={booking.spotId}
                     userId={sessionUser.id}
+                    initialStartDate={booking.startDate}
+                    initialEndDate={booking.endDate}
                     bookedDates={getBookedDatesForSpot(
                       booking.id,
                       booking.spotId

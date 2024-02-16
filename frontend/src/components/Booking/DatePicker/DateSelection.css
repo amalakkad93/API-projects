@@ -85,3 +85,13 @@
 .date-save-btn:hover {
   background-color: #333;
 }
+
+.react-datepicker__day--highlighted-custom-initial {
+  background-color: black;
+  color: white;
+}
+
+.react-datepicker__day--highlighted-custom-booked {
+  background-color: red;
+  color: white;
+}
