@@ -196,13 +196,26 @@ export default function reviewReducer(state = initialState, action) {
       //   }
       // };
 
-    case UPDATE_REVIEW:
-      newState = { ...state, spot: { ...state.spot } };
-      newState.spot[action.review.id] = action.review;
-      return newState;
-      // newState = { ...state, reviews: { ...state.reviews, spot: { ...state.reviews.spot } } };
-      // newState.reviews.spot[action.review.id] = action.review;
+    // case UPDATE_REVIEW:
+      // newState = { ...state, spot: { ...state.spot } };
+      // newState.spot[action.review.id] = action.review;
       // return newState;
+      case UPDATE_REVIEW: {
+        return {
+          ...state,
+          reviews: {
+            ...state.reviews,
+            spot: {
+              ...state.reviews.spot,
+              [action.review.id]: {
+                ...state.reviews.spot[action.review.id],
+                ...action.review,
+              }
+            }
+          }
+        };
+      }
+
 
     default:
       return state;

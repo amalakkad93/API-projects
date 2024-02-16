@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useModal } from "../../../context/Modal";
-import { updateReviewThunk } from "../../../store/reviews";
+import { updateReviewThunk,  getAllReviewsThunk} from "../../../store/reviews";
+import "./EditReviewModal.css";
 
-function EditReviewModal({ review, setReloadPage }) {
+function EditReviewModal({ review, setReloadPage, spot }) {
   const [updatedReview, setUpdatedReview] = useState(review.review);
   const dispatch = useDispatch();
   const { closeModal } = useModal();
@@ -14,8 +15,9 @@ function EditReviewModal({ review, setReloadPage }) {
       review: updatedReview,
     };
     dispatch(updateReviewThunk(review.id, updatedReviewDetails));
-    closeModal();
+    // dispatch(getAllReviewsThunk(spot.id));
     setReloadPage(true);
+    closeModal();
   };
 
   return (

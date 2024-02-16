@@ -48,7 +48,13 @@ export default function SpotDetail() {
   };
   // const userSpotReview = Object.values(reviews).find((currentReview) => currentReview && currentReview.User && currentReview.User.id === sessionUser.id);
 
+  // useEffect(() => {
+  //   dispatch(getSpotDetailThunk(spotId));
+  //   dispatch(getAllReviewsThunk(spotId)).finally(() => setLoading(false));
+  // }, [dispatch, spotId, reloadPage]);
+
   useEffect(() => {
+    setLoading(true);
     dispatch(getSpotDetailThunk(spotId));
     dispatch(getAllReviewsThunk(spotId)).finally(() => setLoading(false));
   }, [dispatch, spotId, reloadPage]);
@@ -154,10 +160,8 @@ export default function SpotDetail() {
 
                 navigate(`/booking-summary/${spotId}`, {
                   replace: true,
-                  state: { spot, selectedDates, totalPrice }
+                  state: { spot, selectedDates, totalPrice },
                 });
-
-
               }}
             >
               Reserve

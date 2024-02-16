@@ -37,6 +37,7 @@ export default function GetAllReviewsModal({ spot, setReloadPage }) {
                     <EditReviewModal
                       review={review}
                       setReloadPage={setReloadPage}
+                      spot={spot}
                     />
                   }
                 />
