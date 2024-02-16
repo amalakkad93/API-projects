@@ -87,12 +87,14 @@ router.put("/:bookingId", requireAuth, errorAuth, async (req, res, next) => {
 
   const checkingPreviousStartDate = await Booking.findAll({
     where: {
+      id: { [Op.ne]: bookingId },
       spotId: booking.spotId,
       startDate: { [Op.between]: [startDate, endDate] },
     },
   });
   const checkingPreviousEndDate = await Booking.findAll({
     where: {
+      id: { [Op.ne]: bookingId }, 
       spotId: booking.spotId,
       endDate: { [Op.between]: [startDate, endDate] },
     },

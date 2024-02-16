@@ -1,17 +1,32 @@
-import React, { useState } from 'react';
-import ReactDatePicker from 'react-datepicker';
-import 'react-datepicker/dist/react-datepicker.css';
-import { useModal } from '../../../context/Modal';
+import React, { useState } from "react";
+import ReactDatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+import { useModal } from "../../../context/Modal";
 
-import './DateSelection.css';
+import "./DateSelection.css";
 
-const DateSelection = ({ initialStartDate, initialEndDate, onDatesSelected, bookedDates }) => {
-  const [startDate, setStartDate] = useState(initialStartDate);
-  const [endDate, setEndDate] = useState(initialEndDate);
+const DateSelection = ({
+  initialStartDate,
+  initialEndDate,
+  onDatesSelected,
+  bookedDates,
+  currentBookingDates,
+}) => {
   const { closeModal } = useModal();
+  const [startDate, setStartDate] = useState(new Date(initialStartDate));
+  const [endDate, setEndDate] = useState(new Date(initialEndDate));
 
-  // const highlightedDates = bookedDates.map(date => new Date(date));
-  const highlightedDates = (bookedDates || []).map(date => new Date(date));
+
+  const bookedHighlight = bookedDates.map(date => new Date(date.setHours(0, 0, 0, 0)));
+
+  let currentBookingHighlight = {};
+  if (currentBookingDates.startDate && currentBookingDates.endDate) {
+    let start = new Date(currentBookingDates.startDate).setHours(0, 0, 0, 0);
+    let end = new Date(currentBookingDates.endDate).setHours(0, 0, 0, 0);
+    currentBookingHighlight = {
+      "react-datepicker__day--highlighted-current": [new Date(start), new Date(end)]
+    };
+  }
 
   const handleDateChange = (dates) => {
     const [start, end] = dates;
@@ -22,7 +37,7 @@ const DateSelection = ({ initialStartDate, initialEndDate, onDatesSelected, book
   const handleSubmit = () => {
     onDatesSelected({
       startDate: startDate,
-      endDate: endDate
+      endDate: endDate,
     });
     closeModal();
   };
@@ -38,9 +53,11 @@ const DateSelection = ({ initialStartDate, initialEndDate, onDatesSelected, book
           selectsRange
           inline
           minDate={new Date()}
-          highlightDates={[{ 'react-datepicker__day--highlighted-custom': highlightedDates }]}
+          highlightDates={[...bookedHighlight, currentBookingHighlight]}
         />
-        <button className='date-save-btn' onClick={handleSubmit}>Dates</button>
+        <button className="date-save-btn" onClick={handleSubmit}>
+          Save Dates
+        </button>
       </div>
     </div>
   );
