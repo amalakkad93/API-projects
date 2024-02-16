@@ -3,6 +3,9 @@ import { useDispatch } from "react-redux";
 import { updateBooking, getUserBookings } from "../../../store/bookings";
 import DateSelection from "../DatePicker/DateSelection";
 
+import { useModal } from "../../../context/Modal";
+import "./EditBooking.css";
+
 const EditBooking = ({
   bookingId,
   spotId,
@@ -13,6 +16,7 @@ const EditBooking = ({
   onSuccess,
 }) => {
   const dispatch = useDispatch();
+  const { setModalContent, closeModal } = useModal();
   const [startDate, setStartDate] = useState(
     initialStartDate ? new Date(initialStartDate) : new Date()
   );
@@ -38,7 +42,15 @@ const EditBooking = ({
 
     try {
       await dispatch(updateBooking(updatedBooking));
-      alert("Booking updated successfully!");
+      setModalContent(
+        <div className="modal-success-message">
+          <p>Booking updated successfully!</p>
+          <button className="modal-success-button" onClick={closeModal}>
+            Close
+          </button>
+        </div>
+      );
+
       dispatch(getUserBookings(userId));
       if (onSuccess) onSuccess();
     } catch (err) {

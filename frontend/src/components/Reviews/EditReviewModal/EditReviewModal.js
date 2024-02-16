@@ -20,35 +20,35 @@ function EditReviewModal({ review, setReloadPage }) {
     </div>
   );
 };
-import { useEffect, useState } from "react";
-import { useDispatch } from "react-redux";
+// import { useEffect, useState } from "react";
+// import { useDispatch } from "react-redux";
 
-import { updateReviewThunk } from '../../../store/reviews';
+// import { updateReviewThunk } from '../../../store/reviews';
 
-function EditReviewModal({ review, setReloadPage }) {
-  const [updatedReview, setUpdatedReview] = useState(review.review);
-  const dispatch = useDispatch();
+// function EditReviewModal({ review, setReloadPage }) {
+//   const [updatedReview, setUpdatedReview] = useState(review.review);
+//   const dispatch = useDispatch();
 
-  // Update local state if the review prop changes
-  useEffect(() => {
-    setUpdatedReview(review.review);
-  }, [review.review]);
+//   // Update local state if the review prop changes
+//   useEffect(() => {
+//     setUpdatedReview(review.review);
+//   }, [review.review]);
 
-  const handleSubmit = async () => {
-      // Send only the updated review text, not the entire review object
-      dispatch(updateReviewThunk(review.id, { review: updatedReview }));
-      setReloadPage(true);
-  };
+//   const handleSubmit = async () => {
+//       // Send only the updated review text, not the entire review object
+//       dispatch(updateReviewThunk(review.id, { review: updatedReview }));
+//       setReloadPage(true);
+//   };
 
-  return (
-    <div>
-      <textarea value={updatedReview} onChange={(e) => setUpdatedReview(e.target.value)} />
-      <button onClick={handleSubmit}>Update Review</button>
-    </div>
-  );
-}
+//   return (
+//     <div>
+//       <textarea value={updatedReview} onChange={(e) => setUpdatedReview(e.target.value)} />
+//       <button onClick={handleSubmit}>Update Review</button>
+//     </div>
+//   );
+// }
 
-export default EditReviewModal;
+// export default EditReviewModal;
 
 
 
