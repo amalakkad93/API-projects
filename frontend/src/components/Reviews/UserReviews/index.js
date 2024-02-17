@@ -28,7 +28,7 @@ const UserReviews = () => {
       <EditReviewModal
         review={review}
         setReloadPage={() => {
-          setReloadPage(prev => !prev);
+          setReloadPage((prev) => !prev);
         }}
       />
     );
@@ -59,8 +59,16 @@ const UserReviews = () => {
             </div>
             <p>{review.review}</p>
             <div className="review-actions">
-              <button onClick={() => openEditModal(review)}>Edit Review</button>
-              <button onClick={() => openDeleteModal(review.id, review.spotId)}>
+              <button
+                className="delete-and-update-user-review-btn edit"
+                onClick={() => openEditModal(review)}
+              >
+                Edit Review
+              </button>
+              <button
+                className="delete-and-update-user-review-btn delete"
+                onClick={() => openDeleteModal(review.id, review.spotId)}
+              >
                 Delete Review
               </button>
             </div>

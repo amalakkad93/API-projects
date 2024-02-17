@@ -37,3 +37,35 @@
 .review-spot {
   font-style: italic;
 }
+
+.review-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.delete-and-update-user-review-btn {
+  flex-grow: 1;
+  padding: 8px 16px;
+  border: none;
+  color: #FFFFFF;
+  font-weight: bold;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.delete-and-update-user-review-btn.edit {
+  background-color: #FF385C;
+}
+
+.delete-and-update-user-review-btn.edit:hover {
+  background-color: #e83256;
+}
+
+.delete-and-update-user-review-btn.delete {
+  background-color: #FFA07A;
+}
+
+.delete-and-update-user-review-btn.delete:hover {
+  background-color: #e89070;
+}
