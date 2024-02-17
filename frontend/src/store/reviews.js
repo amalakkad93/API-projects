@@ -101,14 +101,14 @@ export const deleteReviewThunk = (reviewId) => async (dispatch) => {
 // ***************************getAllReviewsOfCurrentUser***************************
 export const getAllReviewsOfCurrentUserThunk = () => async (dispatch) => {
   try {
-    console.log("Fetching reviews for current user...");
     const res = await csrfFetch(`/api/reviews/current`);
 
     if (res.ok) {
       const { Reviews } = await res.json();
       // console.log("***********************In res.ok getAllReviewsOfCurrentUser");
       // console.log("Received reviews data:", Reviews);
-      return dispatch(actionGetReviewsByCurrentUser(Reviews)); // Dispatch the action using dispatch function
+      dispatch(actionGetReviewsByCurrentUser(Reviews));
+      return Reviews;
     } else {
       const errors = await res.json();
       // console.log("Error fetching reviews:", errors);
@@ -181,10 +181,22 @@ export default function reviewReducer(state = initialState, action) {
       delete newState.reviews.spot[action.reviewId];
       return newState;
 
+    // case GET_ALL_USER_REVIEWS:
+    //   newState = { ...state, user: {} };
+    //   action.reviews.forEach((review) => {
+    //     newState.user[review.id] = review;
+    //   });
+    //   return newState;
     case GET_ALL_USER_REVIEWS:
-      newState = { ...state, user: {} };
+      console.log("---Payload:", action.reviews);
+      newState = { ...state, reviews: { ...state.reviews, user: {} } };
       action.reviews.forEach((review) => {
-        newState.user[review.id] = review;
+        newState.reviews.user[review.id] = {
+          ...review,
+          User: review.User,
+          Spot: review.Spot,
+          ReviewImages: review.ReviewImages,
+        };
       });
       return newState;
 

@@ -139,6 +139,17 @@ function ProfileButton({ user }) {
                     Manage Spots
                   </button>
                 </ul>
+                <ul className="center-menu">
+                  <button
+                    className="Manage-spot-button center-menu1"
+                    onClick={(e) => {
+                      closeMenu();
+                      navigate("/user/reviews");
+                    }}
+                  >
+                    Manage Reviews
+                  </button>
+                </ul>
                 <ul>
                   <button
                     type="button"

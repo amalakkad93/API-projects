@@ -12,6 +12,7 @@ import EditSpotForm from "./components/Spots/SpotForm/EditSpotForm";
 import UserProfile from "./components/UserProfile/UserProfile";
 import BookingSummary from "./components/Booking/BookingSummary";
 import UserBookings from "./components/Booking/UserBookings";
+import UserReviews from "./components/Reviews/UserReviews";
 
 // import CreateReviewModal from "./components/Reviews/ReviewModals/CreateReviewModal";
 // import DeleteReviewModal from "./components/Reviews/ReviewModals/DeleteReviewModal";
@@ -33,6 +34,7 @@ function App() {
           <Route path="/" element={<GetSpots />} />
           <Route path="/spots/new" element={<CreateSpotForm />} />
           <Route path="/users/show" element={<UserProfile/>} />
+          <Route path="/user/reviews" element={<UserReviews />} />
           <Route path="/user/bookings" element={<UserBookings />} />
           <Route path="/spots/edit/:spotId" element={<EditSpotForm />} />
           {/* <Route path="/reviews/new" element={<CreateReviewModal />} /> */}
