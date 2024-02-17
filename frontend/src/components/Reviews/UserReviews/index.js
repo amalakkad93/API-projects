@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { getAllReviewsOfCurrentUserThunk } from "../../../store/reviews";
 import EditReviewModal from "../EditReviewModal/EditReviewModal";
+import DeleteReviewModal from "../DeleteReviewModal/DeleteReviewModal";
 import { useModal } from "../../../context/Modal";
 import "./UserReviews.css";
 
@@ -33,7 +34,15 @@ const UserReviews = () => {
     );
   };
 
-
+  const openDeleteModal = (reviewId, spotId) => {
+    setModalContent(
+      <DeleteReviewModal
+        reviewId={reviewId}
+        spotId={spotId}
+        setReloadPage={() => {}}
+      />
+    );
+  };
 
   return (
     <div className="user-reviews-container">
@@ -51,6 +60,9 @@ const UserReviews = () => {
             <p>{review.review}</p>
             <div className="review-actions">
               <button onClick={() => openEditModal(review)}>Edit Review</button>
+              <button onClick={() => openDeleteModal(review.id, review.spotId)}>
+                Delete Review
+              </button>
             </div>
           </div>
         ))
