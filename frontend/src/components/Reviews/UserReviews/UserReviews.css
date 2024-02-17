@@ -1,0 +1,39 @@
+.user-reviews-container {
+  max-width: 600px;
+  margin: auto;
+  margin-top: 76px;
+  padding: 20px;
+  background-color: #fff;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  border-radius: 8px;
+}
+
+.user-reviews-container h2 {
+  color: #FF385C;
+  margin-bottom: 20px;
+}
+
+.review-item {
+  border-bottom: 1px solid #ebebeb;
+  padding-bottom: 20px;
+  margin-bottom: 20px;
+}
+
+.review-header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.review-date {
+  color: #717171;
+}
+
+.review-rating {
+  color: #FF385C;
+  font-weight: bold;
+}
+
+.review-spot {
+  font-style: italic;
+}
