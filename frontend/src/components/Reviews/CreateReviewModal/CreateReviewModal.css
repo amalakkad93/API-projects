@@ -10,47 +10,56 @@
 .star-container span:hover ~ span {
   color: black;
 }
-#form-review{
-display: flex;
-justify-content: center;
-flex-direction: column;
-width: 400px;
-height: 344px;
-border: solid 4px black;
-border-radius: 10px;
+#form-review {
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  width: 400px;
+  height: 344px;
+  border: solid 4px black;
+  border-radius: 10px;
 }
 .review-form-h2 {
   display: flex;
   justify-content: center;
 }
 #form-review textarea {
+  margin-left: 10px;
+  margin-right: 10px;
+  background-color: rgb(207, 219, 252);
+  height: 111px;
+}
+.star-container {
+  text-align: center;
+}
 
-margin-left: 10px;
-margin-right: 10px;
-background-color: rgb(207, 219, 252);
-height: 111px;;
-}
-.star-container{
-text-align: center;
+#submit-review-btn {
+  background: linear-gradient(to right, #e61e4d 0%, #e31c5f 50%, #d70466 100%);
+  border: black solid 1px;
+  box-shadow: 3px 3px 2px black;
+  margin-bottom: 20px;
+  height: 50px;
+  color: white;
+  margin-right: 10px;
+  margin-left: 10px;
+  cursor: pointer;
+  transition: background 0.3s ease-in-out, transform 0.2s ease;
 }
 
-#submit-review-btn{
-background-color:  #FF5A5F;
-border: black solid 1px;
-box-shadow: 3px 3px 2px black;
-margin-bottom: 20px;
-height: 50px;
-color: white;
-margin-right: 10px;
-margin-left: 10px;
-cursor: pointer;
+#submit-review-btn:hover {
+  background: linear-gradient(to left, #e61e4d 0%, #e31c5f 50%, #d70466 100%);
+  transform: scale(1.05);
 }
-#submit-review-btn:disabled{
-background-color: gray;
-border: black solid 1px;
-box-shadow: none;
+
+#submit-review-btn:active {
+  background: linear-gradient(to right, #bd1e59 0%, #92174d 50%, #861453 100%);
+}
+
+#submit-review-btn:disabled {
+  background-color: gray;
+  border: black solid 1px;
+  box-shadow: none;
 }
 .errors {
   color: red;
-
 }
