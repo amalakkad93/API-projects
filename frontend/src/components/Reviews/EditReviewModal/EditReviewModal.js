@@ -15,8 +15,7 @@ function EditReviewModal({ review, setReloadPage, spot }) {
       review: updatedReview,
     };
     dispatch(updateReviewThunk(review.id, updatedReviewDetails));
-    // dispatch(getAllReviewsThunk(spot.id));
-    setReloadPage(true);
+    setReloadPage(prev => !prev);
     closeModal();
   };
 

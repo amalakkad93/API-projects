@@ -16,9 +16,11 @@ const UPDATE_REVIEW = "UPDATEOneReview";
 const actionGetReviews = (reviews) => ({ type: GET_ALL_REVIEWS, reviews });
 const actionCreateReview = (review) => ({ type: CREATE_REVIEW, review });
 const actionDeleteReview = (reviewId) => ({ type: DELETE_REVIEW, reviewId });
-const actionGetReviewsByCurrentUser = (reviews) => ({ type: GET_ALL_USER_REVIEWS, reviews });
-const actionUpdateReview = (review) => ({ type:  UPDATE_REVIEW, review});
-
+const actionGetReviewsByCurrentUser = (reviews) => ({
+  type: GET_ALL_USER_REVIEWS,
+  reviews,
+});
+const actionUpdateReview = (review) => ({ type: UPDATE_REVIEW, review });
 
 // ************************************************
 //                   ****Thunks****
@@ -123,8 +125,8 @@ export const updateReviewThunk = (reviewId, review) => async (dispatch) => {
   try {
     const res = await csrfFetch(`/api/reviews/${reviewId}`, {
       method: "PUT",
-      headers: {"Content-Type": "application/json"},
-      body: JSON.stringify(review)
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(review),
     });
 
     if (res.ok) {
@@ -133,18 +135,17 @@ export const updateReviewThunk = (reviewId, review) => async (dispatch) => {
       return updatedReview;
     } else {
       const errors = await res.json();
-      console.log('Error updating review with ID:', review.id, errors);
+      console.error("Error updating review", errors);
       return errors;
     }
   } catch (error) {
-    console.error('Error updating review with ID:', review.id, error);
+    console.error("Exception in updateReviewThunk", error);
   }
 };
 
 // ************************************************
 //                   ****Reducer****
 // ************************************************
-// const initialState = { allSpots: {}, singleSpot: {}, reviews: { spot: null, user: {} }, isLoading: true };
 const initialState = {
   allSpots: {},
   singleSpot: {},
@@ -169,8 +170,6 @@ export default function reviewReducer(state = initialState, action) {
       return newState;
 
     case DELETE_REVIEW:
-      // newState = {...state.reviews.spot}
-      // return newState[action.reviewId];
       newState = {
         ...state,
         reviews: {
@@ -184,38 +183,27 @@ export default function reviewReducer(state = initialState, action) {
 
     case GET_ALL_USER_REVIEWS:
       newState = { ...state, user: {} };
-      action.reviews.forEach(review => {
+      action.reviews.forEach((review) => {
         newState.user[review.id] = review;
       });
       return newState;
-      // return {
-      //   ...state,
-      //   reviews: {
-      //     ...state.reviews,
-      //     user: action.reviews
-      //   }
-      // };
 
-    // case UPDATE_REVIEW:
-      // newState = { ...state, spot: { ...state.spot } };
-      // newState.spot[action.review.id] = action.review;
-      // return newState;
-      case UPDATE_REVIEW: {
-        return {
-          ...state,
-          reviews: {
-            ...state.reviews,
-            spot: {
-              ...state.reviews.spot,
-              [action.review.id]: {
-                ...state.reviews.spot[action.review.id],
-                ...action.review,
-              }
-            }
-          }
-        };
-      }
-
+    case UPDATE_REVIEW: {
+      const newState = {
+        ...state,
+        reviews: {
+          ...state.reviews,
+          spot: {
+            ...state.reviews.spot,
+            [action.review.id]: {
+              ...state.reviews.spot[action.review.id],
+              ...action.review,
+            },
+          },
+        },
+      };
+      return newState;
+    }
 
     default:
       return state;
