@@ -170,7 +170,8 @@ p, span {
 }
 
 .post-delete-review-btn:hover {
-  background-color: #FF5A5F;
+  background: linear-gradient(to left, #e61e4d 0%, #e31c5f 50%, #d70466 100%);
+  transform: scale(1.05);
 }
 
 .review-item {
