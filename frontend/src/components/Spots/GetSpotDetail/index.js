@@ -54,6 +54,7 @@ export default function SpotDetail() {
   // }, [dispatch, spotId, reloadPage]);
 
   useEffect(() => {
+    console.log('--SpotDetail useEffect - Fetching spot details and reviews', { spotId, reloadPage });
     setLoading(true);
     dispatch(getSpotDetailThunk(spotId));
     dispatch(getAllReviewsThunk(spotId)).finally(() => setLoading(false));

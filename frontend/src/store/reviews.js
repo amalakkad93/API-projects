@@ -16,9 +16,11 @@ const UPDATE_REVIEW = "UPDATEOneReview";
 const actionGetReviews = (reviews) => ({ type: GET_ALL_REVIEWS, reviews });
 const actionCreateReview = (review) => ({ type: CREATE_REVIEW, review });
 const actionDeleteReview = (reviewId) => ({ type: DELETE_REVIEW, reviewId });
-const actionGetReviewsByCurrentUser = (reviews) => ({ type: GET_ALL_USER_REVIEWS, reviews });
-const actionUpdateReview = (review) => ({ type:  UPDATE_REVIEW, review});
-
+const actionGetReviewsByCurrentUser = (reviews) => ({
+  type: GET_ALL_USER_REVIEWS,
+  reviews,
+});
+const actionUpdateReview = (review) => ({ type: UPDATE_REVIEW, review });
 
 // ************************************************
 //                   ****Thunks****
@@ -120,24 +122,26 @@ export const getAllReviewsOfCurrentUserThunk = () => async (dispatch) => {
 
 // ***************************updateReviewThunk**************************
 export const updateReviewThunk = (reviewId, review) => async (dispatch) => {
+  console.log("--Dispatching updateReviewThunk", { reviewId, review });
   try {
     const res = await csrfFetch(`/api/reviews/${reviewId}`, {
       method: "PUT",
-      headers: {"Content-Type": "application/json"},
-      body: JSON.stringify(review)
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(review),
     });
 
     if (res.ok) {
       const updatedReview = await res.json();
+      console.log("--Update successful", updatedReview);
       dispatch(actionUpdateReview(updatedReview));
       return updatedReview;
     } else {
       const errors = await res.json();
-      console.log('Error updating review with ID:', review.id, errors);
+      console.error("Error updating review", errors);
       return errors;
     }
   } catch (error) {
-    console.error('Error updating review with ID:', review.id, error);
+    console.error("Exception in updateReviewThunk", error);
   }
 };
 
@@ -184,38 +188,40 @@ export default function reviewReducer(state = initialState, action) {
 
     case GET_ALL_USER_REVIEWS:
       newState = { ...state, user: {} };
-      action.reviews.forEach(review => {
+      action.reviews.forEach((review) => {
         newState.user[review.id] = review;
       });
       return newState;
-      // return {
-      //   ...state,
-      //   reviews: {
-      //     ...state.reviews,
-      //     user: action.reviews
-      //   }
-      // };
+    // return {
+    //   ...state,
+    //   reviews: {
+    //     ...state.reviews,
+    //     user: action.reviews
+    //   }
+    // };
 
     // case UPDATE_REVIEW:
-      // newState = { ...state, spot: { ...state.spot } };
-      // newState.spot[action.review.id] = action.review;
-      // return newState;
-      case UPDATE_REVIEW: {
-        return {
-          ...state,
-          reviews: {
-            ...state.reviews,
-            spot: {
-              ...state.reviews.spot,
-              [action.review.id]: {
-                ...state.reviews.spot[action.review.id],
-                ...action.review,
-              }
-            }
-          }
-        };
-      }
-
+    // newState = { ...state, spot: { ...state.spot } };
+    // newState.spot[action.review.id] = action.review;
+    // return newState;
+    case UPDATE_REVIEW: {
+      console.log("--Reducer - processing UPDATE_REVIEW", action.review);
+      const newState = {
+        ...state,
+        reviews: {
+          ...state.reviews,
+          spot: {
+            ...state.reviews.spot,
+            [action.review.id]: {
+              ...state.reviews.spot[action.review.id],
+              ...action.review,
+            },
+          },
+        },
+      };
+      console.log("--New state after UPDATE_REVIEW", newState);
+      return newState;
+    }
 
     default:
       return state;

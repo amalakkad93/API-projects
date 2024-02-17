@@ -9,6 +9,7 @@ export default function GetAllReviewsModal({ spot, setReloadPage }) {
   const reviews = useSelector((state) =>
     state.reviews.reviews.spot ? state.reviews.reviews.spot : null
   );
+  console.log('--GetAllReviewsModal rendering', { reviews });
   const sessionUser = useSelector((state) => state.session.user);
   const sortedReviews = Array.isArray(reviews)
     ? [...reviews].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
