@@ -46,15 +46,8 @@ export default function SpotDetail() {
     );
     return spot.price * diffDays;
   };
-  // const userSpotReview = Object.values(reviews).find((currentReview) => currentReview && currentReview.User && currentReview.User.id === sessionUser.id);
-
-  // useEffect(() => {
-  //   dispatch(getSpotDetailThunk(spotId));
-  //   dispatch(getAllReviewsThunk(spotId)).finally(() => setLoading(false));
-  // }, [dispatch, spotId, reloadPage]);
 
   useEffect(() => {
-    console.log('--SpotDetail useEffect - Fetching spot details and reviews', { spotId, reloadPage });
     setLoading(true);
     dispatch(getSpotDetailThunk(spotId));
     dispatch(getAllReviewsThunk(spotId)).finally(() => setLoading(false));
@@ -64,9 +57,6 @@ export default function SpotDetail() {
     dispatch(fetchBookingsForSpot(spotId));
   }, [dispatch, spotId]);
 
-  useEffect(() => {
-    console.log("--Bookings for Spot from State:", bookingsForSpot);
-  }, [bookingsForSpot]);
 
   if (!spot || !spot.id) return null;
 
@@ -172,15 +162,12 @@ export default function SpotDetail() {
         <hr></hr>
         <div className="review-and-post-Review-button">
           <h2 className="avgRating-numofReviews">
-            {/* ★ {spot.avgStarRating.toFixed(1)} */}
-            {/* ★ {(spot.avgStarRating !== null && spot.avgStarRating !== undefined) ? spot.avgStarRating.toFixed(1) : ""} */}
             ★{" "}
             {spot.avgStarRating !== null && spot.avgStarRating !== undefined ? (
               spot.avgStarRating.toFixed(1)
             ) : (
               <span className="boldText">New</span>
             )}
-            {/* {spot?.numReviews > 0 && ` · ${spot.numReviews} ${spot.numReviews === 1 ? 'review' : 'reviews'}`} */}
             {spot.numReviews > 0 &&
               ` · ${spot.numReviews} ${
                 spot.numReviews === 1 ? "review" : "reviews"

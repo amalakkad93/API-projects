@@ -10,15 +10,11 @@ function EditReviewModal({ review, setReloadPage, spot }) {
   const { closeModal } = useModal();
 
   const handleSubmit = async () => {
-    console.log('--EditReviewModal - Submitting update', { reviewId: review.id });
     const updatedReviewDetails = {
       ...review,
       review: updatedReview,
     };
     dispatch(updateReviewThunk(review.id, updatedReviewDetails));
-    console.log('--EditReviewModal - Update submitted');
-    // dispatch(getAllReviewsThunk(spot.id));
-    // setReloadPage(true);
     setReloadPage(prev => !prev);
     closeModal();
   };

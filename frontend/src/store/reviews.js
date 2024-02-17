@@ -122,7 +122,6 @@ export const getAllReviewsOfCurrentUserThunk = () => async (dispatch) => {
 
 // ***************************updateReviewThunk**************************
 export const updateReviewThunk = (reviewId, review) => async (dispatch) => {
-  console.log("--Dispatching updateReviewThunk", { reviewId, review });
   try {
     const res = await csrfFetch(`/api/reviews/${reviewId}`, {
       method: "PUT",
@@ -132,7 +131,6 @@ export const updateReviewThunk = (reviewId, review) => async (dispatch) => {
 
     if (res.ok) {
       const updatedReview = await res.json();
-      console.log("--Update successful", updatedReview);
       dispatch(actionUpdateReview(updatedReview));
       return updatedReview;
     } else {
@@ -148,7 +146,6 @@ export const updateReviewThunk = (reviewId, review) => async (dispatch) => {
 // ************************************************
 //                   ****Reducer****
 // ************************************************
-// const initialState = { allSpots: {}, singleSpot: {}, reviews: { spot: null, user: {} }, isLoading: true };
 const initialState = {
   allSpots: {},
   singleSpot: {},
@@ -173,8 +170,6 @@ export default function reviewReducer(state = initialState, action) {
       return newState;
 
     case DELETE_REVIEW:
-      // newState = {...state.reviews.spot}
-      // return newState[action.reviewId];
       newState = {
         ...state,
         reviews: {
@@ -192,20 +187,8 @@ export default function reviewReducer(state = initialState, action) {
         newState.user[review.id] = review;
       });
       return newState;
-    // return {
-    //   ...state,
-    //   reviews: {
-    //     ...state.reviews,
-    //     user: action.reviews
-    //   }
-    // };
 
-    // case UPDATE_REVIEW:
-    // newState = { ...state, spot: { ...state.spot } };
-    // newState.spot[action.review.id] = action.review;
-    // return newState;
     case UPDATE_REVIEW: {
-      console.log("--Reducer - processing UPDATE_REVIEW", action.review);
       const newState = {
         ...state,
         reviews: {
@@ -219,7 +202,6 @@ export default function reviewReducer(state = initialState, action) {
           },
         },
       };
-      console.log("--New state after UPDATE_REVIEW", newState);
       return newState;
     }
 
