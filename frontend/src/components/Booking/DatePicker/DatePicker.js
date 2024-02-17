@@ -148,6 +148,7 @@ const DatePicker = ({ onDateSelect, existingBookings }) => {
   return (
     <div className="date-pickers-container">
       <div className="date-picker-section">
+      <span className="date-picker-label">CHECK-IN</span>
         <ReactDatePicker
           selected={startDate}
           onChange={(date) => {
@@ -164,6 +165,7 @@ const DatePicker = ({ onDateSelect, existingBookings }) => {
         />
       </div>
       <div className="date-picker-section">
+        <span className="date-picker-label">CHECKOUT</span>
         <ReactDatePicker
           selected={endDate}
           onChange={(date) => {
