@@ -105,12 +105,11 @@ function ProfileButton({ user }) {
                       justifyContent: "center",
                     }}
                   >
-                    <li className="center-menu center-menu-profile">
                     <FontAwesomeIcon
                       icon={faUserCircle}
                       style={{ marginRight: "8px" }}
-                      className="dropdown-icon"
                     />
+                    <li className="center-menu center-menu-profile">
                       Your Profile
                     </li>
                   </Link>
@@ -127,15 +126,45 @@ function ProfileButton({ user }) {
                       justifyContent: "center",
                     }}
                   >
-                    <li className="center-menu center-menu-profile">
                     <FontAwesomeIcon
                       icon={faCalendarAlt}
                       style={{ marginRight: "8px" }}
-                      className="dropdown-icon"
                     />
-                      Your Bookings</li>
+                    <li>Your Bookings</li>
                   </Link>
                 </ul>
+                {/* <ul className="center-menu">
+                  <button
+                    className="Manage-spot-button center-menu1"
+                    onClick={(e) => {
+                      closeMenu();
+                      navigate("/owner/spots");
+                    }}
+                  >
+                    <FontAwesomeIcon
+                      icon={faToolbox}
+                      style={{ marginRight: "8px" }}
+                    />
+                    Manage Spots
+                  </button>
+                </ul>
+
+                <ul className="center-menu">
+                  <button
+                    className="Manage-spot-button center-menu1"
+                    onClick={(e) => {
+                      closeMenu();
+                      navigate("/user/reviews");
+                    }}
+                  >
+                    <FontAwesomeIcon
+                      icon={faStar}
+                      style={{ marginRight: "8px" }}
+                    />{" "}
+
+                    Manage Reviews
+                  </button>
+                </ul> */}
 
                 <ul className="center-menu">
                   <Link
@@ -149,14 +178,11 @@ function ProfileButton({ user }) {
                       justifyContent: "center",
                     }}
                   >
-                    <li className="center-menu center-menu-profile">
                     <FontAwesomeIcon
-                      icon={ faToolbox}
+                      icon={faUserCircle}
                       style={{ marginRight: "8px" }}
-                      className="dropdown-icon"
                     />
-
-                      Manage Spots</li>
+                    <li>Manage Spots</li>
                   </Link>
                 </ul>
 
@@ -172,21 +198,18 @@ function ProfileButton({ user }) {
                       justifyContent: "center",
                     }}
                   >
-
-                    <li className="center-menu center-menu-profile">
                     <FontAwesomeIcon
                       icon={faStar}
                       style={{ marginRight: "8px" }}
-                      className="dropdown-icon"
                     />
-                      Manage Reviews</li>
+                    <li>Manage Reviews</li>
                   </Link>
                 </ul>
 
-                <ul className="center-menu">
+                <ul>
                   <button
                     onClick={logout}
-                    className="buttons1"
+                    className="buttons center-menu center-menu1"
                   >
                     Log Out
                   </button>
