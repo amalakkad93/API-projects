@@ -525,25 +525,48 @@ router.get("/", validateQueryParams, queryParamValidationErrors, async (req, res
 });
 
 //***********Helper functions***********
+  // const processSpots = (spots) => {
+
+  //     return spots.map((spot) => {
+
+  //     spot = spot.toJSON();
+
+  //     const avgRating = spot.Reviews.reduce((sum, review) => sum + review.stars, 0) / spot.Reviews.length;
+
+  //     const previewImage = spot.SpotImages.find((image) => image.preview === true);
+
+  //     spot.avgRating = avgRating || 0;
+  //     spot.previewImage = previewImage ? previewImage.url : "No spot image found";
+
+  //     delete spot.Reviews;
+  //     delete spot.SpotImages;
+
+  //     return spot;
+  //   });
+  // }
   const processSpots = (spots) => {
-
-      return spots.map((spot) => {
-
+    return spots.map((spot) => {
       spot = spot.toJSON();
+      const avgRating = spot.Reviews.reduce((sum, review) => sum + review.stars, 0) / spot.Reviews.length || 0;
+      spot.avgRating = avgRating;
 
-      const avgRating = spot.Reviews.reduce((sum, review) => sum + review.stars, 0) / spot.Reviews.length;
+      const previewImage = spot.SpotImages.find(image => image.preview === true);
+      const otherImages = spot.SpotImages.filter(image => !image.preview);
 
-      const previewImage = spot.SpotImages.find((image) => image.preview === true);
-
-      spot.avgRating = avgRating || 0;
-      spot.previewImage = previewImage ? previewImage.url : "No spot image found";
+      spot.previewImage = previewImage ? previewImage.url : "No preview image found";
+      spot.otherImages = otherImages.map(image => ({
+        id: image.id,
+        url: image.url,
+        preview: image.preview
+      }));
 
       delete spot.Reviews;
       delete spot.SpotImages;
 
       return spot;
     });
-  }
+  };
+
 
   const getPagination = (queryParams) => {
     let { page, size } = queryParams;

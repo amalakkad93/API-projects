@@ -30,6 +30,7 @@ export const getAllSpotsThunk = () => async (dispatch) => {
   if (res.ok) {
     const { Spots } = await res.json(); // { Spots: [] }
     dispatch(actionGetSpots(normalizeArr(Spots)));
+  console.log("Spots from getAllSpotsThunk:", Spots)
     return Spots;
   } else {
     const errors = await res.json();
@@ -158,10 +159,18 @@ const initialState = { allSpots: {}, singleSpot: {} };
 export default function spotReducer(state = initialState, action) {
   let newState;
   switch (action.type) {
+    // case GET_ALL_SPOTS:
+    //   newState = { ...state, allSpots: {} };
+    //   newState.allSpots = action.spots;
+    //   return newState;
     case GET_ALL_SPOTS:
-      newState = { ...state, allSpots: {} };
-      newState.allSpots = action.spots;
-      return newState;
+      return {
+        ...state,
+        allSpots: action.spots.reduce((acc, spot) => {
+          acc[spot.id] = spot;
+          return acc;
+        }, {}),
+      };
 
     case GET_SINGLE_SPOTS:
       newState = { ...state, singleSpot: {} };
