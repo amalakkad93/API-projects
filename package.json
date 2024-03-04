@@ -25,6 +25,8 @@
   },
   "homepage": "https://github.com/amalakkad93/API-projects#readme",
   "dependencies": {
-    "lodash": "^4.17.21"
+    "aws-sdk": "^2.1569.0",
+    "lodash": "^4.17.21",
+    "multer": "^1.4.5-lts.1"
   }
 }
