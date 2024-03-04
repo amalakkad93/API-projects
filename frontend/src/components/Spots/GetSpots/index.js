@@ -4,157 +4,565 @@ import { Link, useNavigate, NavLink } from "react-router-dom";
 import { getAllSpotsThunk, getOwnerAllSpotsThunk } from "../../../store/spots";
 import OpenModalButton from "../../OpenModalButton";
 import DeleteSpot from "../DeleteSpot/DeleteSpot";
+import SleepInnStyleCard from "./SleepInnStyleCard";
+
+import {
+  Card,
+  CardMedia,
+  CardContent,
+  Typography,
+  Button,
+  Grid,
+  Box,
+  Rating,
+} from "@mui/material";
 
 import "./GetSpots.css";
 
 export default function GetSpots({ ownerMode = false }) {
-
-  const spots = Object.values(useSelector((state) => (state.spots.allSpots ? state.spots.allSpots : [])));
-  const sessionUser = useSelector((state) => state.session.user);
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const spots = Object.values(
+    useSelector((state) => (state.spots.allSpots ? state.spots.allSpots : []))
+  );
+  const sessionUser = useSelector((state) => state.session.user);
+  const [currentImageIndex, setCurrentImageIndex] = useState({});
+
+  // Function to handle next image navigation
+  const handleNextImage = (spotId, spotImagesLength) => {
+    setCurrentImageIndex((prevState) => ({
+      ...prevState,
+      [spotId]: (prevState[spotId] + 1) % spotImagesLength,
+    }));
+  };
+
+  // Function to handle previous image navigation
+  const handlePrevImage = (spotId, spotImagesLength) => {
+    setCurrentImageIndex((prevState) => ({
+      ...prevState,
+      [spotId]:
+        ((prevState[spotId] || 0) - 1 + spotImagesLength) % spotImagesLength,
+    }));
+  };
 
   useEffect(() => {
     if (ownerMode) dispatch(getOwnerAllSpotsThunk());
     else dispatch(getAllSpotsThunk());
   }, [dispatch, ownerMode]);
 
-  const spotsToDisplay = (ownerMode && sessionUser) ? spots.filter((spot) => spot.ownerId === sessionUser.id) : spots;
-  const ownerSpots =  (ownerMode && sessionUser) ? spots.filter((spot) => spot.ownerId === sessionUser.id) : 1;
-  // console.log("ownerSpots = ", ownerSpots.length)
+  const spotsToDisplay =
+    ownerMode && sessionUser
+      ? spots.filter((spot) => spot.ownerId === sessionUser.id)
+      : spots;
+  const ownerSpots =
+    ownerMode && sessionUser
+      ? spots.filter((spot) => spot.ownerId === sessionUser.id)
+      : 1;
+  console.log("spotsToDisplay = ", spotsToDisplay)
 
-  if(!spots || !spotsToDisplay) return null;
+  if (!spots || !spotsToDisplay) return null;
+
   return (
-    <>
-      <div className="main-container">
-        {/* {(ownerMode && sessionUser) && (ownerSpots === null || ownerSpots.length <= 0) && ( */}
-        {ownerMode && (
-          <div className="owner-div manage-create-a-new-spot">
-            <h2 className="manage-spots-h1-tag">Manage Your Spots</h2>
-            {ownerSpots.length <= 0 &&
-              <button className="owner-btn create-new-spot-btn">
-                <NavLink to="/spots/new" className="create-new-spot-owner" style={{ textDecoration: "none", color: "var(--white)"}}>Create a New Spot</NavLink>
-              </button>
-            }
-          </div>
-        )}
-
-{/* ownerSpot-main-container ownerSpot-grid-container */}
-        {/* <div className={"spots-main-container grid-container"}> */}
-        <div className={`${ownerMode ? "ownerSpot-main-container ownerSpot-grid-container" : "spots-main-container grid-container" }`}>
-          {spotsToDisplay &&
-            spotsToDisplay.map((spot) => (
-              <div className={`${ownerMode ? "ownerSpot-spot-img-main-div" : "spot-img-main-div" }`} key={spot.id}>
-                <Link to={`/spots/${spot.id}`} style={{ textDecoration: "none", color: "var(--black)" }}>
-                <div className={`spot-box ${ownerMode ? "ownerSpot" : ""}`} title={spot.name}>
-                    <img src={spot.previewImage} className={ ownerMode ? "ownerSpot-img" : "spot-img"} alt={spot.name} />
-                    <div className="spot-info-flex">
-                      {/* <h3 className="spot-title">{spot.name}</h3> */}
-                      <div className="spot-city-state-rating-div">
-                          <p className="p-card-style location-p-tag">{`${spot.city}, ${spot.state}`}</p>
-                          {/* {spot.avgRating ? ( <p className="avgRating-p-tag">★{spot.avgRating.toFixed(1)}</p> ) : ( <p className="boldText">★New</p> )} */}
-                          <p className="avgRating-p-tag">★{spot.avgRating ? spot.avgRating.toFixed(1) : <span className="boldText">New</span>}</p>
-                      </div>
-                      <div className="price-div">
-                        <p className="p-style"><span className="span-style">${spot.price}</span> night{" "}</p>
-                      </div>
-                    </div>
-
-                  </div>
-                </Link>
-                {ownerMode && (
-                  <div className="owner-div update-delete-btns">
-
-                    <button className="owner-btn post-delete-review-btn" onClick={() => navigate(`/spots/edit/${spot.id}`)}> Update </button>
-                    <OpenModalButton buttonText="Delete" modalComponent={<DeleteSpot spotId={spot.id} />}/>
-                  </div>
+    <Box className="main-container" sx={{ padding: 2 }}>
+      <Grid container spacing={4}>
+        {spotsToDisplay.map((spot) => (
+          <Grid item xs={12} sm={6} md={4} key={spot.id}>
+            <Card
+              sx={{
+                display: "flex",
+                flexDirection: "column",
+                height: "100%",
+              }}
+            >
+              <Box sx={{ position: "relative", height: 200, width: "100%" }}>
+                <CardMedia
+                  component="img"
+                  image={
+                    (spot.SpotImages && spot.SpotImages.length > 0
+                      ? spot.SpotImages[currentImageIndex[spot.id] || 0]?.url
+                      : "/defaultImage.jpg") || "/defaultImage.jpg"
+                  }
+                  alt={spot.name}
+                  sx={{ height: 200, width: "100%" }}
+                />
+                {spot.SpotImages.length > 1 && (
+                  <>
+                    <Button
+                      sx={{
+                        position: "absolute",
+                        top: "50%",
+                        left: 0,
+                        transform: "translateY(-50%)",
+                        backgroundColor: "rgba(0,0,0,0.5)",
+                        color: "white",
+                        "&:hover": {
+                          backgroundColor: "rgba(0,0,0,0.7)",
+                        },
+                      }}
+                      onClick={() =>
+                        handlePrevImage(spot.id, spot.SpotImages.length)
+                      }
+                    >
+                      &#10094;
+                    </Button>
+                    <Button
+                      sx={{
+                        position: "absolute",
+                        top: "50%",
+                        right: 0,
+                        transform: "translateY(-50%)",
+                        backgroundColor: "rgba(0,0,0,0.5)",
+                        color: "white",
+                        "&:hover": {
+                          backgroundColor: "rgba(0,0,0,0.7)",
+                        },
+                      }}
+                      onClick={() =>
+                        handleNextImage(spot.id, spot.SpotImages.length)
+                      }
+                    >
+                      &#10095;
+                    </Button>
+                  </>
                 )}
-              </div>
-            ))}
-        </div>
+              </Box>
+              <CardContent>
+                <Box
+                  sx={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    marginBottom: 1,
+                  }}
+                >
+                  <Typography
+                    variant="body1"
+                    color="text.primary"
+                    noWrap
+                    sx={{ fontWeight: "bold", wordBreak: "break-word" }}
+                  >
+                    {spot.city}, {spot.state}
+                  </Typography>
+                  <Box sx={{ display: "flex", alignItems: "center" }}>
+                    <Typography
+                      variant="body1"
+                      color="text.primary"
+                      sx={{ fontWeight: "bold", marginRight: "4px" }}
+                    >
+                      ★
+                    </Typography>
+                    <Typography
+                      variant="body1"
+                      color="text.primary"
+                      sx={{ fontWeight: "normal" }}
+                    >
+                      {spot.avgRating ? spot.avgRating.toFixed(1) : "New"}
+                    </Typography>
+                  </Box>
+                </Box>
+                <Typography
+                  variant="body1"
+                  sx={{ display: "flex", alignItems: "center" }}
+                >
+                  <Box component="span" sx={{ fontWeight: "bold" }}>
+                    ${spot.price}
+                  </Box>
+                  <Box
+                    component="span"
+                    sx={{ fontWeight: "normal", marginLeft: "4px" }}
+                  >
+                    night
+                  </Box>
+                </Typography>
+              </CardContent>
+              {ownerMode && (
+                <Box
+                  sx={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    p: 2,
+                  }}
+                >
+                  <Button
+                    variant="outlined"
+                    onClick={() => navigate(`/spots/edit/${spot.id}`)}
+                    sx={{
+                      minWidth: "90px",
+                      height: "36px",
+                      padding: "6px 16px",
+                      color: "white",
+                      backgroundImage:
+                        "linear-gradient(to left, #e61e4d 0%, #e31c5f 50%, #d70466 100%)",
+                      border: "none",
+                      ":hover": {
+                        opacity: 0.9,
+                        backgroundImage:
+                          "linear-gradient(to right, #e61e4d 0%, #e31c5f 50%, #d70466 100%)",
+                      },
+                    }}
+                  >
+                    Update
+                  </Button>
 
-      </div>
-    </>
+                  <OpenModalButton
+                    buttonText="Delete"
+                    modalComponent={<DeleteSpot spotId={spot.id} />}
+                    className="custom-delete-button"
+                    style={{
+                      minWidth: "90px",
+                      height: "36px",
+                      padding: "6px 16px",
+                      color: "white",
+                      backgroundColor: "grey",
+                      border: "1px solid black",
+                      marginTop: "18px",
+                    }}
+                  />
+                </Box>
+              )}
+            </Card>
+          </Grid>
+        ))}
+      </Grid>
+    </Box>
   );
 }
-// className="p-card-style"
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// import React, { useEffect, useState } from "react";
-// import { useDispatch, useSelector } from "react-redux";
-// import { Link, useHistory, NavLink, useParams } from "react-router-dom";
-// import { thunkGetAllRestaurants, thunkGetRestaurantsUserOwns } from "../../../store/restaurants";
-// import OpenModalButton from "../../OpenModalButton/index";
-// import DeleteRestaurant from "../DeleteRestaurant";
-// import "./GetRestaurants.css";
-
-// export default function GetRestaurants({ ownerMode = false }) {
-//   const restaurants = Object.values(useSelector((state) => (state.restaurants.allRestaurants ? state.restaurants.allRestaurants : [])));
-//   const sessionUser = useSelector((state) => state.session.user);
-//   const dispatch = useDispatch();
-//   const history = useHistory();
-
-//   useEffect(() => {
-//     if (ownerMode) dispatch(thunkGetRestaurantsUserOwns());
-//     else dispatch(thunkGetAllRestaurants());
-//   }, [dispatch, ownerMode]);
-
-//   const restaurantsToDisplay = (ownerMode && sessionUser) ? restaurants.filter((restaurant) => restaurant.ownerId === sessionUser.id) : restaurants;
-//   const ownerRestaurants =  (ownerMode && sessionUser) ? restaurants.filter((restaurant) => restaurant.ownerId === sessionUser.id) : 1;
-
-//   if(!restaurants || !restaurantsToDisplay) return null;
 //   return (
 //     <>
-//       {ownerMode && (
-//         <div className="owner-div">
-//           <h2>Manage Your Restaurants</h2>
-//           <button>
-//             <NavLink to="/restaurants/new">Create a New Restaurant</NavLink>
-//           </button>
-//         </div>
-//       )}
-//       <div className="main-container">
-//         {restaurantsToDisplay.map((restaurant) => (
-//           <div key={restaurant.id}>
-//             <Link to={`/restaurants/${restaurant.id}`}>
-//               <div>
-//                   <img src={restaurant.previewImage} alt={restaurant.name} />
-//                   <div>
-//                       <p>{`${restaurant.city}, ${restaurant.state}`}</p>
-//                       <p>★{restaurant.avgRating ? restaurant.avgRating.toFixed(1) : 'New'}</p>
-//                       <div>
-//                         <p><span>${restaurant.price}</span> night</p>
-//                       </div>
-//                   </div>
-//               </div>
-//             </Link>
-//             {ownerMode && (
-//               <div>
-//                 <button onClick={() => history.push(`/restaurants/edit/${restaurant.id}`)}>Update</button>
-//                 <OpenModalButton buttonText="Delete" modalComponent={<DeleteRestaurant restaurantId={restaurant.id} />}/>
-//               </div>
+//       <Box className="main-container" sx={{ padding: 2 }}>
+//         {ownerMode && (
+//           <Box
+//             className="owner-div manage-create-a-new-spot"
+//             sx={{ marginBottom: 2 }}
+//           >
+//             <Typography variant="h4" gutterBottom>
+//               Manage Your Spots
+//             </Typography>
+//             {ownerSpots.length <= 0 && (
+//               <Button
+//                 variant="contained"
+//                 color="primary"
+//                 component={NavLink}
+//                 to="/spots/new"
+//                 sx={{ textDecoration: "none", color: "inherit" }}
+//               >
+//                 Create a New Spot
+//               </Button>
 //             )}
-//           </div>
-//         ))}
-//       </div>
+//           </Box>
+//         )}
+//         <Grid container spacing={4}>
+//           {spotsToDisplay.map((spot) => (
+//             <Grid item xs={12} sm={6} md={4} key={spot.id}>
+//               <Card
+//                 sx={{
+//                   display: "flex",
+//                   flexDirection: "column",
+//                   height: "100%",
+//                   cursor: 'pointer',
+//                 }}
+//               >
+//                 <CardMedia
+//                   component="img"
+//                   image={spot.previewImage}
+//                   alt={spot.name}
+//                   sx={{ height: 200 }}
+//                 />
+//                 <CardContent>
+//                   <Box
+//                     sx={{
+//                       display: "flex",
+//                       justifyContent: "space-between",
+//                       alignItems: "center",
+//                       marginBottom: 1,
+//                     }}
+//                   >
+//                     <Typography
+//                       variant="body1"
+//                       color="text.primary"
+//                       noWrap
+//                       sx={{ fontWeight: "bold", wordBreak: "break-word" }}
+//                     >
+//                       {spot.city}, {spot.state}
+//                     </Typography>
+//                     <Box sx={{ display: "flex", alignItems: "center" }}>
+//                       <Typography
+//                         variant="body1"
+//                         color="text.primary"
+//                         sx={{ fontWeight: "bold", marginRight: "4px" }}
+//                       >
+//                         ★
+//                       </Typography>
+//                       <Typography
+//                         variant="body1"
+//                         color="text.primary"
+//                         sx={{ fontWeight: "normal" }}
+//                       >
+//                         {spot.avgRating ? spot.avgRating.toFixed(1) : "New"}
+//                       </Typography>
+//                     </Box>
+//                   </Box>
+//                   <Typography
+//                     variant="body1"
+//                     sx={{ display: "flex", alignItems: "center" }}
+//                   >
+//                     <Box component="span" sx={{ fontWeight: "bold" }}>
+//                       ${spot.price}
+//                     </Box>
+//                     <Box
+//                       component="span"
+//                       sx={{ fontWeight: "normal", marginLeft: "4px" }}
+//                     >
+//                       night
+//                     </Box>
+//                   </Typography>
+//                 </CardContent>
+
+//                 {ownerMode && (
+//                   <Box
+//                     sx={{
+//                       display: "flex",
+//                       justifyContent: "space-between",
+//                       alignItems: "center",
+//                       p: 2,
+//                     }}
+//                   >
+//                     <Button
+//                       variant="outlined"
+//                       onClick={() => navigate(`/spots/edit/${spot.id}`)}
+//                       sx={{
+//                         minWidth: "90px",
+//                         height: "36px",
+//                         padding: "6px 16px",
+//                         color: "white",
+//                         backgroundImage:
+//                           "linear-gradient(to left, #e61e4d 0%, #e31c5f 50%, #d70466 100%)",
+//                         border: "none",
+//                         ":hover": {
+//                           opacity: 0.9,
+//                           backgroundImage:
+//                             "linear-gradient(to right, #e61e4d 0%, #e31c5f 50%, #d70466 100%)",
+//                         },
+//                       }}
+//                     >
+//                       Update
+//                     </Button>
+
+//                     <OpenModalButton
+//                       buttonText="Delete"
+//                       modalComponent={<DeleteSpot spotId={spot.id} />}
+//                       className="custom-delete-button"
+//                       style={{
+//                         minWidth: "90px",
+//                         height: "36px",
+//                         padding: "6px 16px",
+//                         color: "white",
+//                         backgroundColor: "grey",
+//                         border: "1px solid black",
+//                         marginTop: "18px",
+//                       }}
+//                     />
+//                   </Box>
+//                 )}
+//               </Card>
+//             </Grid>
+//           ))}
+//         </Grid>
+//       </Box>
 //     </>
 //   );
-// }
+// };
+
+// import { useEffect, useState } from "react";
+// import { useDispatch, useSelector } from "react-redux";
+// import { Link, useNavigate, NavLink } from "react-router-dom";
+// import { getAllSpotsThunk, getOwnerAllSpotsThunk } from "../../../store/spots";
+// import OpenModalButton from "../../OpenModalButton";
+// import DeleteSpot from "../DeleteSpot/DeleteSpot";
+// import SleepInnStyleCard from "./SleepInnStyleCard";
+
+// import {
+//   Card,
+//   CardMedia,
+//   CardContent,
+//   Typography,
+//   Button,
+//   Grid,
+//   Box,
+//   Rating,
+// } from "@mui/material";
+
+// import "./GetSpots.css";
+
+// export default function GetSpots({ ownerMode = false }) {
+//   const spots = Object.values(
+//     useSelector((state) => (state.spots.allSpots ? state.spots.allSpots : []))
+//   );
+//   const sessionUser = useSelector((state) => state.session.user);
+//   const dispatch = useDispatch();
+//   const navigate = useNavigate();
+
+//   useEffect(() => {
+//     if (ownerMode) dispatch(getOwnerAllSpotsThunk());
+//     else dispatch(getAllSpotsThunk());
+//   }, [dispatch, ownerMode]);
+
+//   const spotsToDisplay =
+//     ownerMode && sessionUser
+//       ? spots.filter((spot) => spot.ownerId === sessionUser.id)
+//       : spots;
+//   const ownerSpots =
+//     ownerMode && sessionUser
+//       ? spots.filter((spot) => spot.ownerId === sessionUser.id)
+//       : 1;
+//   // console.log("ownerSpots = ", ownerSpots.length)
+
+//   if (!spots || !spotsToDisplay) return null;
+
+//   return (
+//     <>
+//       <Box className="main-container" sx={{ padding: 2 }}>
+//         {ownerMode && (
+//           <Box
+//             className="owner-div manage-create-a-new-spot"
+//             sx={{ marginBottom: 2 }}
+//           >
+//             <Typography variant="h4" gutterBottom>
+//               Manage Your Spots
+//             </Typography>
+//             {ownerSpots.length <= 0 && (
+//               <Button
+//                 variant="contained"
+//                 color="primary"
+//                 component={NavLink}
+//                 to="/spots/new"
+//                 sx={{ textDecoration: "none", color: "inherit" }}
+//               >
+//                 Create a New Spot
+//               </Button>
+//             )}
+//           </Box>
+//         )}
+//         <Grid container spacing={4}>
+//           {spotsToDisplay.map((spot) => (
+//             <Grid item xs={12} sm={6} md={4} key={spot.id}>
+//               <Card
+//                 sx={{
+//                   display: "flex",
+//                   flexDirection: "column",
+//                   height: "100%",
+//                   cursor: 'pointer',
+//                 }}
+//               >
+//                 <CardMedia
+//                   component="img"
+//                   image={spot.previewImage}
+//                   alt={spot.name}
+//                   sx={{ height: 200 }}
+//                 />
+//                 <CardContent>
+//                   <Box
+//                     sx={{
+//                       display: "flex",
+//                       justifyContent: "space-between",
+//                       alignItems: "center",
+//                       marginBottom: 1,
+//                     }}
+//                   >
+//                     <Typography
+//                       variant="body1"
+//                       color="text.primary"
+//                       noWrap
+//                       sx={{ fontWeight: "bold", wordBreak: "break-word" }}
+//                     >
+//                       {spot.city}, {spot.state}
+//                     </Typography>
+//                     <Box sx={{ display: "flex", alignItems: "center" }}>
+//                       <Typography
+//                         variant="body1"
+//                         color="text.primary"
+//                         sx={{ fontWeight: "bold", marginRight: "4px" }}
+//                       >
+//                         ★
+//                       </Typography>
+//                       <Typography
+//                         variant="body1"
+//                         color="text.primary"
+//                         sx={{ fontWeight: "normal" }}
+//                       >
+//                         {spot.avgRating ? spot.avgRating.toFixed(1) : "New"}
+//                       </Typography>
+//                     </Box>
+//                   </Box>
+//                   <Typography
+//                     variant="body1"
+//                     sx={{ display: "flex", alignItems: "center" }}
+//                   >
+//                     <Box component="span" sx={{ fontWeight: "bold" }}>
+//                       ${spot.price}
+//                     </Box>
+//                     <Box
+//                       component="span"
+//                       sx={{ fontWeight: "normal", marginLeft: "4px" }}
+//                     >
+//                       night
+//                     </Box>
+//                   </Typography>
+//                 </CardContent>
+
+//                 {ownerMode && (
+//                   <Box
+//                     sx={{
+//                       display: "flex",
+//                       justifyContent: "space-between",
+//                       alignItems: "center",
+//                       p: 2,
+//                     }}
+//                   >
+//                     <Button
+//                       variant="outlined"
+//                       onClick={() => navigate(`/spots/edit/${spot.id}`)}
+//                       sx={{
+//                         minWidth: "90px",
+//                         height: "36px",
+//                         padding: "6px 16px",
+//                         color: "white",
+//                         backgroundImage:
+//                           "linear-gradient(to left, #e61e4d 0%, #e31c5f 50%, #d70466 100%)",
+//                         border: "none",
+//                         ":hover": {
+//                           opacity: 0.9,
+//                           backgroundImage:
+//                             "linear-gradient(to right, #e61e4d 0%, #e31c5f 50%, #d70466 100%)",
+//                         },
+//                       }}
+//                     >
+//                       Update
+//                     </Button>
+
+//                     <OpenModalButton
+//                       buttonText="Delete"
+//                       modalComponent={<DeleteSpot spotId={spot.id} />}
+//                       className="custom-delete-button"
+//                       style={{
+//                         minWidth: "90px",
+//                         height: "36px",
+//                         padding: "6px 16px",
+//                         color: "white",
+//                         backgroundColor: "grey",
+//                         border: "1px solid black",
+//                         marginTop: "18px",
+//                       }}
+//                     />
+//                   </Box>
+//                 )}
+//               </Card>
+//             </Grid>
+//           ))}
+//         </Grid>
+//       </Box>
+//     </>
+//   );
+// };

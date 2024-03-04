@@ -13,3 +13,17 @@ height: 30px;
 color: white;
 cursor: pointer;
 }
+
+.custom-delete-button {
+  min-width: 90px;
+  height: 36px;
+  padding: 6px 16px;
+  color: white;
+  background-image: linear-gradient(to left, #e61e4d 0%, #e31c5f 50%, #d70466 100%);
+  border: none;
+  cursor: pointer;
+}
+.custom-delete-button:hover {
+  opacity: 0.9;
+  background-image: linear-gradient(to right, #e61e4d 0%, #e31c5f 50%, #d70466 100%);
+}
