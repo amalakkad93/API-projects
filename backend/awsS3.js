@@ -4,12 +4,12 @@ const path = require('path');
 
 // Configure AWS to use your credentials
 AWS.config.update({
-  accessKeyId: process.env.S3_KEY || 'AKIASQFSBNCP5PRK3BOT',
-  secretAccessKey: process.env.S3_SECRET || 'VP0mGfxjNp3quFKvAAW8dEULWE70zMNdZmlqnkeP'
+  accessKeyId: process.env.S3_KEY,
+  secretAccessKey: process.env.S3_SECRET
 });
 
 const s3 = new AWS.S3({ apiVersion: '2006-03-01' });
-const NAME_OF_BUCKET = process.env.S3_BUCKET || 'flask3';
+const NAME_OF_BUCKET = process.env.S3_BUCKET;
 
 const singleFileUpload = async ({ file, public = false }) => {
   const { originalname, buffer } = file;

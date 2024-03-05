@@ -9,15 +9,10 @@ import {
 
 import { GetCountries, GetState, GetCity } from "react-country-state-city";
 
-// import FormError from "./FormError";
-
 import TextInput from "../../Inputs/TextInput";
 import { LabeledInput } from "../../Inputs/LabeledInput";
 import { LabeledTextarea } from "../../Inputs/LabeledTextarea";
 import SelectInput from "../../Inputs/SelectInput";
-
-// import { Select } from 'antd';
-// import 'antd/dist/antd.css';
 
 import "./SpotForm.css";
 
@@ -29,30 +24,25 @@ export default function SpotForm({ formType, spotId }) {
   const [country, setCountry] = useState("");
   const [state, setState] = useState("");
   const [city, setCity] = useState("");
-  // const [countriesList, setCountriesList] = useState([]);
-  // const [stateList, setStateList] = useState([]);
-  // const [cityList, setCityList] = useState([]);
   const [lat, setLat] = useState(1);
   const [lng, setLng] = useState(1);
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [price, setPrice] = useState("");
   const [previewImage, setPreviewImage] = useState("");
-  const [imageUrl2, setImageUrl2] = useState("");
-  const [imageUrl3, setImageUrl3] = useState("");
-  const [imageUrl4, setImageUrl4] = useState("");
-  const [imageUrl5, setImageUrl5] = useState("");
+
   const [validationObj, setValidationObj] = useState({});
 
   const [initialSpot, setInitialSpot] = useState({});
 
   const [selectActive, setSelectActive] = useState(false);
 
+  const [selectedFiles, setSelectedFiles] = useState([]);
+
   const sessionUser = useSelector((stateid) => stateid.session.user);
 
   // ***************useEffects***************
   useEffect(() => {
-    // GetCountries().then((result) => setCountriesList(result));
     if (formType === "Edit" && spotId) {
       dispatch(getSpotDetailThunk(spotId)).then((data) => {
         setAddress(data.address);
@@ -64,54 +54,10 @@ export default function SpotForm({ formType, spotId }) {
         setCountry(data.country);
         setState(data.state);
         setCity(data.city);
-
-        // GetState(data.country).then((states) => setStateList(states));
-        // GetCity(data.country, data.state).then((cities) => setCityList(cities));
         setInitialSpot(data);
       });
     }
   }, [dispatch, formType, spotId]);
-
-  // =========================================
-
-  // useEffect(() => {
-  //   if (country) {
-  //     GetState(country)
-  //       .then((states) => setStateList(states))
-  //       .catch((err) => {
-  //         console.error("Error fetching states:", err);
-  //       });
-  //   }
-  // }, [country]);
-  // // =========================================
-
-  // useEffect(() => {
-  //   if (state) {
-  //     GetCity(country, state)
-  //       .then((cities) => setCityList(cities))
-  //       .catch((err) => {
-  //         console.error("Error fetching cities:", err);
-  //       });
-  //   }
-  // }, [state]);
-  // =========================================
-
-  // ******************************************
-
-  // *************clearValidationError ************
-  // const clearValidationError = (fieldName) => {
-  //   if (validationObj[fieldName]) {
-  //     setValidationObj(prevState => {
-  //       const newState = { ...prevState };
-  //       delete newState[fieldName];
-  //       return newState;
-  //     });
-  //   }
-  // };
-
-  // const clearValidationError = (validationField) => {
-  //   setValidationObj((prev) => ({ ...prev, [validationField]: null }));
-  // };
 
   const clearValidationError = (validationField) => {
     setValidationObj((prev) => {
@@ -134,7 +80,8 @@ export default function SpotForm({ formType, spotId }) {
     // if (!lat) errors.lat = "Latitude is required";
     // if (!lng) errors.lng = "Longitude is required";
     if (!name) errors.name = "Name is required";
-    if (description.length < 30) errors.description = "Description needs a minimum of 30 characters";
+    if (description.length < 30)
+      errors.description = "Description needs a minimum of 30 characters";
     if (!price) errors.price = "Price is required";
 
     return errors;
@@ -142,42 +89,37 @@ export default function SpotForm({ formType, spotId }) {
   // ****************************************
 
   // **********handleImages******************
-  const handleImages = () => {
-    const imageUrls = [
-      previewImage,
-      imageUrl2,
-      imageUrl3,
-      imageUrl4,
-      imageUrl5,
-    ];
-    const imageExtensionsRegex = /\.(png|jpe?g)$/i;
-    const invalidImages = imageUrls.filter(
-      (url) => url && !imageExtensionsRegex.test(url)
-    );
-
-    if (invalidImages.length > 0) {
-      const errorsObj = { ...validationObj };
-      invalidImages.forEach((url, index) => {
-        const fieldName = index === 0 ? "previewImage" : `imageUrl${index + 1}`;
-        errorsObj[fieldName] = "Image URL must end in .png, .jpg, or .jpeg";
-      });
-      setValidationObj(errorsObj);
-      return false;
+  const handleImageChange = (e, fieldName) => {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        // reader.result, contains the base64 encoded string
+        setSelectedFiles({
+          ...selectedFiles,
+          [fieldName]: reader.result,
+        });
+      };
+      reader.readAsDataURL(file);
     }
 
-    let newSpotImage = [];
-    const tempNewSpotImage = [
-      { url: previewImage, preview: true },
-      { url: imageUrl2, preview: false },
-      { url: imageUrl3, preview: false },
-      { url: imageUrl4, preview: false },
-      { url: imageUrl5, preview: false },
-    ];
-
-    tempNewSpotImage.forEach((image) => image.url && newSpotImage.push(image));
-
-    return newSpotImage;
+    clearValidationError(fieldName);
   };
+  const handleImages = () => {
+    let newSpotImages = [];
+    Object.keys(selectedFiles).forEach((key) => {
+      if (selectedFiles[key]) {
+        newSpotImages.push({
+          base64: selectedFiles[key],
+          fileName: key,
+          preview: key === "previewImage",
+        });
+      }
+    });
+
+    return newSpotImages.length > 0 ? newSpotImages : null;
+  };
+
   // ****************************************
 
   // **********handleInputChange******************
@@ -185,74 +127,20 @@ export default function SpotForm({ formType, spotId }) {
     setterFunction(e.target.value);
     clearValidationError(validationField);
   };
-  // ****************************************
-
-  // // **********handleCountryChange******************
-  // const handleCountryChange = (e) => {
-  //   const selectedCountryId = e.target.value;
-  //   setCountry(Number(selectedCountryId));
-  //   clearValidationError("country");
-  //   setState(null);
-  //   setCity(null);
-  //   GetState(selectedCountryId)
-  //     .then((states) => setStateList(states))
-  //     .catch((error) => {
-  //       console.error("Error fetching states:", error);
-  //     });
-  // };
-  // // ****************************************
-
-  // // **********handleCityChange******************
-  // const handleCityChange = (e) => {
-  //   const selectedCityId = e.target.value;
-  //   setCity(Number(selectedCityId));
-  //   clearValidationError("city");
-  // };
-  // // ****************************************
-
-  // // **********handleStateChange******************
-  // const handleStateChange = (e) => {
-  //   const selectedStateId = e.target.value;
-  //   setState(Number(selectedStateId));
-  //   clearValidationError("state");
-  //   setCity(null);
-  //   GetCity(country, selectedStateId)
-  //     .then((cities) => setCityList(cities.name))
-  //     .catch((error) => {
-  //       console.error("Error fetching cities:", error);
-  //     });
-  // };
-  // ****************************************
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     let errorsObj = validateCommonFields();
-    if (formType === "Create" && !previewImage)
-      errorsObj.previewImage = "Preview Image is required";
+    if (formType === "Create" && Object.keys(selectedFiles).length === 0)
+      errorsObj.previewImage = "At least one image is required";
 
     if (Object.keys(errorsObj).length) {
       setValidationObj(errorsObj);
       return;
     }
 
-    const newSpotImage = handleImages();
-    if (!newSpotImage) return;
-
-    const getNameById = (list, id) =>
-      list?.find((item) => item.id === id)?.name || "";
-    // const spot = {
-    //   address,
-    //   city: getNameById(cityList, city),
-    //   state: getNameById(stateList, state),
-    //   country: getNameById(countriesList, country),
-    //   lat,
-    //   lng,
-    //   name,
-    //   description,
-    //   price,
-    // };
-    const spot = {
+    const spotDetails = {
       address,
       city,
       state,
@@ -265,49 +153,51 @@ export default function SpotForm({ formType, spotId }) {
     };
 
     try {
-      if (formType === "Create") {
-        const newlyCreateSpot = await dispatch(
-          createSpotThunk(spot, newSpotImage, sessionUser)
-        );
-        const newSpot= await dispatch(getSpotDetailThunk(newlyCreateSpot.id))
+      let spotId;
 
-        // if (newlyCreateSpot.id) navigate(`/spots/${newlyCreateSpot.id}`);
-        if (newlyCreateSpot.id) navigate(`/spots/${newSpot.id}`);
-        else throw new Error("Failed to create spot");
+      if (formType === "Create") {
+        const createdSpot = await dispatch(
+          createSpotThunk(spotDetails, sessionUser)
+        ).then((res) => res.json());
+        spotId = createdSpot.id;
+      } else if (formType === "Edit") {
+        const updatedSpot = await dispatch(
+          updateSpotThunk({ ...spotDetails, id: spotId }, sessionUser)
+        ).then((res) => res.json());
+        spotId = updatedSpot.id;
       }
-      if (formType === "Edit") {
-        const updatedSpot = {
-          ...initialSpot,
-          address,
-          city,
-          state,
-          country,
-          lat,
-          lng,
-          name,
-          description,
-          price,
-        };
-        // const updatedSpot = {
-        //   ...initialSpot,
-        //   address,
-        //   city: getNameById(cityList, city) || initialSpot.city,
-        //   state: getNameById(stateList, state) || initialSpot.state,
-        //   country: getNameById(countriesList, country) || initialSpot.country,
-        //   lat,
-        //   lng,
-        //   name,
-        //   description,
-        //   price,
-        // };
-        const updatedSpotData = await dispatch(updateSpotThunk(updatedSpot));
-        if (updatedSpotData) navigate(`/spots/${updatedSpotData.id}`);
-        else return null;
+
+      if (!spotId) {
+        throw new Error("Failed to get spot ID after creation or update.");
       }
+
+      const uploadImages = async (spotId, selectedFiles) => {
+        const urls = await Promise.all(
+          Object.entries(selectedFiles).map(async ([key, file]) => {
+            const formData = new FormData();
+            formData.append("image", file);
+
+            const response = await fetch(`/api/spots/${spotId}/images`, {
+              method: "POST",
+              body: formData,
+            });
+
+            if (!response.ok)
+              throw new Error(`Failed to upload image for key: ${key}`);
+            return await response.json();
+          })
+        );
+        return urls;
+      };
+
+      await uploadImages(spotId, selectedFiles);
+
+      navigate(`/spots/${spotId}`);
     } catch (error) {
-      console.error("Error processing the spot:", error.message);
+      console.error("Error in form submission:", error);
     }
   };
+
   // ****************************************
   return (
     <div className="form-container">
@@ -321,10 +211,6 @@ export default function SpotForm({ formType, spotId }) {
           {formType === "Create" ? "Create a new Spot" : "Update your Spot"}
         </h1>
         <div className="form-div-container">
-          {/* <h1 className="form-header-h1">
-            {formType === "Create" ? "Create a new Spot" : "Update your Spot"}
-          </h1> */}
-
           {/* ***************************Country*************************************** */}
           <div className="box-style location-main-container">
             <div className="form-h2-h3-div">
@@ -370,58 +256,33 @@ export default function SpotForm({ formType, spotId }) {
               {/* ***************************City*************************************** */}
               {/* <div className="error-container"><p>city</p>{validationObj.cityid && (<p className="errors">{validationObj.cityid}</p>)}</div> */}
               <LabeledInput title="City" error={validationObj.city}>
-              <TextInput
-                id="city"
-                type="text"
-                label="City"
-                value={city}
-                error={validationObj.city}
-                placeholder="City"
-                onChange={handleInputChange(setCity, "city")}
-                className="city-state-input"
-              />
+                <TextInput
+                  id="city"
+                  type="text"
+                  label="City"
+                  value={city}
+                  error={validationObj.city}
+                  placeholder="City"
+                  onChange={handleInputChange(setCity, "city")}
+                  className="city-state-input"
+                />
               </LabeledInput>
               {/* ***************************State*************************************** */}
               {/* <div className="error-container"><p>State</p>{validationObj.stateid && (<p className="errors">{validationObj.stateid}</p>)}</div> */}
               <LabeledInput title="State" error={validationObj.state}>
-              <TextInput
-                id="state"
-                type="text"
-                label="State"
-                value={state}
-                error={validationObj.state}
-                placeholder="State"
-                onChange={handleInputChange(setState, "state")}
-                className="city-state-input"
-              />
+                <TextInput
+                  id="state"
+                  type="text"
+                  label="State"
+                  value={state}
+                  error={validationObj.state}
+                  placeholder="State"
+                  onChange={handleInputChange(setState, "state")}
+                  className="city-state-input"
+                />
               </LabeledInput>
             </div>
-            {/* ****************************latitude and Longitude************************************ */}
 
-            {/* <div className="lat-lng-container"> */}
-              {/* ***************************latitude*************************************** */}
-              {/* <LabeledInput title="Latitude" error={validationObj.lat}> */}
-                {/* <TextInput
-                  type="number"
-                  id="lat"
-                  value={lat}
-                  placeholder="latitude"
-                  onChange={handleInputChange(setLat, "lat")}
-                />
-              </LabeledInput> */}
-
-              {/* ***************************Longitude*************************************** */}
-              {/* <div className="error-container"><p>Longitude</p>{validationObj.lng && (<p className="errors">{validationObj.lng}</p>)}</div> */}
-              {/* <LabeledInput title="Longitude" error={validationObj.lng}>
-                <TextInput
-                  type="number"
-                  id="lng"
-                  value={lng}
-                  placeholder="Longitude"
-                  onChange={handleInputChange(setLng, "lng")}
-                />
-              </LabeledInput> */}
-            {/* </div> */}
             <hr></hr>
             {/* ****************************description************************************ */}
             <div
@@ -448,7 +309,11 @@ export default function SpotForm({ formType, spotId }) {
                   className={formType === "Edit" ? "edit-form-textarea" : ""}
                 />
               </LabeledTextarea>
-              <div className="error-container">{validationObj.description && (<p className="errors">{validationObj.description}</p>)}</div>
+              <div className="error-container">
+                {validationObj.description && (
+                  <p className="errors">{validationObj.description}</p>
+                )}
+              </div>
             </div>
             <hr></hr>
             {/* ****************************Name************************************ */}
@@ -469,7 +334,9 @@ export default function SpotForm({ formType, spotId }) {
                 className="input-form"
               />
             </LabeledInput>
-            {validationObj.name && <p className="errors">{validationObj.name}</p>}
+            {validationObj.name && (
+              <p className="errors">{validationObj.name}</p>
+            )}
             <hr></hr>
             {/* ****************************Price************************************ */}
             <div className="form-h2-h3-div">
@@ -482,17 +349,19 @@ export default function SpotForm({ formType, spotId }) {
             <LabeledInput>
               <div className="price-div-form">
                 <span className="dollar-sign">$</span>
-              <TextInput
-                id="price"
-                type="number"
-                value={price}
-                placeholder="Price per night (USD)"
-                onChange={handleInputChange(setPrice, "price")}
-                className="input-form"
-              />
+                <TextInput
+                  id="price"
+                  type="number"
+                  value={price}
+                  placeholder="Price per night (USD)"
+                  onChange={handleInputChange(setPrice, "price")}
+                  className="input-form"
+                />
               </div>
             </LabeledInput>
-            {validationObj.price && (<p className="errors">{validationObj.price}</p>)}
+            {validationObj.price && (
+              <p className="errors">{validationObj.price}</p>
+            )}
             <hr></hr>
             {/* ****************************Images************************************ */}
             {formType === "Create" && (
@@ -500,75 +369,49 @@ export default function SpotForm({ formType, spotId }) {
                 <div className="form-h2-h3-div">
                   <h2 className="form-h2">Liven up your spot with photos</h2>
                   <h3 className="form-h3">
-                    Submit a link to at least one photo to publish your spot.
+                    Upload at least one photo to publish your spot.
                   </h3>
                 </div>
 
                 {/* ****************************previewImage************************************ */}
-
-                <LabeledInput>
-                  <TextInput
+                <LabeledInput
+                  title="Preview Image"
+                  error={validationObj.previewImage}
+                >
+                  <input
                     id="previewImage"
-                    type="url"
-                    placeholder="Preview Image URL"
-                    value={previewImage}
-                    onChange={handleInputChange(setPreviewImage,"previewImage")}
+                    type="file"
+                    onChange={(e) => handleImageChange(e, "previewImage")}
                     className="input-form"
+                    accept="image/png, image/jpeg"
                   />
                 </LabeledInput>
-                {validationObj.previewImage && ( <p className="errors">{validationObj.previewImage}</p>)}
+                {validationObj.previewImage && (
+                  <p className="errors">{validationObj.previewImage}</p>
+                )}
 
-                {/* ****************************imageUrl2************************************ */}
-                <LabeledInput>
-                  <TextInput
-                    id="imageUrl2"
-                    type="url"
-                    placeholder="Image URL"
-                    value={imageUrl2}
-                    onChange={handleInputChange(setImageUrl2, "imageUrl2")}
-                    className="input-form"
-                  />
-                </LabeledInput>
-                {validationObj.imageUrl2 && <p className="errors">{validationObj.imageUrl2}</p>}
+                {/* Additional Images */}
+                {Array.from({ length: 4 }).map((_, index) => (
+                  <LabeledInput key={index} title={`Image ${index + 2}`}>
+                    <input
+                      type="file"
+                      onChange={(e) =>
+                        handleImageChange(e, `imageUrl${index + 2}`)
+                      }
+                      className="input-form"
+                      accept="image/png, image/jpeg"
+                    />
+                  </LabeledInput>
+                ))}
 
-                {/* ****************************imageUrl3************************************ */}
-                <LabeledInput>
-                  <TextInput
-                    id="imageUrl3"
-                    type="url"
-                    placeholder="Image URL"
-                    value={imageUrl3}
-                    onChange={handleInputChange(setImageUrl3, "imageUrl3")}
-                    className="input-form"
-                  />
-                </LabeledInput>
-                {validationObj.imageUrl3 && <p className="errors">{validationObj.imageUrl3}</p>}
-
-                {/* ****************************imageUrl4************************************ */}
-                <LabeledInput>
-                  <TextInput
-                    id="imageUrl4"
-                    type="url"
-                    placeholder="Image URL"
-                    value={imageUrl4}
-                    onChange={handleInputChange(setImageUrl4, "imageUrl4")}
-                    className="input-form"
-                  />
-                </LabeledInput>
-                {validationObj.imageUrl4 && <p className="errors">{validationObj.imageUrl4}</p>}
-
-                {/* ****************************imageUrl5************************************ */}
-                <LabeledInput>
-                  <TextInput
-                    id="imageUrl5"
-                    type="url"
-                    placeholder="Image URL"
-                    value={imageUrl5}
-                    onChange={handleInputChange(setImageUrl5, "imageUrl5")}
-                    className="input-form"
-                  />
-                </LabeledInput>
-                {validationObj.imageUrl5 && <p className="errors">{validationObj.imageUrl5}</p>}
+                {/* Display validation errors for additional images if any */}
+                {Object.keys(validationObj)
+                  .filter((key) => key.startsWith("imageUrl"))
+                  .map((key) => (
+                    <p key={key} className="errors">
+                      {validationObj[key]}
+                    </p>
+                  ))}
                 <hr></hr>
               </>
             )}

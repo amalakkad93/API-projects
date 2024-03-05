@@ -9,6 +9,7 @@ const { handleValidationErrors } = require("../../utils/validation");
 const spot = require("../../db/models/spot");
 const { json } = require("sequelize");
 const { Op } = require('sequelize');
+const { singleMulterUpload, singleFileUpload } = require("../../awsS3")
 
 //**************************************handleErrorResponse**************************************************** */
 
@@ -269,27 +270,49 @@ router.post('/', requireAuth, validateSpot, async (req, res) => {
   }
 });
 
+// //======== Add an Image to a Spot based on the Spot's id ========
+// router.post("/:spotId/images", requireAuth, async (req, res) => {
+//   const { url, preview } = req.body;
+//   const spotId = req.params.spotId;
+
+//   const spot = await Spot.findOne({ where: { id: spotId} });
+
+//   if (spot && spot.ownerId === req.user.id) {
+//     const spotImage = await SpotImage.create({ spotId, url, preview });
+//     const { updatedAt, createdAt, ...response } = spotImage.toJSON();
+//     delete response.spotId;
+//     return res.json(response);
+
+//   } else if (!spot) {
+
+//     return createErrorHandler(404, "Spot couldn't be found", {}, res);
+
+//   } else if (spot && spot.ownerId !== req.user.id) {
+//     return createErrorHandler(403, "Forbidden", {}, res);
+//   }
+// });
+
 //======== Add an Image to a Spot based on the Spot's id ========
-router.post("/:spotId/images", requireAuth, async (req, res) => {
-  const { url, preview } = req.body;
-  const spotId = req.params.spotId;
+router.post("/:spotId/images", requireAuth, singleMulterUpload("image"), async (req, res) => {
+  const { spotId } = req.params;
+  const { user } = req;
+  const spot = await Spot.findByPk(spotId);
 
-  const spot = await Spot.findOne({ where: { id: spotId} });
+  if (!spot) return res.status(404).json({ message: "Spot couldn't be found" });
+  if (spot.ownerId !== user.id) return res.status(403).json({ message: "Forbidden" });
 
-  if (spot && spot.ownerId === req.user.id) {
-    const spotImage = await SpotImage.create({ spotId, url, preview });
-    const { updatedAt, createdAt, ...response } = spotImage.toJSON();
-    delete response.spotId;
-    return res.json(response);
+  const file = req.file;
+  const result = await singleFileUpload({ file, public: true });
 
-  } else if (!spot) {
+  const spotImage = await SpotImage.create({
+    spotId,
+    url: result.Location,
+    preview: true,
+  });
 
-    return createErrorHandler(404, "Spot couldn't be found", {}, res);
-
-  } else if (spot && spot.ownerId !== req.user.id) {
-    return createErrorHandler(403, "Forbidden", {}, res);
-  }
+  return res.json({ spotImage });
 });
+
 
 // ***********************************************************************************************************************
 //======== Edit a Spot ========*****************
