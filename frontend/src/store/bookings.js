@@ -32,7 +32,7 @@ export const clearBooking = (bookingId) => ({
 });
 
 export const fetchBookingsForSpot = (spotId) => async (dispatch) => {
-  const response = await csrfFetch(`/api/spots/${spotId}/bookings`);
+  const response = await fetch(`/api/spots/${spotId}/bookings`);
   if (response.ok) {
     const { Bookings } = await response.json();
     console.log("--Fetched Bookings for Spot:", Bookings);

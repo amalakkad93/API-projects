@@ -73,10 +73,10 @@ export default function GetSpots({ ownerMode = false }) {
     <Box className="main-container" sx={{ padding: 2 }}>
       <Grid container spacing={4}>
         {spotsToDisplay.map((spot) => {
-       const combinedImages = [
-        spot.previewImage,
-        ...spot.otherImages.map(image => image.url),
-      ];
+          const combinedImages = [
+            spot.previewImage,
+            ...spot.otherImages.map((image) => image.url),
+          ];
 
           return (
             <Grid item xs={12} sm={6} md={4} key={spot.id}>
@@ -110,7 +110,10 @@ export default function GetSpots({ ownerMode = false }) {
                             backgroundColor: "rgba(0,0,0,0.7)",
                           },
                         }}
-                        onClick={() => handlePrevImage(spot.id, combinedImages.length)}
+                        onClick={(event) => {
+                          event.stopPropagation();
+                          handlePrevImage(spot.id, combinedImages.length);
+                        }}
                       >
                         &#10094;
                       </Button>
@@ -126,7 +129,10 @@ export default function GetSpots({ ownerMode = false }) {
                             backgroundColor: "rgba(0,0,0,0.7)",
                           },
                         }}
-                        onClick={() => handleNextImage(spot.id, combinedImages.length)}
+                        onClick={(event) => {
+                          event.stopPropagation(); 
+                          handleNextImage(spot.id, combinedImages.length);
+                        }}
                       >
                         &#10095;
                       </Button>

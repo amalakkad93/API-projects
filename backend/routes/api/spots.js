@@ -437,7 +437,9 @@ router.get('/:spotId/bookings', requireAuth, authCatch, async (req, res) => {
   if (!spot) return createErrorHandler(404, "Spot couldn't be found", {}, res);
 
   let bookings;
-  if (spot.ownerId === req.user.id) {
+  // if (spot.ownerId === req.user.id) {
+    if (req.user && spot.ownerId === req.user.id) {
+
 
         bookings = await Booking.findAll({
           where: { spotId: req.params.spotId },
