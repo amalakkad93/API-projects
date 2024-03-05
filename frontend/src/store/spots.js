@@ -56,36 +56,58 @@ export const getSpotDetailThunk = (spotId) => async (dispatch) => {
 };
 
 // ***************************createSpotThunk***************************
-export const createSpotThunk = (newSpot, newSpotImage, sessionUser) => async (dispatch) => {
-  const res = await csrfFetch("/api/spots", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(newSpot),
-  })
+// export const createSpotThunk = (newSpot, newSpotImage, sessionUser) => async (dispatch) => {
+//   const res = await csrfFetch("/api/spots", {
+//     method: "POST",
+//     headers: { "Content-Type": "application/json" },
+//     body: JSON.stringify(newSpot),
+//   })
 
-  if (res.ok) {
-    const newlyCreateSpot = await res.json();
+//   if (res.ok) {
+//     const newlyCreateSpot = await res.json();
 
-    const newImagesRes = await Promise.all(newSpotImage.map(async (imageObj) => {
-      const imageRes = await csrfFetch(`/api/spots/${newlyCreateSpot.id}/images`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(imageObj),
-      });
-      if(imageRes.ok) {
-        const imageData = await imageRes.json();
-        return imageData;
-      }
-    }));
-    newlyCreateSpot.SpotImages = newImagesRes;
-    newlyCreateSpot.creatorName = sessionUser.username;
+//     const newImagesRes = await Promise.all(newSpotImage.map(async (imageObj) => {
+//       const imageRes = await csrfFetch(`/api/spots/${newlyCreateSpot.id}/images`, {
+//         method: "POST",
+//         headers: { "Content-Type": "application/json" },
+//         body: JSON.stringify(imageObj),
+//       });
+//       if(imageRes.ok) {
+//         const imageData = await imageRes.json();
+//         return imageData;
+//       }
+//     }));
+//     newlyCreateSpot.SpotImages = newImagesRes;
+//     newlyCreateSpot.creatorName = sessionUser.username;
+//     dispatch(actionCreateSpot(newlyCreateSpot));
+//     return newlyCreateSpot;
+//   } else {
+//     const errors = res.json();
+//     return errors;
+//   }
+// }
+
+export const createSpotThunk = (newSpot, sessionUser) => async (dispatch) => {
+  try {
+    const response = await csrfFetch("/api/spots", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(newSpot),
+    });
+
+    if (!response.ok) {
+      const errors = await response.json();
+      throw new Error(errors.message);
+    }
+
+    const newlyCreateSpot = await response.json();
     dispatch(actionCreateSpot(newlyCreateSpot));
     return newlyCreateSpot;
-  } else {
-    const errors = res.json();
-    return errors;
+  } catch (error) {
+    console.error("Error creating spot:", error);
+    throw error;
   }
-}
+};
 
 // ***************************updateSpotThunk**************************
 // these functions hit routes
@@ -159,18 +181,18 @@ const initialState = { allSpots: {}, singleSpot: {} };
 export default function spotReducer(state = initialState, action) {
   let newState;
   switch (action.type) {
-    // case GET_ALL_SPOTS:
-    //   newState = { ...state, allSpots: {} };
-    //   newState.allSpots = action.spots;
-    //   return newState;
     case GET_ALL_SPOTS:
-      return {
-        ...state,
-        allSpots: action.spots.reduce((acc, spot) => {
-          acc[spot.id] = spot;
-          return acc;
-        }, {}),
-      };
+      newState = { ...state, allSpots: {} };
+      newState.allSpots = action.spots;
+      return newState;
+    // case GET_ALL_SPOTS:
+    //   return {
+    //     ...state,
+    //     allSpots: action.spots.reduce((acc, spot) => {
+    //       acc[spot.id] = spot;
+    //       return acc;
+    //     }, {}),
+    //   };
 
     case GET_SINGLE_SPOTS:
       newState = { ...state, singleSpot: {} };
