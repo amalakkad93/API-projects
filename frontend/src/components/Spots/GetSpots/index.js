@@ -2,9 +2,10 @@ import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate, NavLink } from "react-router-dom";
 import { getAllSpotsThunk, getOwnerAllSpotsThunk } from "../../../store/spots";
+import { fetchFavorites } from "../../../store/favorites";
 import OpenModalButton from "../../OpenModalButton";
 import DeleteSpot from "../DeleteSpot/DeleteSpot";
-import SleepInnStyleCard from "./SleepInnStyleCard";
+import ToggleFavorite from "../../Favorites/ToggleFavorite";
 import DotIndicator from "./DotIndicator";
 import {
   Card,
@@ -26,7 +27,7 @@ export default function GetSpots({ ownerMode = false }) {
     useSelector((state) => (state.spots.allSpots ? state.spots.allSpots : []))
   );
 
-  console.log("spots = ", spots);
+  const favorites = useSelector((state) => state.favorites.items || []);
 
   const sessionUser = useSelector((state) => state.session.user);
   const [currentImageIndex, setCurrentImageIndex] = useState({});
@@ -54,9 +55,23 @@ export default function GetSpots({ ownerMode = false }) {
   };
 
   useEffect(() => {
-    if (ownerMode) dispatch(getOwnerAllSpotsThunk());
-    else dispatch(getAllSpotsThunk());
-  }, [dispatch, ownerMode]);
+    if (ownerMode) {
+      dispatch(getOwnerAllSpotsThunk());
+    } else {
+      dispatch(getAllSpotsThunk());
+    }
+    if (sessionUser) {
+      dispatch(fetchFavorites(sessionUser.id));
+    }
+  }, [dispatch, ownerMode, sessionUser]);
+
+  const isSpotFavorited = (spotId) => {
+    const favorite = favorites.find((fav) => fav.spotId === spotId);
+    return {
+      isFavorited: !!favorite,
+      favoriteId: favorite?.id || null,
+    };
+  };
 
   const spotsToDisplay =
     ownerMode && sessionUser
@@ -74,6 +89,7 @@ export default function GetSpots({ ownerMode = false }) {
     <Box className="main-container" sx={{ padding: 2 }}>
       <Grid container spacing={4}>
         {spotsToDisplay.map((spot) => {
+          const { isFavorited, favoriteId } = isSpotFavorited(spot.id);
           const combinedImages = [
             spot.previewImage,
             ...spot.otherImages.map((image) => image.url),
@@ -112,7 +128,22 @@ export default function GetSpots({ ownerMode = false }) {
                       borderRadius: "10px",
                     }}
                   />
-
+                  {sessionUser && (
+                    <Box
+                      sx={{
+                        position: "absolute",
+                        top: 0,
+                        right: 0,
+                        padding: "8px",
+                      }}
+                    >
+                      <ToggleFavorite
+                        spotId={spot.id}
+                        isFavorited={isFavorited}
+                        favoriteId={favoriteId}
+                      />
+                    </Box>
+                  )}
                   {combinedImages.length > 1 && (
                     <>
                       <Button

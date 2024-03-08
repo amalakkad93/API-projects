@@ -4,6 +4,7 @@ import sessionReducer from "./session";
 import spotReducer from "./spots";
 import reviewReducer from "./reviews";
 import bookingReducer from "./bookings";
+import favoritesReducer from "./favorites";
 
 // this constructs the SHAPE of your store
 const rootReducer = combineReducers({
@@ -11,6 +12,7 @@ const rootReducer = combineReducers({
   spots: spotReducer,  // (state={}, action) => ({ allSpots: {}, singleSpot: {}}),
   reviews: reviewReducer,
   bookings: bookingReducer, // { userBookings: [], spotBookings: [] },
+  favorites: favoritesReducer, // { items: [], error: null }
   // spotSearch: spotSearchReducer, // { results: [], page: null, size: null }
 });
 
