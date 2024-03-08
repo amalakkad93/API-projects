@@ -22,8 +22,7 @@ const DotIndicator = ({ total, current }) => {
             borderRadius: "50%",
             backgroundColor: current === i ? "white" : "rgba(0, 0, 0, 0.5)",
             margin: "0 2px",
-            boxShadow: "0px 0px 2px rgba(0,0,0,0.8)",
-            border: "1px solid rgba(255,255,255,0.8)"
+        
           }}
         />
       ))}
