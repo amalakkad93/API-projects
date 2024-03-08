@@ -2,9 +2,10 @@ import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate, NavLink } from "react-router-dom";
 import { getAllSpotsThunk, getOwnerAllSpotsThunk } from "../../../store/spots";
+import { fetchFavorites } from "../../../store/favorites";
 import OpenModalButton from "../../OpenModalButton";
 import DeleteSpot from "../DeleteSpot/DeleteSpot";
-import SleepInnStyleCard from "./SleepInnStyleCard";
+import AddFavorite from "../../Favorites/AddFavorite";
 import DotIndicator from "./DotIndicator";
 import {
   Card,
@@ -26,7 +27,7 @@ export default function GetSpots({ ownerMode = false }) {
     useSelector((state) => (state.spots.allSpots ? state.spots.allSpots : []))
   );
 
-  console.log("spots = ", spots);
+  const favorites = useSelector((state) => state.favorites.items || []);
 
   const sessionUser = useSelector((state) => state.session.user);
   const [currentImageIndex, setCurrentImageIndex] = useState({});
@@ -54,9 +55,19 @@ export default function GetSpots({ ownerMode = false }) {
   };
 
   useEffect(() => {
-    if (ownerMode) dispatch(getOwnerAllSpotsThunk());
-    else dispatch(getAllSpotsThunk());
-  }, [dispatch, ownerMode]);
+    if (ownerMode) {
+      dispatch(getOwnerAllSpotsThunk());
+    } else {
+      dispatch(getAllSpotsThunk());
+    }
+    if (sessionUser) {
+      dispatch(fetchFavorites(sessionUser.id));
+    }
+  }, [dispatch, ownerMode, sessionUser]);
+
+  const isSpotFavorited = (spotId) => {
+    return favorites.some(favorite => favorite.spotId === spotId);
+  };
 
   const spotsToDisplay =
     ownerMode && sessionUser
@@ -112,7 +123,22 @@ export default function GetSpots({ ownerMode = false }) {
                       borderRadius: "10px",
                     }}
                   />
-
+                  {sessionUser && (
+                    <Box
+                      sx={{
+                        position: "absolute",
+                        top: 0,
+                        right: 0,
+                        padding: "8px",
+                      }}
+                    >
+                      <AddFavorite
+                        userId={sessionUser.id}
+                        spotId={spot.id}
+                        isFavorited={isSpotFavorited(spot.id)}
+                      />
+                    </Box>
+                  )}
                   {combinedImages.length > 1 && (
                     <>
                       <Button
