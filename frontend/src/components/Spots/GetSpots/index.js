@@ -105,7 +105,8 @@ export default function GetSpots({ ownerMode = false }) {
                   sx={{
                     height: 300,
                     // height: "100%",
-                    // width: "100%",
+                    width: "100%",
+                    // width: 300,
                     borderRadius: "10px",
                   }}
                 />
@@ -178,7 +179,8 @@ export default function GetSpots({ ownerMode = false }) {
                   </>
                 )}
                 {/* </Box> */}
-                <CardContent>
+                <CardContent sx={{ padding: "16px", "&:last-child": { paddingBottom: "16px" } }}>
+
                   <Box
                     sx={{
                       display: "flex",
