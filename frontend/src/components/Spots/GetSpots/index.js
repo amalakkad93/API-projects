@@ -30,6 +30,7 @@ export default function GetSpots({ ownerMode = false }) {
 
   const sessionUser = useSelector((state) => state.session.user);
   const [currentImageIndex, setCurrentImageIndex] = useState({});
+  const [hoveredSpotId, setHoveredSpotId] = useState(null);
 
   // Function to handle next image navigation
   const handleNextImage = (spotId, spotImagesLength) => {
@@ -81,64 +82,102 @@ export default function GetSpots({ ownerMode = false }) {
           return (
             <Grid item xs={12} sm={6} md={4} key={spot.id}>
               <Card
+                onMouseEnter={() => setHoveredSpotId(spot.id)}
+                onMouseLeave={() => setHoveredSpotId(null)}
                 sx={{
                   display: "flex",
                   flexDirection: "column",
                   height: "100%",
                   cursor: "pointer",
+                  position: "relative",
+
+                  borderRadius: "8px",
+                  overflow: "hidden",
+                  boxShadow: "none",
                 }}
                 onClick={() => navigate(`/spots/${spot.id}`)}
               >
-                <Box sx={{ position: "relative", height: 200, width: "100%" }}>
-                  <CardMedia
-                    component="img"
-                    image={combinedImages[currentImageIndex[spot.id] || 0]}
-                    alt={spot.name}
-                    sx={{ height: 200, width: "100%" }}
-                  />
-                  {combinedImages.length > 1 && (
-                    <>
-                      <Button
-                        sx={{
-                          position: "absolute",
-                          top: "50%",
-                          left: 0,
-                          transform: "translateY(-50%)",
-                          backgroundColor: "rgba(0,0,0,0.5)",
-                          color: "white",
-                          "&:hover": {
-                            backgroundColor: "rgba(0,0,0,0.7)",
-                          },
-                        }}
-                        onClick={(event) => {
-                          event.stopPropagation();
-                          handlePrevImage(spot.id, combinedImages.length);
-                        }}
-                      >
-                        &#10094;
-                      </Button>
-                      <Button
-                        sx={{
-                          position: "absolute",
-                          top: "50%",
-                          right: 0,
-                          transform: "translateY(-50%)",
-                          backgroundColor: "rgba(0,0,0,0.5)",
-                          color: "white",
-                          "&:hover": {
-                            backgroundColor: "rgba(0,0,0,0.7)",
-                          },
-                        }}
-                        onClick={(event) => {
-                          event.stopPropagation(); 
-                          handleNextImage(spot.id, combinedImages.length);
-                        }}
-                      >
-                        &#10095;
-                      </Button>
-                    </>
-                  )}
-                </Box>
+                {/* <Box sx={{ position: "relative", height: 200, width: "100%" }}> */}
+                <CardMedia
+                  component="img"
+                  image={combinedImages[currentImageIndex[spot.id] || 0]}
+                  alt={spot.name}
+                  sx={{
+                    height: 300,
+                    // height: "100%",
+                    // width: "100%",
+                    borderRadius: "10px",
+                  }}
+                />
+                {combinedImages.length > 1 && (
+                  <>
+                    <Button
+                      sx={{
+                        position: "absolute",
+                        top: "50%",
+                        left: 32,
+                        transform: "translate(-50%, -50%)",
+                        borderRadius: "50%",
+                        width: 32,
+                        height: 32,
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        backgroundColor: "white",
+                        color: "black",
+                        boxShadow: "0 2px 4px rgba(0,0,0,0.2)",
+                        "&:hover": {
+                          backgroundColor: "white",
+                          opacity: 0.8,
+                        },
+                        padding: 0,
+                        lineHeight: 0,
+                        minWidth: 0,
+                        visibility:
+                          hoveredSpotId === spot.id ? "visible" : "hidden",
+                      }}
+                      onClick={(event) => {
+                        event.stopPropagation();
+                        handlePrevImage(spot.id, combinedImages.length);
+                      }}
+                    >
+                      &#10094;
+                    </Button>
+                    <Button
+                      sx={{
+                        position: "absolute",
+                        top: "50%",
+                        right: 32,
+                        transform: "translate(50%, -50%)",
+                        borderRadius: "50%",
+                        width: 32,
+                        height: 32,
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        backgroundColor: "white",
+                        color: "black",
+                        boxShadow: "0 2px 4px rgba(0,0,0,0.2)",
+                        "&:hover": {
+                          backgroundColor: "white",
+                          opacity: 0.8,
+                        },
+                        padding: 0,
+                        lineHeight: 0,
+                        minWidth: 0,
+                        visibility:
+                          hoveredSpotId === spot.id ? "visible" : "hidden",
+                      }}
+                      onClick={(event) => {
+                        event.stopPropagation();
+                        handleNextImage(spot.id, combinedImages.length);
+                      }}
+                    >
+                      &#10095;
+                    </Button>
+                  </>
+                )}
+                {/* </Box> */}
                 <CardContent>
                   <Box
                     sx={{
