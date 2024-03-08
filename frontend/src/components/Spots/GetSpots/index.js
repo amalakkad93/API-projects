@@ -5,7 +5,7 @@ import { getAllSpotsThunk, getOwnerAllSpotsThunk } from "../../../store/spots";
 import { fetchFavorites } from "../../../store/favorites";
 import OpenModalButton from "../../OpenModalButton";
 import DeleteSpot from "../DeleteSpot/DeleteSpot";
-import AddFavorite from "../../Favorites/AddFavorite";
+import ToggleFavorite from "../../Favorites/ToggleFavorite";
 import DotIndicator from "./DotIndicator";
 import {
   Card,
@@ -66,7 +66,11 @@ export default function GetSpots({ ownerMode = false }) {
   }, [dispatch, ownerMode, sessionUser]);
 
   const isSpotFavorited = (spotId) => {
-    return favorites.some(favorite => favorite.spotId === spotId);
+    const favorite = favorites.find((fav) => fav.spotId === spotId);
+    return {
+      isFavorited: !!favorite,
+      favoriteId: favorite?.id || null,
+    };
   };
 
   const spotsToDisplay =
@@ -85,6 +89,7 @@ export default function GetSpots({ ownerMode = false }) {
     <Box className="main-container" sx={{ padding: 2 }}>
       <Grid container spacing={4}>
         {spotsToDisplay.map((spot) => {
+          const { isFavorited, favoriteId } = isSpotFavorited(spot.id);
           const combinedImages = [
             spot.previewImage,
             ...spot.otherImages.map((image) => image.url),
@@ -132,10 +137,10 @@ export default function GetSpots({ ownerMode = false }) {
                         padding: "8px",
                       }}
                     >
-                      <AddFavorite
-                        userId={sessionUser.id}
+                      <ToggleFavorite
                         spotId={spot.id}
-                        isFavorited={isSpotFavorited(spot.id)}
+                        isFavorited={isFavorited}
+                        favoriteId={favoriteId}
                       />
                     </Box>
                   )}
