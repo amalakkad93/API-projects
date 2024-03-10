@@ -24,7 +24,7 @@ const ToggleFavorite = ({ spotId, isFavorited, favoriteId }) => {
     }
   };
 
-  
+
 
   return (
     <div onClick={handleToggleFavorite} style={{ display: "inline-block" }}>
