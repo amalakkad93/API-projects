@@ -20,7 +20,7 @@ import {
 
 import "./GetSpots.css";
 
-export default function GetSpots({ ownerMode = false }) {
+export default function GetSpots({ mode }) {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const spots = Object.values(
@@ -55,15 +55,22 @@ export default function GetSpots({ ownerMode = false }) {
   };
 
   useEffect(() => {
-    if (ownerMode) {
+    if (mode === "ownerSpot" && sessionUser) {
       dispatch(getOwnerAllSpotsThunk());
     } else {
       dispatch(getAllSpotsThunk());
     }
+
     if (sessionUser) {
       dispatch(fetchFavorites(sessionUser.id));
     }
-  }, [dispatch, ownerMode, sessionUser]);
+  }, [dispatch, mode, sessionUser]);
+
+  useEffect(() => {
+    if (mode === "favorite" && sessionUser) {
+      dispatch(fetchFavorites(sessionUser.id));
+    }
+  }, [dispatch, mode, sessionUser]);
 
   const isSpotFavorited = (spotId) => {
     const favorite = favorites.find((fav) => fav.spotId === spotId);
@@ -73,15 +80,49 @@ export default function GetSpots({ ownerMode = false }) {
     };
   };
 
+  // const spotsToDisplay =
+  //   ownerMode && sessionUser
+  //     ? spots.filter((spot) => spot.ownerId === sessionUser.id)
+  //     : spots;
+  // const ownerSpots =
+  //   ownerMode && sessionUser
+  //     ? spots.filter((spot) => spot.ownerId === sessionUser.id)
+  //     : 1;
+
   const spotsToDisplay =
-    ownerMode && sessionUser
+    mode === "favorite"
+      ? spots.filter((spot) => favorites.some((fav) => fav.spotId === spot.id))
+      : mode === "ownerSpot" && sessionUser
       ? spots.filter((spot) => spot.ownerId === sessionUser.id)
       : spots;
-  const ownerSpots =
-    ownerMode && sessionUser
-      ? spots.filter((spot) => spot.ownerId === sessionUser.id)
-      : 1;
-  console.log("spotsToDisplay = ", spotsToDisplay);
+
+  // Check if in 'favorite' mode and there are no favorites
+  if (mode === "favorite" && favorites.length === 0) {
+    return (
+      <Box sx={{ padding: 10, textAlign: "center" }}>
+        <Typography variant="h4">No saves yet</Typography>
+        <Typography variant="body1" sx={{ marginTop: 2 }}>
+          As you search, click the heart icon to save your favorite places and
+          Experiences to a wishlist.
+        </Typography>
+        <Button
+          variant="contained"
+          sx={{
+            marginTop: 4,
+            backgroundColor: "black",
+            borderRadius: "4px",
+            color: "white",
+            '&:hover': {
+              backgroundColor: "rgba(0, 0, 0, 0.8)",
+            },
+          }}
+          onClick={() => navigate("/")}
+        >
+          Start exploring
+        </Button>
+      </Box>
+    );
+  }
 
   if (!spots || !spotsToDisplay) return null;
 
@@ -272,7 +313,7 @@ export default function GetSpots({ ownerMode = false }) {
                   </Typography>
                 </CardContent>
 
-                {ownerMode && (
+                {mode === "ownerSpot" && (
                   <Box
                     sx={{
                       display: "flex",

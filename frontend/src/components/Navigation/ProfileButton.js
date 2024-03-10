@@ -4,6 +4,7 @@ import * as sessionActions from "../../store/session";
 import OpenModalMenuItem from "./OpenModalMenuItem";
 import LoginFormModal from "../LoginFormModal";
 import SignupFormModal from "../SignupFormModal";
+import FavoriteSpotsList from "../Favorites/FavoriteSpotsList";
 import { useNavigate, Link } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -12,6 +13,7 @@ import {
   faCalendarAlt,
   faToolbox,
   faStar,
+  faHeart,
 } from "@fortawesome/free-solid-svg-icons";
 import UserBookings from "../Booking/UserBookings";
 
@@ -106,11 +108,11 @@ function ProfileButton({ user }) {
                     }}
                   >
                     <li className="center-menu center-menu-profile">
-                    <FontAwesomeIcon
-                      icon={faUserCircle}
-                      style={{ marginRight: "8px" }}
-                      className="dropdown-icon"
-                    />
+                      <FontAwesomeIcon
+                        icon={faUserCircle}
+                        style={{ marginRight: "8px" }}
+                        className="dropdown-icon"
+                      />
                       Your Profile
                     </li>
                   </Link>
@@ -128,12 +130,13 @@ function ProfileButton({ user }) {
                     }}
                   >
                     <li className="center-menu center-menu-profile">
-                    <FontAwesomeIcon
-                      icon={faCalendarAlt}
-                      style={{ marginRight: "8px" }}
-                      className="dropdown-icon"
-                    />
-                      Your Bookings</li>
+                      <FontAwesomeIcon
+                        icon={faCalendarAlt}
+                        style={{ marginRight: "8px" }}
+                        className="dropdown-icon"
+                      />
+                      Your Bookings
+                    </li>
                   </Link>
                 </ul>
 
@@ -150,13 +153,13 @@ function ProfileButton({ user }) {
                     }}
                   >
                     <li className="center-menu center-menu-profile">
-                    <FontAwesomeIcon
-                      icon={ faToolbox}
-                      style={{ marginRight: "8px" }}
-                      className="dropdown-icon"
-                    />
-
-                      Manage Spots</li>
+                      <FontAwesomeIcon
+                        icon={faToolbox}
+                        style={{ marginRight: "8px" }}
+                        className="dropdown-icon"
+                      />
+                      Manage Spots
+                    </li>
                   </Link>
                 </ul>
 
@@ -172,22 +175,42 @@ function ProfileButton({ user }) {
                       justifyContent: "center",
                     }}
                   >
-
                     <li className="center-menu center-menu-profile">
-                    <FontAwesomeIcon
-                      icon={faStar}
-                      style={{ marginRight: "8px" }}
-                      className="dropdown-icon"
-                    />
-                      Manage Reviews</li>
+                      <FontAwesomeIcon
+                        icon={faStar}
+                        style={{ marginRight: "8px" }}
+                        className="dropdown-icon"
+                      />
+                      Manage Reviews
+                    </li>
                   </Link>
                 </ul>
 
                 <ul className="center-menu">
-                  <button
-                    onClick={logout}
-                    className="buttons1"
+                  <Link
+                    to="/my/favorites"
+                    onClick={closeMenu}
+                    style={{
+                      textDecoration: "none",
+                      color: "black",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                    }}
                   >
+                    <li className="center-menu center-menu-profile">
+                      <FontAwesomeIcon
+                        icon={faHeart} 
+                        style={{ marginRight: "8px" }}
+                        className="dropdown-icon"
+                      />
+                      Wishlists
+                    </li>
+                  </Link>
+                </ul>
+
+                <ul className="center-menu">
+                  <button onClick={logout} className="buttons1">
                     Log Out
                   </button>
                 </ul>
