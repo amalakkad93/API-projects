@@ -18,6 +18,7 @@ import UserReviews from "./components/Reviews/UserReviews";
 // import DeleteReviewModal from "./components/Reviews/ReviewModals/DeleteReviewModal";
 import './index.css'
 
+
 function App() {
   const dispatch = useDispatch();
   const [isLoaded, setIsLoaded] = useState(false);
@@ -36,13 +37,14 @@ function App() {
           <Route path="/users/show" element={<UserProfile/>} />
           <Route path="/user/reviews" element={<UserReviews />} />
           <Route path="/user/bookings" element={<UserBookings />} />
+          <Route path="/my/favorites" element={<GetSpots mode="favorite" key="favorites" />} />
           <Route path="/spots/edit/:spotId" element={<EditSpotForm />} />
           {/* <Route path="/reviews/new" element={<CreateReviewModal />} /> */}
           {/* <Route path="/reviews/:reviewId" element={<DeleteReviewModal />} /> */}
           <Route path="/spots/:spotId" element={<GetSpotDetail />} />
           <Route path="/booking-summary/:spotId" element={<BookingSummary />} />
           {/* <Route path="/owner/spots" element={<SpotsOwner />} /> */}
-          <Route path="/owner/spots" element={<GetSpots ownerMode={true}/>} />
+          <Route path="/owner/spots" element={<GetSpots mode="ownerSpot" key="ownerSpot" />} />
           <Route>Page Not Found</Route>
         </Routes>
       )}
