@@ -4,7 +4,6 @@ import * as sessionActions from "../../store/session";
 import OpenModalMenuItem from "./OpenModalMenuItem";
 import LoginFormModal from "../LoginFormModal";
 import SignupFormModal from "../SignupFormModal";
-import FavoriteSpotsList from "../Favorites/FavoriteSpotsList";
 import { useNavigate, Link } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -200,7 +199,7 @@ function ProfileButton({ user }) {
                   >
                     <li className="center-menu center-menu-profile">
                       <FontAwesomeIcon
-                        icon={faHeart} 
+                        icon={faHeart}
                         style={{ marginRight: "8px" }}
                         className="dropdown-icon"
                       />

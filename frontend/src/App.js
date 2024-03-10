@@ -13,7 +13,6 @@ import UserProfile from "./components/UserProfile/UserProfile";
 import BookingSummary from "./components/Booking/BookingSummary";
 import UserBookings from "./components/Booking/UserBookings";
 import UserReviews from "./components/Reviews/UserReviews";
-import FavoriteSpotsList from "./components/Favorites/FavoriteSpotsList"
 
 // import CreateReviewModal from "./components/Reviews/ReviewModals/CreateReviewModal";
 // import DeleteReviewModal from "./components/Reviews/ReviewModals/DeleteReviewModal";
