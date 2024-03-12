@@ -92,22 +92,23 @@ export const createSpotThunk = (newSpot, sessionUser) => async (dispatch) => {
     const response = await csrfFetch("/api/spots", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(newSpot),
+      body: JSON.stringify({newSpot}),
     });
 
+    const responseData = await response.json();
+
     if (!response.ok) {
-      const errors = await response.json();
-      throw new Error(errors.message);
+      throw new Error(responseData.message);
     }
 
-    const newlyCreateSpot = await response.json();
-    dispatch(actionCreateSpot(newlyCreateSpot));
-    return newlyCreateSpot;
+    dispatch(actionCreateSpot(responseData));
+    return responseData;
   } catch (error) {
     console.error("Error creating spot:", error);
     throw error;
   }
 };
+
 
 // ***************************updateSpotThunk**************************
 // these functions hit routes
