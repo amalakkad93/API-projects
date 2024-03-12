@@ -14,6 +14,8 @@ import { LabeledInput } from "../../Inputs/LabeledInput";
 import { LabeledTextarea } from "../../Inputs/LabeledTextarea";
 import SelectInput from "../../Inputs/SelectInput";
 
+import LocationForm from "../../ LocationForm";
+
 import "./SpotForm.css";
 
 export default function SpotForm({ formType, spotId }) {
@@ -21,6 +23,7 @@ export default function SpotForm({ formType, spotId }) {
   const navigate = useNavigate();
 
   const [address, setAddress] = useState("");
+
   const [country, setCountry] = useState("");
   const [state, setState] = useState("");
   const [city, setCity] = useState("");
@@ -128,6 +131,16 @@ export default function SpotForm({ formType, spotId }) {
     clearValidationError(validationField);
   };
 
+  // Function to update address details from LocationAutocomplete
+  const handleAddressDetailsUpdate = ({ address, city, state, country }) => {
+    setAddress(address);
+    setCity(city);
+    setState(state);
+    setCountry(country);
+    // setLat(...);
+    // setLng(...);
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -156,10 +169,13 @@ export default function SpotForm({ formType, spotId }) {
       let spotId;
 
       if (formType === "Create") {
-        const createdSpot = await dispatch(
-          createSpotThunk(spotDetails, sessionUser)
-        ).then((res) => res.json());
-        spotId = createdSpot.id;
+        try {
+          const createdSpot = await dispatch(createSpotThunk(spotDetails, sessionUser));
+         
+          spotId = createdSpot.id;
+        } catch (error) {
+          console.error("Error in form submission:", error);
+        }
       } else if (formType === "Edit") {
         const updatedSpot = await dispatch(
           updateSpotThunk({ ...spotDetails, id: spotId }, sessionUser)
@@ -223,18 +239,6 @@ export default function SpotForm({ formType, spotId }) {
 
             {/* <div className="error-container"> <p>State</p>{validationObj.stateid && (<p className="errors">{validationObj.stateid}</p>)}</div> */}
 
-            <LabeledInput title="Country" error={validationObj.country}>
-              <TextInput
-                id="country"
-                type="text"
-                label="Country"
-                value={country}
-                error={validationObj.country}
-                placeholder="Country"
-                onChange={handleInputChange(setCountry, "country")}
-                className="input-form"
-              />
-            </LabeledInput>
             {/* ****************************Address************************************ */}
 
             {/* <div className="error-container"><p>Street Address</p>{validationObj.address && (<p className="errors">{validationObj.address}</p>)}</div> */}
@@ -251,36 +255,12 @@ export default function SpotForm({ formType, spotId }) {
               />
             </LabeledInput>
 
-            {/* *****************************City and State*********************************** */}
-            <div className="city-state-container">
-              {/* ***************************City*************************************** */}
-              {/* <div className="error-container"><p>city</p>{validationObj.cityid && (<p className="errors">{validationObj.cityid}</p>)}</div> */}
-              <LabeledInput title="City" error={validationObj.city}>
-                <TextInput
-                  id="city"
-                  type="text"
-                  label="City"
-                  value={city}
-                  error={validationObj.city}
-                  placeholder="City"
-                  onChange={handleInputChange(setCity, "city")}
-                  className="city-state-input"
-                />
-              </LabeledInput>
-              {/* ***************************State*************************************** */}
-              {/* <div className="error-container"><p>State</p>{validationObj.stateid && (<p className="errors">{validationObj.stateid}</p>)}</div> */}
-              <LabeledInput title="State" error={validationObj.state}>
-                <TextInput
-                  id="state"
-                  type="text"
-                  label="State"
-                  value={state}
-                  error={validationObj.state}
-                  placeholder="State"
-                  onChange={handleInputChange(setState, "state")}
-                  className="city-state-input"
-                />
-              </LabeledInput>
+            <div style={{ marginTop: "10px" }}>
+              <LocationForm
+                setCountry={setCountry}
+                setState={setState}
+                setCity={setCity}
+              />
             </div>
 
             <hr></hr>
