@@ -292,26 +292,58 @@ router.post('/', requireAuth, validateSpot, async (req, res) => {
 //   }
 // });
 
-//======== Add an Image to a Spot based on the Spot's id ========
 router.post("/:spotId/images", requireAuth, singleMulterUpload("image"), async (req, res) => {
   const { spotId } = req.params;
-  const { user } = req;
   const spot = await Spot.findByPk(spotId);
-
-  if (!spot) return res.status(404).json({ message: "Spot couldn't be found" });
-  if (spot.ownerId !== user.id) return res.status(403).json({ message: "Forbidden" });
+  if (!spot || spot.ownerId !== req.user.id) {
+    return res.status(404).json({ message: "Spot not found or unauthorized" });
+  }
 
   const file = req.file;
-  const result = await singleFileUpload({ file, public: true });
+  if (!file) {
+    return res.status(400).json({ message: "No image file provided" });
+  }
 
-  const spotImage = await SpotImage.create({
-    spotId,
-    url: result.Location,
-    preview: true,
-  });
+  try {
+    const uploadResult = await singleFileUpload({ file, public: true });
+    if (!uploadResult || !uploadResult.location) {
+      throw new Error("Failed to upload image to storage service");
+    }
 
-  return res.json({ spotImage });
+    const spotImage = await SpotImage.create({
+      spotId,
+      url: uploadResult.location,
+      preview: true,
+    });
+
+    return res.json({ spotImage });
+  } catch (error) {
+    console.error("Failed to upload image:", error);
+    return res.status(500).json({ message: "Failed to upload image", error: error.message });
+  }
 });
+
+
+//======== Add an Image to a Spot based on the Spot's id ========
+// router.post("/:spotId/images", requireAuth, singleMulterUpload("image"), async (req, res) => {
+//   const { spotId } = req.params;
+//   const { user } = req;
+//   const spot = await Spot.findByPk(spotId);
+
+//   if (!spot) return res.status(404).json({ message: "Spot couldn't be found" });
+//   if (spot.ownerId !== user.id) return res.status(403).json({ message: "Forbidden" });
+
+//   const file = req.file;
+//   const result = await singleFileUpload({ file, public: true });
+
+//   const spotImage = await SpotImage.create({
+//     spotId,
+//     url: result.Location,
+//     preview: true,
+//   });
+
+//   return res.json({ spotImage });
+// });
 
 
 // ***********************************************************************************************************************
