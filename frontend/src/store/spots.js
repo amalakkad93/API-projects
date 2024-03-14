@@ -87,27 +87,50 @@ export const getSpotDetailThunk = (spotId) => async (dispatch) => {
 //   }
 // }
 
-export const createSpotThunk = (newSpot, sessionUser) => async (dispatch) => {
-  try {
-    const response = await csrfFetch("/api/spots", {
+export const createSpotThunk = (newSpot, newSpotImages, sessionUser) => async (dispatch) => {
+  const createSpotResponse = await csrfFetch("/api/spots", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(newSpot),
+  });
+
+  if (!createSpotResponse.ok) {
+    const errors = await createSpotResponse.json();
+    throw new Error(errors.message || 'Failed to create spot.');
+  }
+
+  const newlyCreatedSpot = await createSpotResponse.json();
+
+  const spotId = newlyCreatedSpot.id;
+  const uploadImagePromises = newSpotImages.map(async (imageFile) => {
+    const formData = new FormData();
+    formData.append("image", imageFile);
+
+    const imageUploadResponse = await csrfFetch(`/api/spots/${spotId}/images`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({newSpot}),
+      body: formData,
     });
 
-    const responseData = await response.json();
+    if (!imageUploadResponse.ok) {
+      const error = await imageUploadResponse.json();
+      console.error(`Failed to upload image: ${error.message}`);
+      throw new Error(`Failed to upload image: ${error.message}`);
 
-    if (!response.ok) {
-      throw new Error(responseData.message);
     }
 
-    dispatch(actionCreateSpot(responseData));
-    return responseData;
-  } catch (error) {
-    console.error("Error creating spot:", error);
-    throw error;
-  }
+    return await imageUploadResponse.json();
+  });
+
+
+  const uploadedImages = await Promise.all(uploadImagePromises);
+
+  newlyCreatedSpot.images = uploadedImages;
+  dispatch(actionCreateSpot(newlyCreatedSpot));
+
+  return newlyCreatedSpot;
 };
+
+
 
 
 // ***************************updateSpotThunk**************************

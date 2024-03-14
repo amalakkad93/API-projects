@@ -93,34 +93,13 @@ export default function SpotForm({ formType, spotId }) {
 
   // **********handleImages******************
   const handleImageChange = (e, fieldName) => {
-    const file = e.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        // reader.result, contains the base64 encoded string
-        setSelectedFiles({
-          ...selectedFiles,
-          [fieldName]: reader.result,
-        });
-      };
-      reader.readAsDataURL(file);
+    const files = Array.from(e.target.files);
+    if (files.length > 0) {
+      setSelectedFiles((prevFiles) => ({
+        ...prevFiles,
+        [fieldName]: files,
+      }));
     }
-
-    clearValidationError(fieldName);
-  };
-  const handleImages = () => {
-    let newSpotImages = [];
-    Object.keys(selectedFiles).forEach((key) => {
-      if (selectedFiles[key]) {
-        newSpotImages.push({
-          base64: selectedFiles[key],
-          fileName: key,
-          preview: key === "previewImage",
-        });
-      }
-    });
-
-    return newSpotImages.length > 0 ? newSpotImages : null;
   };
 
   // ****************************************
@@ -144,15 +123,18 @@ export default function SpotForm({ formType, spotId }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    // Validate form fields
     let errorsObj = validateCommonFields();
-    if (formType === "Create" && Object.keys(selectedFiles).length === 0)
+    if (formType === "Create" && !Object.keys(selectedFiles).length) {
       errorsObj.previewImage = "At least one image is required";
+    }
 
     if (Object.keys(errorsObj).length) {
       setValidationObj(errorsObj);
       return;
     }
 
+    // Prepare spot details
     const spotDetails = {
       address,
       city,
@@ -165,52 +147,40 @@ export default function SpotForm({ formType, spotId }) {
       price,
     };
 
+
+    const imageFiles = [];
+    Object.values(selectedFiles).forEach((fileList) => {
+      if (Array.isArray(fileList)) {
+        imageFiles.push(...fileList);
+      } else {
+        imageFiles.push(fileList);
+      }
+    });
+
     try {
-      let spotId;
-
+      let spotResult;
+      
       if (formType === "Create") {
-        try {
-          const createdSpot = await dispatch(createSpotThunk(spotDetails, sessionUser));
-         
-          spotId = createdSpot.id;
-        } catch (error) {
-          console.error("Error in form submission:", error);
+        // Dispatch the thunk for creating a spot and uploading images
+        const actionResult = await dispatch(createSpotThunk(spotDetails, imageFiles, sessionUser));
+        if (actionResult.error) {
+          throw new Error(actionResult.error.message || 'Failed to create spot.');
         }
-      } else if (formType === "Edit") {
-        const updatedSpot = await dispatch(
-          updateSpotThunk({ ...spotDetails, id: spotId }, sessionUser)
-        ).then((res) => res.json());
-        spotId = updatedSpot.id;
+        spotResult = actionResult;
       }
 
-      if (!spotId) {
-        throw new Error("Failed to get spot ID after creation or update.");
+      else if (formType === "Edit" && spotId) {
+        const actionResult = await dispatch(updateSpotThunk({ ...spotDetails, id: spotId }));
+        if (actionResult.error) {
+          throw new Error(actionResult.error.message || 'Failed to update spot.');
+        }
+        spotResult = actionResult;
       }
 
-      const uploadImages = async (spotId, selectedFiles) => {
-        const urls = await Promise.all(
-          Object.entries(selectedFiles).map(async ([key, file]) => {
-            const formData = new FormData();
-            formData.append("image", file);
-
-            const response = await fetch(`/api/spots/${spotId}/images`, {
-              method: "POST",
-              body: formData,
-            });
-
-            if (!response.ok)
-              throw new Error(`Failed to upload image for key: ${key}`);
-            return await response.json();
-          })
-        );
-        return urls;
-      };
-
-      await uploadImages(spotId, selectedFiles);
-
-      navigate(`/spots/${spotId}`);
+      navigate(`/spots/${spotResult.id}`);
     } catch (error) {
       console.error("Error in form submission:", error);
+
     }
   };
 

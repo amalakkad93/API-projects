@@ -1,4 +1,5 @@
 import { useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
 import { useModal } from "../../../context/Modal";
 import {deleteSpotThunk } from "../../../store/spots";
 import { getOwnerAllSpotsThunk } from "../../../store/spots";
@@ -8,25 +9,23 @@ import './DeleteSpot.css'
 
 export default function DeleteSpot({spotId}) {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const { closeModal } = useModal();
 
-  // const handleSubmit = (e) => {
-  //   e.preventDefault();
 
-  //   return dispatch(deleteSpotThunk(spotId))
-  //     .then(closeModal)
-  //     .catch(async (res) => {
-  //       const data = await res.json();
-  //       if (data && data.errors) {
-  //         setErrors(data.errors);
-  //       }
-  //     });
-  // };
-  const handleDelete = async () => {
-     await dispatch(deleteSpotThunk(spotId));
-     await dispatch(getOwnerAllSpotsThunk());
-     closeModal();
-  }
+  const handleDelete = async (e) => {
+    e.preventDefault();
+    e.stopPropagation(); 
+    try {
+      await dispatch(deleteSpotThunk(spotId));
+      await dispatch(getOwnerAllSpotsThunk());
+      closeModal();
+      navigate('/owner/spots');
+    } catch (error) {
+      console.error("Failed to delete spot:", error);
+    }
+};
+
 
   return (
     <>
