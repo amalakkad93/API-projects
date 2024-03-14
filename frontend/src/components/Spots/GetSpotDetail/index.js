@@ -59,7 +59,9 @@ export default function SpotDetail() {
 
 
   if (!spot || !spot.id) return null;
-
+  if (!spot || !spot.id || !spot.SpotImages || spot.SpotImages.length === 0) {
+  return null;
+  }
   return (
     <>
       <div className="tile-parent">
@@ -72,8 +74,8 @@ export default function SpotDetail() {
           <div className="left-spot-image-container">
             <img
               className="resize left-rounded"
-              src={spot.SpotImages[0]?.url}
-              alt={spot.name}
+              src={spot?.SpotImages[0]?.url}
+              alt={spot?.name}
             />
           </div>
 
