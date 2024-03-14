@@ -1,17 +1,29 @@
+const AWS = require('aws-sdk');
+const multer = require('multer');
 const { S3Client, PutObjectCommand, GetObjectCommand } = require("@aws-sdk/client-s3");
 const { getSignedUrl } = require("@aws-sdk/s3-request-presigner");
 const { Upload } = require("@aws-sdk/lib-storage");
 const path = require("path");
+const fs = require('fs');
+const util = require('util');
 
+const s3 = new AWS.S3({ apiVersion: '2012-10-17' });
 const s3Client = new S3Client({
-  region: process.env.AWS_REGION,
+  region: "us-east-1",
   credentials: {
     accessKeyId: process.env.S3_KEY,
     secretAccessKey: process.env.S3_SECRET,
   },
 });
 
-const uploadFile = async ({ file, isPublic = false }) => {
+// Storage configuration for multer
+const storage = multer.memoryStorage();
+
+// Single file upload using multer
+const singleMulterUpload = (nameOfFileField) => multer({ storage }).single(nameOfFileField);
+
+// Upload a single file to S3
+const singleFileUpload = async (file, isPublic = false) => {
   const Key = `${new Date().getTime()}${path.extname(file.originalname)}`;
   const uploadParams = {
     Bucket: process.env.S3_BUCKET,
@@ -21,12 +33,7 @@ const uploadFile = async ({ file, isPublic = false }) => {
   };
 
   try {
-    const parallelUploads3 = new Upload({
-      client: s3Client,
-      params: uploadParams,
-    });
-
-    await parallelUploads3.done();
+    await s3Client.send(new PutObjectCommand(uploadParams));
     return `https://${process.env.S3_BUCKET}.s3.amazonaws.com/${Key}`;
   } catch (error) {
     console.error("Error uploading file: ", error);
@@ -34,19 +41,48 @@ const uploadFile = async ({ file, isPublic = false }) => {
   }
 };
 
-const getSignedUrlForGetObject = async ({ Key, Expires = 3600 }) => {
-  const command = new GetObjectCommand({
-    Bucket: process.env.S3_BUCKET,
-    Key,
-  });
 
-  return await getSignedUrl(s3Client, command, { expiresIn: Expires });
+//
+const multipleMulterUpload = (nameOfFileField) => multer({ storage }).array(nameOfFileField);
+
+// Function to upload multiple files to S3
+const multipleFilesUpload = async (files, isPublic = false) => {
+  try {
+    const uploadPromises = files.map((file) =>
+    singleFileUpload(file, isPublic)
+    );
+    const uploadResults = await Promise.all(uploadPromises);
+    return uploadResults;
+  } catch (error) {
+    console.error("Error uploading multiple files: ", error);
+    throw new Error("Error uploading multiple files");
+  }
+};
+
+
+// Retrieve a private file from S3
+const retrievePrivateFile = async (Key) => {
+  try {
+    const url = await getSignedUrl(s3Client, new GetObjectCommand({
+      Bucket: process.env.S3_BUCKET,
+      Key,
+    }), { expiresIn: 3600 });
+    return url;
+  } catch (error) {
+    console.error("Error generating signed URL: ", error);
+    throw new Error("Error retrieving file");
+  }
 };
 
 module.exports = {
-  uploadFile,
-  getSignedUrlForGetObject,
+  s3,
+  singleFileUpload,
+  multipleFilesUpload,
+  retrievePrivateFile,
+  singleMulterUpload,
+  multipleMulterUpload
 };
+
 
 
 

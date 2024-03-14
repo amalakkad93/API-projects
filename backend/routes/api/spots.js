@@ -9,7 +9,7 @@ const { handleValidationErrors } = require("../../utils/validation");
 const spot = require("../../db/models/spot");
 const { json } = require("sequelize");
 const { Op } = require('sequelize');
-const { singleMulterUpload, singleFileUpload } = require("../../awsS3")
+const { singleMulterUpload, singleFileUpload, multipleFilesUpload, multipleMulterUpload } = require("../../awsS3")
 
 //**************************************handleErrorResponse**************************************************** */
 
@@ -292,36 +292,34 @@ router.post('/', requireAuth, validateSpot, async (req, res) => {
 //   }
 // });
 
-router.post("/:spotId/images", requireAuth, singleMulterUpload("image"), async (req, res) => {
+router.post("/:spotId/images", requireAuth, multipleMulterUpload("image"), async (req, res) => {
   const { spotId } = req.params;
   const spot = await Spot.findByPk(spotId);
   if (!spot || spot.ownerId !== req.user.id) {
     return res.status(404).json({ message: "Spot not found or unauthorized" });
   }
 
-  const file = req.file;
-  if (!file) {
-    return res.status(400).json({ message: "No image file provided" });
+  if (!req.files || req.files.length === 0) {
+    return res.status(400).json({ message: "No image files provided" });
   }
 
   try {
-    const uploadResult = await singleFileUpload({ file, public: true });
-    if (!uploadResult || !uploadResult.location) {
-      throw new Error("Failed to upload image to storage service");
-    }
 
-    const spotImage = await SpotImage.create({
+    const uploadResults = await multipleFilesUpload(req.files, true);
+
+    const spotImages = await Promise.all(uploadResults.map(uploadResult => SpotImage.create({
       spotId,
-      url: uploadResult.location,
-      preview: true,
-    });
+      url: uploadResult,
+      preview: false,
+    })));
 
-    return res.json({ spotImage });
+    return res.json({ spotImages });
   } catch (error) {
-    console.error("Failed to upload image:", error);
-    return res.status(500).json({ message: "Failed to upload image", error: error.message });
+    console.error("Failed to upload images:", error);
+    return res.status(500).json({ message: "Failed to upload images", error: error.message });
   }
 });
+
 
 
 //======== Add an Image to a Spot based on the Spot's id ========
