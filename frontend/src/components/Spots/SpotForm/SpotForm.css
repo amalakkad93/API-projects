@@ -98,8 +98,8 @@ gap:5px;
     font-weight: normal;
     /* padding: 2px 5px; */
     border-radius: 5px;
-    /* background-color: rgb(207, 219, 252); */
     background-color: rgb(227, 233, 251);
+    /* background-color: rgb(227, 233, 251); */
     /* margin-bottom: 40px; */
     /* overflow-y: auto; */
   }
@@ -204,4 +204,3 @@ gap:5px;
   .labeledInput-div {
     width: 100%
   }
-

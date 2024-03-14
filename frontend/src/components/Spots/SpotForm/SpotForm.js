@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import { useFormik } from "formik";
 import {
   createSpotThunk,
   getSpotDetailThunk,
@@ -12,11 +13,25 @@ import { GetCountries, GetState, GetCity } from "react-country-state-city";
 import TextInput from "../../Inputs/TextInput";
 import { LabeledInput } from "../../Inputs/LabeledInput";
 import { LabeledTextarea } from "../../Inputs/LabeledTextarea";
+import {
+  Container,
+  Typography,
+  TextField,
+  Button,
+  Box,
+  Divider,
+  FormControl,
+  FormLabel,
+  Input,
+  FormHelperText,
+} from "@mui/material";
+import PhotoCamera from "@mui/icons-material/PhotoCamera";
+
 import SelectInput from "../../Inputs/SelectInput";
 
 import LocationForm from "../../ LocationForm";
 
-import "./SpotForm.css";
+import "./SpotForm1.css";
 
 export default function SpotForm({ formType, spotId }) {
   const dispatch = useDispatch();
@@ -147,7 +162,6 @@ export default function SpotForm({ formType, spotId }) {
       price,
     };
 
-
     const imageFiles = [];
     Object.values(selectedFiles).forEach((fileList) => {
       if (Array.isArray(fileList)) {
@@ -159,20 +173,26 @@ export default function SpotForm({ formType, spotId }) {
 
     try {
       let spotResult;
-      
+
       if (formType === "Create") {
         // Dispatch the thunk for creating a spot and uploading images
-        const actionResult = await dispatch(createSpotThunk(spotDetails, imageFiles, sessionUser));
+        const actionResult = await dispatch(
+          createSpotThunk(spotDetails, imageFiles, sessionUser)
+        );
         if (actionResult.error) {
-          throw new Error(actionResult.error.message || 'Failed to create spot.');
+          throw new Error(
+            actionResult.error.message || "Failed to create spot."
+          );
         }
         spotResult = actionResult;
-      }
-
-      else if (formType === "Edit" && spotId) {
-        const actionResult = await dispatch(updateSpotThunk({ ...spotDetails, id: spotId }));
+      } else if (formType === "Edit" && spotId) {
+        const actionResult = await dispatch(
+          updateSpotThunk({ ...spotDetails, id: spotId })
+        );
         if (actionResult.error) {
-          throw new Error(actionResult.error.message || 'Failed to update spot.');
+          throw new Error(
+            actionResult.error.message || "Failed to update spot."
+          );
         }
         spotResult = actionResult;
       }
@@ -180,204 +200,223 @@ export default function SpotForm({ formType, spotId }) {
       navigate(`/spots/${spotResult.id}`);
     } catch (error) {
       console.error("Error in form submission:", error);
-
     }
   };
 
   // ****************************************
   return (
-    <div className="form-container">
-      <form
-        className={
-          formType === "Create" ? "create-container" : "edit-container"
-        }
-        onSubmit={handleSubmit}
+    <Container component="main" maxWidth="md">
+      <Box
+        sx={{
+          marginTop: 8,
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+        }}
       >
-        <h1 className="form-header-h1">
+        <Typography component="h1" variant="h5">
           {formType === "Create" ? "Create a new Spot" : "Update your Spot"}
-        </h1>
-        <div className="form-div-container">
-          {/* ***************************Country*************************************** */}
-          <div className="box-style location-main-container">
-            <div className="form-h2-h3-div">
-              <h2 className="form-h2">Where's your place located?</h2>
-              <h3 className="form-h3">
-                Guests will only get your exact address once they booked a
-                reservation.
-              </h3>
-            </div>
+        </Typography>
 
-            {/* <div className="error-container"> <p>State</p>{validationObj.stateid && (<p className="errors">{validationObj.stateid}</p>)}</div> */}
+        <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 3 }}>
+          {/* Location Section */}
+          <Typography variant="h6" gutterBottom>
+            Where's your place located?
+          </Typography>
+          <Typography variant="subtitle1" gutterBottom>
+            Guests will only get your exact address once they booked a
+            reservation.
+          </Typography>
+          <TextField
+            margin="normal"
+            required
+            fullWidth
+            id="address"
+            label="Street Address"
+            name="address"
+            autoComplete="address"
+            autoFocus
+            value={address}
+            onChange={(e) => setAddress(e.target.value)}
+          />
 
-            {/* ****************************Address************************************ */}
+          <LocationForm
+            setCountry={setCountry}
+            setState={setState}
+            setCity={setCity}
+          />
+          <Divider sx={{ my: 2 }} />
 
-            {/* <div className="error-container"><p>Street Address</p>{validationObj.address && (<p className="errors">{validationObj.address}</p>)}</div> */}
-            <LabeledInput title="Street Address" error={validationObj.address}>
-              <TextInput
-                id="address"
-                type="text"
-                label="Street Address"
-                value={address}
-                error={validationObj.address}
-                placeholder="Address"
-                onChange={handleInputChange(setAddress, "address")}
-                className="input-form"
-              />
-            </LabeledInput>
+          {/* Name Section */}
+          <Typography variant="h6" gutterBottom>
+            Create a title for your spot
+          </Typography>
+          <Typography variant="subtitle1" gutterBottom>
+            Catch guests' attention with a spot title that highlights what makes
+            your place special.
+          </Typography>
+          <TextField
+            margin="normal"
+            required
+            fullWidth
+            id="name"
+            label="Name of your spot"
+            name="name"
+            autoComplete="name"
+            value={name}
+            onChange={handleInputChange(setName, "name")}
+          />
 
-            <div style={{ marginTop: "10px" }}>
-              <LocationForm
-                setCountry={setCountry}
-                setState={setState}
-                setCity={setCity}
-              />
-            </div>
+          {/* Description Section */}
+          <Typography variant="h6" gutterBottom>
+            Describe your place to guests
+          </Typography>
+          <Typography variant="subtitle1" gutterBottom>
+            Mention the best features of your space, any special amenities like
+            fast wifi or parking, and what you love about the neighborhood.
+          </Typography>
 
-            <hr></hr>
-            {/* ****************************description************************************ */}
-            <div
-              className={
-                formType === "Create"
-                  ? "create-description-textarea"
-                  : "edit-description-textarea"
-              }
-            >
-              <div className="form-h2-h3-div">
-                <h2 className="form-h2">Describe your place to guests</h2>
-                <h3 className="form-h3">
-                  Mention the best features of your space, any special
-                  amentities like fast wifi or parking, and what you love about
-                  the neighborhood.
-                </h3>
-              </div>
-              <LabeledTextarea>
-                <textarea
-                  id="description"
-                  placeholder="Please write at least 30 characters."
-                  value={description}
-                  onChange={handleInputChange(setDescription, "description")}
-                  className={formType === "Edit" ? "edit-form-textarea" : ""}
+          <TextField
+            margin="normal"
+            required
+            fullWidth
+            id="description"
+            label="Description"
+            name="description"
+            autoComplete="description"
+            multiline
+            rows={4}
+            value={description}
+            onChange={handleInputChange(setDescription, "description")}
+          />
+          <Divider sx={{ my: 2 }} />
+
+          {/* Price Section */}
+          <Typography variant="h6" gutterBottom>
+            Set a base price for your spot
+          </Typography>
+          <Typography variant="subtitle1" gutterBottom>
+            Competitive pricing can help your listing stand out and rank higher
+            in search results.
+          </Typography>
+          <TextField
+            margin="normal"
+            required
+            fullWidth
+            id="price"
+            label="Price per night (USD)"
+            name="price"
+            type="number"
+            autoComplete="price"
+            value={price}
+            onChange={handleInputChange(setPrice, "price")}
+          />
+          <Divider sx={{ my: 2 }} />
+
+          {/* Photos Section */}
+          {formType === "Create" && (
+            <>
+              <Divider sx={{ my: 2 }} />
+              <Typography variant="h6" gutterBottom>
+                Liven up your spot with photos
+              </Typography>
+              <Typography variant="subtitle1" gutterBottom>
+                Upload at least one photo to publish your spot.
+              </Typography>
+
+              {/* Preview Image */}
+              <FormControl fullWidth margin="normal">
+                <input
+                  accept="image/*"
+                  style={{ display: "none" }}
+                  id="preview-image-upload"
+                  type="file"
+                  onChange={(e) => handleImageChange(e, "previewImage")}
                 />
-              </LabeledTextarea>
-              <div className="error-container">
-                {validationObj.description && (
-                  <p className="errors">{validationObj.description}</p>
+                <label htmlFor="preview-image-upload">
+                  <Button
+                    variant="contained"
+                    component="span"
+                    startIcon={<PhotoCamera />}
+                    sx={{
+                      mt: 3,
+                      mb: 2,
+                      background: 'linear-gradient(to right, #00a699, #00a699 50%, #008489 100%)',
+                      color: '#fff',
+                    }}
+                  >
+                    Upload Preview Image
+                  </Button>
+                </label>
+                {validationObj.previewImage && (
+                  <FormHelperText error>
+                    {validationObj.previewImage}
+                  </FormHelperText>
                 )}
-              </div>
-            </div>
-            <hr></hr>
-            {/* ****************************Name************************************ */}
-            <div className="form-h2-h3-div">
-              <h2 className="form-h2">Create a title for your spot</h2>
-              <h3 className="form-h3">
-                Catch guests' attention with a spot title that highlights what
-                makes your place special.
-              </h3>
-            </div>
-            <LabeledInput>
-              <TextInput
-                id="name"
-                type="text"
-                value={name}
-                placeholder="Name of your spot"
-                onChange={handleInputChange(setName, "name")}
-                className="input-form"
-              />
-            </LabeledInput>
-            {validationObj.name && (
-              <p className="errors">{validationObj.name}</p>
-            )}
-            <hr></hr>
-            {/* ****************************Price************************************ */}
-            <div className="form-h2-h3-div">
-              <h2 className="form-h2">Set a base price for your spot</h2>
-              <h3 className="form-h3">
-                Competitive pricing can help your listing stand out and rank
-                higher in search results.
-              </h3>
-            </div>
-            <LabeledInput>
-              <div className="price-div-form">
-                <span className="dollar-sign">$</span>
-                <TextInput
-                  id="price"
-                  type="number"
-                  value={price}
-                  placeholder="Price per night (USD)"
-                  onChange={handleInputChange(setPrice, "price")}
-                  className="input-form"
-                />
-              </div>
-            </LabeledInput>
-            {validationObj.price && (
-              <p className="errors">{validationObj.price}</p>
-            )}
-            <hr></hr>
-            {/* ****************************Images************************************ */}
-            {formType === "Create" && (
-              <>
-                <div className="form-h2-h3-div">
-                  <h2 className="form-h2">Liven up your spot with photos</h2>
-                  <h3 className="form-h3">
-                    Upload at least one photo to publish your spot.
-                  </h3>
-                </div>
+              </FormControl>
 
-                {/* ****************************previewImage************************************ */}
-                <LabeledInput
-                  title="Preview Image"
-                  error={validationObj.previewImage}
+              {/* Additional Images */}
+              {Array.from({ length: 4 }).map((_, index) => (
+                <FormControl
+                  key={index}
+                  fullWidth
+                  margin="normal"
+                  sx={{ mt: 2 }}
                 >
                   <input
-                    id="previewImage"
+                    accept="image/*"
+                    style={{ display: "none" }}
+                    id={`image-upload-${index + 2}`}
                     type="file"
-                    onChange={(e) => handleImageChange(e, "previewImage")}
-                    className="input-form"
-                    accept="image/png, image/jpeg"
+                    onChange={(e) =>
+                      handleImageChange(e, `imageUrl${index + 2}`)
+                    }
                   />
-                </LabeledInput>
-                {validationObj.previewImage && (
-                  <p className="errors">{validationObj.previewImage}</p>
-                )}
+                  <label htmlFor={`image-upload-${index + 2}`}>
+                    <Button
+                      variant="contained"
+                      component="span"
+                      startIcon={<PhotoCamera />}
+                      sx={{
+                        mt: 3,
+                        mb: 2,
+                        background: 'linear-gradient(to right, #00a699, #00a699 50%, #008489 100%)',
+                        color: '#fff',
+                      }}
+                    >
+                      Upload Image {index + 2}
+                    </Button>
+                  </label>
+                </FormControl>
+              ))}
 
-                {/* Additional Images */}
-                {Array.from({ length: 4 }).map((_, index) => (
-                  <LabeledInput key={index} title={`Image ${index + 2}`}>
-                    <input
-                      type="file"
-                      onChange={(e) =>
-                        handleImageChange(e, `imageUrl${index + 2}`)
-                      }
-                      className="input-form"
-                      accept="image/png, image/jpeg"
-                    />
-                  </LabeledInput>
+              {/* Displaying Validation Errors for Additional Images */}
+              {Object.keys(validationObj)
+                .filter((key) => key.startsWith("imageUrl"))
+                .map((key) => (
+                  <FormHelperText key={key} error>
+                    {validationObj[key]}
+                  </FormHelperText>
                 ))}
+            </>
+          )}
 
-                {/* Display validation errors for additional images if any */}
-                {Object.keys(validationObj)
-                  .filter((key) => key.startsWith("imageUrl"))
-                  .map((key) => (
-                    <p key={key} className="errors">
-                      {validationObj[key]}
-                    </p>
-                  ))}
-                <hr></hr>
-              </>
-            )}
-          </div>
-
-          {/* <div className='button-form-div'> */}
-          <button
-            className="spot-form-btn"
+          <Button
             type="submit"
-            disabled={Object.keys(validationObj).length > 0}
+            fullWidth
+            variant="contained"
+            sx={{
+              background:
+                "linear-gradient(to right, #e61e4d 0%, #e31c5f 50%, #d70466 100%)",
+              color: "#fff",
+              mt: 3,
+              mb: 2,
+            }}
           >
             {formType === "Create" ? "Create Spot" : "Update Spot"}
-          </button>
-          {/* </div> */}
-        </div>
-      </form>
-    </div>
+          </Button>
+        </Box>
+      </Box>
+    </Container>
   );
 }
