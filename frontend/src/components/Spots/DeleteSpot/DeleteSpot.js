@@ -15,7 +15,7 @@ export default function DeleteSpot({spotId}) {
 
   const handleDelete = async (e) => {
     e.preventDefault();
-    e.stopPropagation(); 
+  
     try {
       await dispatch(deleteSpotThunk(spotId));
       await dispatch(getOwnerAllSpotsThunk());
