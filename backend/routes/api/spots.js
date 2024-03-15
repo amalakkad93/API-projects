@@ -194,6 +194,38 @@ const createErrorHandler = (statusCode, message, data = {}, res) => {
 
 //****************************************************************************************** */
 
+//======== Search for Spots based on a query ========
+router.get("/search", async (req, res) => {
+  const { query } = req.query;
+
+  if (!query) {
+    return res.status(400).json({ message: "Please provide a search query." });
+  }
+
+  try {
+    const spots = await Spot.findAll({
+      where: {
+        [Op.or]: [
+          { city: { [Op.iLike]: `%${query}%` } },
+          { state: { [Op.iLike]: `%${query}%` } },
+          { country: { [Op.iLike]: `%${query}%` } },
+          { name: { [Op.iLike]: `%${query}%` } }
+        ]
+      },
+      include: [
+        { model: Review, attributes: ["stars"] },
+        { model: SpotImage, attributes: ["url", "preview"] }
+      ]
+    });
+
+    const spotsList = processSpots(spots);
+    res.json(spotsList);
+  } catch (error) {
+    console.error("Search error:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+});
+
 //======== Get all Spots owned by the Current User ========
 router.get('/current', requireAuth, async (req, res) => {
 
