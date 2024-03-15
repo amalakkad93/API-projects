@@ -45,6 +45,7 @@ function App() {
           <Route path="/booking-summary/:spotId" element={<BookingSummary />} />
           {/* <Route path="/owner/spots" element={<SpotsOwner />} /> */}
           <Route path="/owner/spots" element={<GetSpots mode="ownerSpot" key="ownerSpot" />} />
+          <Route path="/search" element={<GetSpots mode="searchSpot" key="searchSpot" />} />
           <Route>Page Not Found</Route>
         </Routes>
       )}
