@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Link, useNavigate, NavLink } from "react-router-dom";
-import { getAllSpotsThunk, getOwnerAllSpotsThunk } from "../../../store/spots";
+import { useNavigate, useLocation } from "react-router-dom";
+import { getAllSpotsThunk, getOwnerAllSpotsThunk, searchSpotsThunk } from "../../../store/spots";
 import { fetchFavorites } from "../../../store/favorites";
 import OpenModalButton from "../../OpenModalButton";
 import DeleteSpot from "../DeleteSpot/DeleteSpot";
@@ -23,6 +23,7 @@ import "./GetSpots.css";
 export default function GetSpots({ mode }) {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const location = useLocation();
   const spots = Object.values(
     useSelector((state) => (state.spots.allSpots ? state.spots.allSpots : []))
   );
@@ -55,7 +56,13 @@ export default function GetSpots({ mode }) {
   };
 
   useEffect(() => {
-    if (mode === "ownerSpot" && sessionUser) {
+    if (mode === "searchSpot") {
+      const queryParams = new URLSearchParams(location.search);
+      const locationQuery = queryParams.get('location');
+      if (locationQuery) {
+        dispatch(searchSpotsThunk(locationQuery));
+      }
+    } else if (mode === "ownerSpot" && sessionUser) {
       dispatch(getOwnerAllSpotsThunk());
     } else {
       dispatch(getAllSpotsThunk());
@@ -64,7 +71,7 @@ export default function GetSpots({ mode }) {
     if (sessionUser) {
       dispatch(fetchFavorites(sessionUser.id));
     }
-  }, [dispatch, mode, sessionUser]);
+  }, [dispatch, mode, sessionUser, location.search]);
 
   useEffect(() => {
     if (mode === "favorite" && sessionUser) {

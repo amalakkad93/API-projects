@@ -64,18 +64,24 @@ export const getSpotDetailThunk = (spotId) => async (dispatch) => {
 
 // ***************************searchSpotsThunk**************************
 export const searchSpotsThunk = (query) => async (dispatch) => {
-  const res = await csrfFetch(
-    `/api/spots/search?query=${encodeURIComponent(query)}`
-  );
+  const res = await csrfFetch(`/api/spots/search?query=${encodeURIComponent(query)}`);
   if (res.ok) {
-    const { Spots } = await res.json();
-    dispatch(actionSearchSpots(normalizeArr(Spots)));
-    return Spots;
+    const data = await res.json();
+
+    if (data && Array.isArray(data)) {
+      const spots = normalizeArr(data);
+      dispatch(actionSearchSpots(spots));
+    } else {
+      console.error("Unexpected response structure:", data);
+
+    }
+    return data;
   } else {
     const errors = await res.json();
-    return errors;
+    return Promise.reject(errors); 
   }
 };
+
 
 // ***************************createSpotThunk***************************
 // export const createSpotThunk = (newSpot, newSpotImage, sessionUser) => async (dispatch) => {
@@ -227,7 +233,7 @@ export default function spotReducer(state = initialState, action) {
       newState = { ...state, allSpots: {} };
       newState.allSpots = action.spots;
       return newState;
-      
+
     case SEARCH_SPOTS:
       return {
         ...state,
