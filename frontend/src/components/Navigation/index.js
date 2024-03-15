@@ -2,11 +2,13 @@ import { NavLink } from "react-router-dom";
 import React, { useState } from "react";
 import { useSelector } from "react-redux";
 import ProfileButton from "./ProfileButton";
+import SearchBar from "../SearchBar";
 import logo from "../../assets/logo/long-logo.png";
 import "./Navigation.css";
 
 function Navigation({ isLoaded }) {
   const sessionUser = useSelector((state) => state.session.user);
+  const spots = useSelector((state) => state.spots.allSpots ? Object.values(state.spots.allSpots) : []);
   const [showMenu, setShowMenu] = useState(false);
 
   return (
@@ -19,6 +21,7 @@ function Navigation({ isLoaded }) {
             </NavLink>
           </div>
           <div className="navBar-logo-create-link">
+          <SearchBar spots={spots} />
             {sessionUser && (
               <div className="navBar-create-link">
                 <NavLink to="/spots/new" className="create-new-spot">
