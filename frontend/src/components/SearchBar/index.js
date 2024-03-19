@@ -37,7 +37,6 @@ function SearchBar({ spots }) {
         alignItems: "center",
         gap: 1,
         m: 2,
-
       }}
     >
       <Autocomplete
@@ -69,50 +68,51 @@ function SearchBar({ spots }) {
         }}
         renderInput={(params) => (
           <TextField
-      {...params}
-      label="Search spots by location..."
-      variant="outlined"
-      size="small"
-      sx={{
-        width: 300,
-        ".MuiOutlinedInput-root": {
-          borderRadius: '20px', 
-          '& fieldset': {
-            borderColor: 'rgba(0, 0, 0, 0.23)',
-          },
-          '&:hover fieldset': {
-            borderColor: 'primary.main',
-          },
-          '&.Mui-focused fieldset': {
-            borderColor: 'primary.main',
-          },
-        },
-        ".MuiInputBase-input": {
-          padding: '10px',
-        }
-      }}
-    />
-  )}
-/>
+            {...params}
+            label="Search spots by location..."
+            variant="outlined"
+            size="small"
+            sx={{
+              width: 300,
+              ".MuiOutlinedInput-root": {
+                borderRadius: "20px",
+                "& fieldset": {
+                  borderColor: "rgba(0, 0, 0, 0.23)",
+                },
+                "&:hover fieldset": {
+                  borderColor: "primary.main",
+                },
+                "&.Mui-focused fieldset": {
+                  borderColor: "primary.main",
+                },
+              },
+              ".MuiInputBase-input": {
+                padding: "10px",
+              },
+            }}
+          />
+        )}
+      />
 
       <Button
         variant="contained"
         type="submit"
         sx={{
-          background: 'linear-gradient(to right, #e61e4d 0%, #e31c5f 50%, #d70466 100%)',
-          color: '#fff',
-          borderRadius: '20px',
-          ':hover': {
-          background: 'linear-gradient(to right, #d70466 0%, #e31c5f 50%, #e61e4d 100%)',
+          background:
+            "linear-gradient(to right, #e61e4d 0%, #e31c5f 50%, #d70466 100%)",
+          color: "#fff",
+          borderRadius: "20px",
+          ":hover": {
+            background:
+              "linear-gradient(to right, #d70466 0%, #e31c5f 50%, #e61e4d 100%)",
           },
-          textTransform: 'none',
-          fontSize: '1rem',
-          padding: '6px 16px',
-          }}
+          textTransform: "none",
+          fontSize: "1rem",
+          padding: "6px 16px",
+        }}
       >
         Search
       </Button>
-
     </Box>
   );
 }

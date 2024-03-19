@@ -223,7 +223,7 @@ router.get("/search", async (req, res) => {
       ],
     });
 
-    const spotsList = processSpots(spots); 
+    const spotsList = processSpots(spots);
     res.json(spotsList);
   } catch (error) {
     console.error("Search error:", error);
@@ -366,7 +366,8 @@ router.post(
           SpotImage.create({
             spotId,
             url: uploadResult,
-            preview: false,
+            preview: true,
+            // preview: index === 0,
           })
         )
       );
