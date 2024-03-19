@@ -137,12 +137,16 @@ export default function GetSpots({ mode }) {
     <Box className="main-container" sx={{ padding: 2 }}>
       <Grid container spacing={4}>
         {spotsToDisplay.map((spot) => {
+          // const { isFavorited, favoriteId } = isSpotFavorited(spot.id);
+          // const combinedImages = [
+          //   spot.previewImage,
+          //   ...spot.otherImages.map((image) => image.url),
+          // ];
           const { isFavorited, favoriteId } = isSpotFavorited(spot.id);
-          const combinedImages = [
-            spot.previewImage,
-            ...spot.otherImages.map((image) => image.url),
-          ];
-
+          const previewImageUrl = spot.previewImage;
+          const otherImageUrls = spot.otherImages.map(image => image.url);
+          const combinedImages = [previewImageUrl, ...otherImageUrls];
+          
           return (
             <Grid item xs={12} sm={6} md={4} key={spot.id}>
               <Card
