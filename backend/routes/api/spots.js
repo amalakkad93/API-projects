@@ -319,28 +319,8 @@ router.post("/", requireAuth, validateSpot, async (req, res) => {
   }
 });
 
-// //======== Add an Image to a Spot based on the Spot's id ========
-// router.post("/:spotId/images", requireAuth, async (req, res) => {
-//   const { url, preview } = req.body;
-//   const spotId = req.params.spotId;
 
-//   const spot = await Spot.findOne({ where: { id: spotId} });
-
-//   if (spot && spot.ownerId === req.user.id) {
-//     const spotImage = await SpotImage.create({ spotId, url, preview });
-//     const { updatedAt, createdAt, ...response } = spotImage.toJSON();
-//     delete response.spotId;
-//     return res.json(response);
-
-//   } else if (!spot) {
-
-//     return createErrorHandler(404, "Spot couldn't be found", {}, res);
-
-//   } else if (spot && spot.ownerId !== req.user.id) {
-//     return createErrorHandler(403, "Forbidden", {}, res);
-//   }
-// });
-
+//======== Add an Image to a Spot based on the Spot's id ========
 router.post(
   "/:spotId/images",
   requireAuth,
