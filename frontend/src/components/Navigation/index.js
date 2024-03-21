@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import { useSelector } from "react-redux";
 import ProfileButton from "./ProfileButton";
 import SearchBar from "../SearchBar";
-import logo from "../../assets/logo/long-logo.png";
+import logo from "../../assets/logo/logo.jpg";
 import "./Navigation.css";
 
 function Navigation({ isLoaded }) {
