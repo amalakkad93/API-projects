@@ -6,6 +6,7 @@ import { fetchBookingsForSpot } from "../../../store/bookings";
 import { getAllReviewsThunk } from "../../../store/reviews";
 import OpenModalButton from "../../OpenModalButton";
 import GetAllReviewsModal from "../../Reviews/GetAllReviewsModal/GetAllReviewsModal";
+import PhotoGalleryModal from "../PhotoGalleryModal";
 import CreateReviewModal from "../../Reviews/CreateReviewModal/CreateReviewModal";
 import DatePicker from "../../Booking/DatePicker/DatePicker";
 
@@ -17,6 +18,7 @@ export default function SpotDetail() {
   const dispatch = useDispatch();
   const [reloadPage, setReloadPage] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [isGalleryModalOpen, setIsGalleryModalOpen] = useState(false);
   const [selectedDates, setSelectedDates] = useState({
     startDate: new Date(),
     endDate: new Date(),
@@ -57,10 +59,9 @@ export default function SpotDetail() {
     dispatch(fetchBookingsForSpot(spotId));
   }, [dispatch, spotId]);
 
-
   if (!spot || !spot.id) return null;
   if (!spot || !spot.id || !spot.SpotImages || spot.SpotImages.length === 0) {
-  return null;
+    return null;
   }
   return (
     <>
@@ -79,7 +80,7 @@ export default function SpotDetail() {
             />
           </div>
 
-          <div className="right-spot-image-container">
+          {/* <div className="right-spot-image-container">
             {spot.SpotImages?.slice(1, 5).map((image, index, array) => (
               <div
                 className={`right-image ${
@@ -92,6 +93,40 @@ export default function SpotDetail() {
                   src={image.url}
                   alt={`Image ${index + 1}`}
                 />
+              </div>
+            ))}
+          </div> */}
+
+          <div className="right-spot-image-container">
+            {spot.SpotImages?.slice(1, 5).map((image, index, array) => (
+              <div
+                className={`right-image ${
+                  index === 0 ? "top-right-rounded" : ""
+                } ${index === array.length - 1 ? "bottom-right-rounded" : ""}`}
+                key={index}
+              >
+                <img
+                  className="resize"
+                  src={image.url}
+                  alt={`Image ${index + 1}`}
+                />
+
+                {index === array.length - 1 && spot.SpotImages.length > 5 && (
+                  <>
+                    <button
+                      type="button"
+                      className="show-all-photos-button"
+                      onClick={() => setIsGalleryModalOpen(true)}
+                    >
+                      Show all photos
+                    </button>
+                    <PhotoGalleryModal
+                      isOpen={isGalleryModalOpen}
+                      images={spot.SpotImages}
+                      closeModal={() => setIsGalleryModalOpen(false)}
+                    />
+                  </>
+                )}
               </div>
             ))}
           </div>
