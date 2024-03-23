@@ -107,12 +107,18 @@ export default function SpotForm({ formType, spotId }) {
   // ****************************************
 
   // **********handleImages******************
+
   const handleImageChange = (e, fieldName) => {
     const files = Array.from(e.target.files);
-    if (files.length > 0) {
+    if (fieldName === "previewImage") {
       setSelectedFiles((prevFiles) => ({
         ...prevFiles,
-        [fieldName]: files,
+        [fieldName]: e.target.files[0],
+      }));
+    } else if (fieldName === "additionalImages") {
+      setSelectedFiles((prevFiles) => ({
+        ...prevFiles,
+        [fieldName]: [...(prevFiles.additionalImages || []), ...files],
       }));
     }
   };
@@ -162,14 +168,9 @@ export default function SpotForm({ formType, spotId }) {
       price,
     };
 
-    const imageFiles = [];
-    Object.values(selectedFiles).forEach((fileList) => {
-      if (Array.isArray(fileList)) {
-        imageFiles.push(...fileList);
-      } else {
-        imageFiles.push(fileList);
-      }
-    });
+    const imageFiles = [selectedFiles.previewImage].concat(
+      selectedFiles.additionalImages || []
+    );
 
     try {
       let spotResult;
@@ -341,8 +342,9 @@ export default function SpotForm({ formType, spotId }) {
                     sx={{
                       mt: 3,
                       mb: 2,
-                      background: 'linear-gradient(to right, #00a699, #00a699 50%, #008489 100%)',
-                      color: '#fff',
+                      background:
+                        "linear-gradient(to right, #00a699, #00a699 50%, #008489 100%)",
+                      color: "#fff",
                     }}
                   >
                     Upload Preview Image
@@ -355,42 +357,33 @@ export default function SpotForm({ formType, spotId }) {
                 )}
               </FormControl>
 
-              {/* Additional Images */}
-              {Array.from({ length: 4 }).map((_, index) => (
-                <FormControl
-                  key={index}
-                  fullWidth
-                  margin="normal"
-                  sx={{ mt: 2 }}
-                >
-                  <input
-                    accept="image/*"
-                    style={{ display: "none" }}
-                    id={`image-upload-${index + 2}`}
-                    type="file"
-                    onChange={(e) =>
-                      handleImageChange(e, `imageUrl${index + 2}`)
-                    }
-                  />
-                  <label htmlFor={`image-upload-${index + 2}`}>
-                    <Button
-                      variant="contained"
-                      component="span"
-                      startIcon={<PhotoCamera />}
-                      sx={{
-                        mt: 3,
-                        mb: 2,
-                        background: 'linear-gradient(to right, #00a699, #00a699 50%, #008489 100%)',
-                        color: '#fff',
-                      }}
-                    >
-                      Upload Image {index + 2}
-                    </Button>
-                  </label>
-                </FormControl>
-              ))}
-
-              {/* Displaying Validation Errors for Additional Images */}
+              {/* Additional Images - Modified for multiple file upload */}
+              <FormControl fullWidth margin="normal">
+                <input
+                  accept="image/*"
+                  style={{ display: "none" }}
+                  id="additional-images-upload"
+                  type="file"
+                  multiple
+                  onChange={(e) => handleImageChange(e, "additionalImages")}
+                />
+                <label htmlFor="additional-images-upload">
+                  <Button
+                    variant="contained"
+                    component="span"
+                    startIcon={<PhotoCamera />}
+                    sx={{
+                      mt: 3,
+                      mb: 2,
+                      background:
+                        "linear-gradient(to right, #00a699, #00a699 50%, #008489 100%)",
+                      color: "#fff",
+                    }}
+                  >
+                    Upload Additional Images
+                  </Button>
+                </label>
+              </FormControl>
               {Object.keys(validationObj)
                 .filter((key) => key.startsWith("imageUrl"))
                 .map((key) => (

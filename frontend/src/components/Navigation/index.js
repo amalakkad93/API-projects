@@ -8,7 +8,9 @@ import "./Navigation.css";
 
 function Navigation({ isLoaded }) {
   const sessionUser = useSelector((state) => state.session.user);
-  const spots = useSelector((state) => state.spots.allSpots ? Object.values(state.spots.allSpots) : []);
+  const spots = useSelector((state) =>
+    state.spots.allSpots ? Object.values(state.spots.allSpots) : []
+  );
   const [showMenu, setShowMenu] = useState(false);
 
   return (
@@ -17,11 +19,14 @@ function Navigation({ isLoaded }) {
         <div className="navBar-inner-container">
           <div className="navBar-logo-create-link">
             <NavLink exact to="/" className="navbar-logo">
-              <img src={logo} alt="logo" className="logo" />
+              <div className="logo-and-text">
+                <img src={logo} alt="logo" className="logo" />
+                <span className="logo-text">SleepInn</span>
+              </div>
             </NavLink>
           </div>
           <div className="navBar-logo-create-link">
-          <SearchBar spots={spots} />
+            <SearchBar spots={spots} />
             {sessionUser && (
               <div className="navBar-create-link">
                 <NavLink to="/spots/new" className="create-new-spot">
