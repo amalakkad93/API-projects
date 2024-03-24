@@ -342,7 +342,7 @@ router.post(
       const uploadResults = await multipleFilesUpload(req.files, true);
 
       const spotImages = await Promise.all(
-        uploadResults.map((uploadResult) =>
+        uploadResults.map((uploadResult, index) =>
           SpotImage.create({
             spotId,
             url: uploadResult,
@@ -676,46 +676,58 @@ router.get(
 );
 
 //***********Helper functions***********
+
 // const processSpots = (spots) => {
-
-//     return spots.map((spot) => {
-
+//   return spots.map((spot) => {
 //     spot = spot.toJSON();
+//     const avgRating =
+//       spot.Reviews.reduce((sum, review) => sum + review.stars, 0) /
+//         spot.Reviews.length || 0;
+//     spot.avgRating = avgRating;
 
-//     const avgRating = spot.Reviews.reduce((sum, review) => sum + review.stars, 0) / spot.Reviews.length;
+//     const previewImage = spot.SpotImages.find(
+//       (image) => image.preview === true
+//     );
+//     const otherImages = spot.SpotImages.filter((image) => !image.preview);
 
-//     const previewImage = spot.SpotImages.find((image) => image.preview === true);
-
-//     spot.avgRating = avgRating || 0;
-//     spot.previewImage = previewImage ? previewImage.url : "No spot image found";
+//     spot.previewImage = previewImage
+//       ? previewImage.url
+//       : "No preview image found";
+//     spot.otherImages = otherImages.map((image) => ({
+//       id: image.id,
+//       url: image.url,
+//       preview: image.preview,
+//     }));
 
 //     delete spot.Reviews;
 //     delete spot.SpotImages;
 
 //     return spot;
 //   });
-// }
+// };
+
 const processSpots = (spots) => {
   return spots.map((spot) => {
     spot = spot.toJSON();
-    const avgRating =
-      spot.Reviews.reduce((sum, review) => sum + review.stars, 0) /
-        spot.Reviews.length || 0;
+    console.log(`Processing spot: ${spot.id}`);
+
+    const avgRating = spot.Reviews.reduce((sum, review) => sum + review.stars, 0) / spot.Reviews.length || 0;
     spot.avgRating = avgRating;
 
-    const previewImage = spot.SpotImages.find(
-      (image) => image.preview === true
-    );
-    const otherImages = spot.SpotImages.filter((image) => !image.preview);
+    const previewImage = spot.SpotImages.find((image) => image.preview === true);
+    let otherImages = spot.SpotImages.filter((image) => !image.preview);
 
-    spot.previewImage = previewImage
-      ? previewImage.url
-      : "No preview image found";
-    spot.otherImages = otherImages.map((image) => ({
-      id: image.id,
-      url: image.url,
-      preview: image.preview,
-    }));
+    console.log(`Other images before any modification: ${otherImages.length}`);
+
+    if (otherImages.length === 0 && previewImage) {
+      console.log(`No other images found for spot ${spot.id}, using preview image.`);
+      otherImages.push(previewImage);
+    }
+
+    spot.previewImage = previewImage ? previewImage.url : "No preview image found";
+    spot.otherImages = otherImages.map((image) => ({ url: image.url, preview: image.preview }));
+
+    console.log(`Final other images count for spot ${spot.id}: ${spot.otherImages.length}`);
 
     delete spot.Reviews;
     delete spot.SpotImages;
@@ -723,6 +735,7 @@ const processSpots = (spots) => {
     return spot;
   });
 };
+
 
 const getPagination = (queryParams) => {
   let { page, size } = queryParams;
