@@ -11,6 +11,7 @@ const {
   Booking,
   sequelize,
 } = require("../../db/models");
+const uuid = require("uuid");
 
 const { check, validationResult } = require("express-validator");
 const { handleValidationErrors } = require("../../utils/validation");
@@ -211,10 +212,26 @@ router.get("/search", async (req, res) => {
     const spots = await Spot.findAll({
       where: {
         [Op.or]: [
-          sequelize.where(sequelize.fn("LOWER", sequelize.col("city")), "LIKE", "%" + query.toLowerCase() + "%"),
-          sequelize.where(sequelize.fn("LOWER", sequelize.col("state")), "LIKE", "%" + query.toLowerCase() + "%"),
-          sequelize.where(sequelize.fn("LOWER", sequelize.col("country")), "LIKE", "%" + query.toLowerCase() + "%"),
-          sequelize.where(sequelize.fn("LOWER", sequelize.col("name")), "LIKE", "%" + query.toLowerCase() + "%"),
+          sequelize.where(
+            sequelize.fn("LOWER", sequelize.col("city")),
+            "LIKE",
+            "%" + query.toLowerCase() + "%"
+          ),
+          sequelize.where(
+            sequelize.fn("LOWER", sequelize.col("state")),
+            "LIKE",
+            "%" + query.toLowerCase() + "%"
+          ),
+          sequelize.where(
+            sequelize.fn("LOWER", sequelize.col("country")),
+            "LIKE",
+            "%" + query.toLowerCase() + "%"
+          ),
+          sequelize.where(
+            sequelize.fn("LOWER", sequelize.col("name")),
+            "LIKE",
+            "%" + query.toLowerCase() + "%"
+          ),
         ],
       },
       include: [
@@ -230,8 +247,6 @@ router.get("/search", async (req, res) => {
     res.status(500).json({ message: "Internal server error" });
   }
 });
-
-
 
 //======== Get all Spots owned by the Current User ========
 router.get("/current", requireAuth, async (req, res) => {
@@ -319,7 +334,6 @@ router.post("/", requireAuth, validateSpot, async (req, res) => {
   }
 });
 
-
 //======== Add an Image to a Spot based on the Spot's id ========
 router.post(
   "/:spotId/images",
@@ -339,18 +353,30 @@ router.post(
     }
 
     try {
+      const previewImageName = req.body.previewImageName;
+
       const uploadResults = await multipleFilesUpload(req.files, true);
 
-      const spotImages = await Promise.all(
-        uploadResults.map((uploadResult, index) =>
-          SpotImage.create({
-            spotId,
-            url: uploadResult,
-            preview: true,
-            // preview: index === 0,
-          })
-        )
-      );
+      let uploadedURLs = new Set();
+      let spotImages = [];
+
+      for (let i = 0; i < uploadResults.length; i++) {
+        const url = uploadResults[i];
+        if (uploadedURLs.has(url)) {
+          continue;
+        }
+        uploadedURLs.add(url);
+
+        const file = req.files[i];
+        const isPreview = file.originalname === previewImageName;
+
+        const spotImage = await SpotImage.create({
+          spotId,
+          url,
+          preview: isPreview,
+        });
+        spotImages.push(spotImage);
+      }
 
       return res.json({ spotImages });
     } catch (error) {
@@ -711,23 +737,36 @@ const processSpots = (spots) => {
     spot = spot.toJSON();
     console.log(`Processing spot: ${spot.id}`);
 
-    const avgRating = spot.Reviews.reduce((sum, review) => sum + review.stars, 0) / spot.Reviews.length || 0;
+    const avgRating =
+      spot.Reviews.reduce((sum, review) => sum + review.stars, 0) /
+        spot.Reviews.length || 0;
     spot.avgRating = avgRating;
 
-    const previewImage = spot.SpotImages.find((image) => image.preview === true);
+    const previewImage = spot.SpotImages.find(
+      (image) => image.preview === true
+    );
     let otherImages = spot.SpotImages.filter((image) => !image.preview);
 
     console.log(`Other images before any modification: ${otherImages.length}`);
 
     if (otherImages.length === 0 && previewImage) {
-      console.log(`No other images found for spot ${spot.id}, using preview image.`);
+      console.log(
+        `No other images found for spot ${spot.id}, using preview image.`
+      );
       otherImages.push(previewImage);
     }
 
-    spot.previewImage = previewImage ? previewImage.url : "No preview image found";
-    spot.otherImages = otherImages.map((image) => ({ url: image.url, preview: image.preview }));
+    spot.previewImage = previewImage
+      ? previewImage.url
+      : "No preview image found";
+    spot.otherImages = otherImages.map((image) => ({
+      url: image.url,
+      preview: image.preview,
+    }));
 
-    console.log(`Final other images count for spot ${spot.id}: ${spot.otherImages.length}`);
+    console.log(
+      `Final other images count for spot ${spot.id}: ${spot.otherImages.length}`
+    );
 
     delete spot.Reviews;
     delete spot.SpotImages;
@@ -735,7 +774,6 @@ const processSpots = (spots) => {
     return spot;
   });
 };
-
 
 const getPagination = (queryParams) => {
   let { page, size } = queryParams;
