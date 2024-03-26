@@ -108,19 +108,32 @@ export default function SpotForm({ formType, spotId }) {
 
   // **********handleImages******************
 
-  const handleImageChange = (e, fieldName) => {
+  const handlePreviewImageChange = (e) => {
+    const file = e.target.files[0];
+    console.log("Before setting preview image, selectedFiles:", selectedFiles);
+    setSelectedFiles({
+      ...selectedFiles,
+      previewImage: { file, preview: true },
+    });
+    console.log("After setting preview image, selectedFiles:", selectedFiles);
+  };
+
+  const handleAdditionalImagesChange = (e) => {
     const files = Array.from(e.target.files);
-    if (fieldName === "previewImage") {
-      setSelectedFiles((prevFiles) => ({
-        ...prevFiles,
-        [fieldName]: e.target.files[0],
-      }));
-    } else if (fieldName === "additionalImages") {
-      setSelectedFiles((prevFiles) => ({
-        ...prevFiles,
-        [fieldName]: [...(prevFiles.additionalImages || []), ...files],
-      }));
-    }
+    console.log("Received additional files:", files);
+
+    const additionalFilesWithFlag = files.map(file => ({ file, preview: false }));
+    console.log("Before setting additional images, selectedFiles:", selectedFiles);
+
+    setSelectedFiles(current => {
+      console.log("Current state in update function:", current);
+      const update = {
+        ...current,
+        additionalImages: [...(current.additionalImages || []), ...additionalFilesWithFlag],
+      };
+      console.log("Updated state to set:", update);
+      return update;
+    });
   };
 
   // ****************************************
@@ -155,6 +168,13 @@ export default function SpotForm({ formType, spotId }) {
       return;
     }
 
+    const previewImageFile = selectedFiles.previewImage?.file;
+    const previewImageName = previewImageFile?.name;
+
+    const additionalImageFiles = selectedFiles.additionalImages?.map(imageObj => imageObj.file) || [];
+
+    const newSpotImages = previewImageFile ? [previewImageFile, ...additionalImageFiles] : additionalImageFiles;
+
     // Prepare spot details
     const spotDetails = {
       address,
@@ -178,7 +198,7 @@ export default function SpotForm({ formType, spotId }) {
       if (formType === "Create") {
         // Dispatch the thunk for creating a spot and uploading images
         const actionResult = await dispatch(
-          createSpotThunk(spotDetails, imageFiles, sessionUser)
+          createSpotThunk(spotDetails, newSpotImages, previewImageName, sessionUser)
         );
         if (actionResult.error) {
           throw new Error(
@@ -332,7 +352,8 @@ export default function SpotForm({ formType, spotId }) {
                   style={{ display: "none" }}
                   id="preview-image-upload"
                   type="file"
-                  onChange={(e) => handleImageChange(e, "previewImage")}
+                  // onChange={(e) => handleImageChange(e, "previewImage")}
+                  onChange={(e) => handlePreviewImageChange(e, "previewImage")}
                 />
                 <label htmlFor="preview-image-upload">
                   <Button
@@ -365,7 +386,8 @@ export default function SpotForm({ formType, spotId }) {
                   id="additional-images-upload"
                   type="file"
                   multiple
-                  onChange={(e) => handleImageChange(e, "additionalImages")}
+                  // onChange={(e) => handleImageChange(e, "additionalImages")}
+                  onChange={(e) =>  handleAdditionalImagesChange(e, "additionalImages")}
                 />
                 <label htmlFor="additional-images-upload">
                   <Button
