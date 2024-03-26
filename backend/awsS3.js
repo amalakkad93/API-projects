@@ -6,6 +6,7 @@ const { Upload } = require("@aws-sdk/lib-storage");
 const path = require("path");
 const fs = require('fs');
 const util = require('util');
+const { v4: uuidv4 } = require('uuid');
 
 const s3 = new AWS.S3({ apiVersion: '2012-10-17' });
 const s3Client = new S3Client({
@@ -24,7 +25,8 @@ const singleMulterUpload = (nameOfFileField) => multer({ storage }).single(nameO
 
 // Upload a single file to S3
 const singleFileUpload = async (file, isPublic = false) => {
-  const Key = `${new Date().getTime()}${path.extname(file.originalname)}`;
+
+  const Key = `${uuidv4()}-${new Date().getTime()}${path.extname(file.originalname)}`;
   const uploadParams = {
     Bucket: process.env.S3_BUCKET,
     Key,
@@ -40,7 +42,6 @@ const singleFileUpload = async (file, isPublic = false) => {
     throw new Error("Error uploading file");
   }
 };
-
 
 //
 const multipleMulterUpload = (nameOfFileField) => multer({ storage }).array(nameOfFileField);

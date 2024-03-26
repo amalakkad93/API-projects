@@ -78,7 +78,7 @@ export const searchSpotsThunk = (query) => async (dispatch) => {
     return data;
   } else {
     const errors = await res.json();
-    return Promise.reject(errors); 
+    return Promise.reject(errors);
   }
 };
 
@@ -115,50 +115,100 @@ export const searchSpotsThunk = (query) => async (dispatch) => {
 //   }
 // }
 
-export const createSpotThunk =
-  (newSpot, newSpotImages, sessionUser) => async (dispatch) => {
-    const createSpotResponse = await csrfFetch("/api/spots", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(newSpot),
-    });
 
-    if (!createSpotResponse.ok) {
-      const errors = await createSpotResponse.json();
-      throw new Error(errors.message || "Failed to create spot.");
-    }
+// Frontend: Adjusting to include preview image name in the image upload request.
+export const createSpotThunk = (newSpot, newSpotImages, previewImageName, sessionUser) => async (dispatch) => {
+  console.log("Creating new spot with details:", newSpot); 
+  console.log("Preview image name:", previewImageName);
 
-    const newlyCreatedSpot = await createSpotResponse.json();
+  const createSpotResponse = await csrfFetch("/api/spots", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(newSpot),
+  });
 
-    const spotId = newlyCreatedSpot.id;
-    const uploadImagePromises = newSpotImages.map(async (imageFile) => {
-      const formData = new FormData();
-      formData.append("image", imageFile);
+  if (!createSpotResponse.ok) {
+    const errors = await createSpotResponse.json();
+    throw new Error(errors.message || "Failed to create spot.");
+  }
 
-      const imageUploadResponse = await csrfFetch(
-        `/api/spots/${spotId}/images`,
-        {
-          method: "POST",
-          body: formData,
-        }
-      );
+  const newlyCreatedSpot = await createSpotResponse.json();
+  const spotId = newlyCreatedSpot.id;
 
-      if (!imageUploadResponse.ok) {
-        const error = await imageUploadResponse.json();
-        console.error(`Failed to upload image: ${error.message}`);
-        throw new Error(`Failed to upload image: ${error.message}`);
-      }
+  const formData = new FormData();
+  newSpotImages.forEach(imageFile => {
+    console.log("Appending file to formData:", imageFile.name);
+    formData.append("image", imageFile);
+  });
+  formData.append("previewImageName", previewImageName);
 
-      return await imageUploadResponse.json();
-    });
+  console.log("Sending image upload request for spotId:", spotId);
 
-    const uploadedImages = await Promise.all(uploadImagePromises);
+  const imageUploadResponse = await csrfFetch(`/api/spots/${spotId}/images`, {
+    method: "POST",
+    body: formData,
+  });
 
-    newlyCreatedSpot.images = uploadedImages;
-    dispatch(actionCreateSpot(newlyCreatedSpot));
+  if (!imageUploadResponse.ok) {
+    const error = await imageUploadResponse.json();
+    console.error(`Failed to upload images: ${error.message}`);
+    throw new Error(`Failed to upload images: ${error.message}`);
+  }
 
-    return newlyCreatedSpot;
-  };
+  const uploadedImages = await imageUploadResponse.json();
+  newlyCreatedSpot.images = uploadedImages;
+
+
+  dispatch(actionCreateSpot(newlyCreatedSpot));
+
+  return newlyCreatedSpot;
+};
+
+
+// export const createSpotThunk =
+//   (newSpot, newSpotImages, sessionUser) => async (dispatch) => {
+//     const createSpotResponse = await csrfFetch("/api/spots", {
+//       method: "POST",
+//       headers: { "Content-Type": "application/json" },
+//       body: JSON.stringify(newSpot),
+//     });
+
+//     if (!createSpotResponse.ok) {
+//       const errors = await createSpotResponse.json();
+//       throw new Error(errors.message || "Failed to create spot.");
+//     }
+
+//     const newlyCreatedSpot = await createSpotResponse.json();
+
+//     const spotId = newlyCreatedSpot.id;
+//     const uploadImagePromises = newSpotImages.map(async (imageFile) => {
+//       const formData = new FormData();
+//       formData.append("image", imageFile);
+
+//       const imageUploadResponse = await csrfFetch(
+//         `/api/spots/${spotId}/images`,
+//         {
+//           method: "POST",
+//           body: formData,
+//         }
+//       );
+
+//       if (!imageUploadResponse.ok) {
+//         const error = await imageUploadResponse.json();
+//         console.error(`Failed to upload image: ${error.message}`);
+//         throw new Error(`Failed to upload image: ${error.message}`);
+//       }
+
+//       return await imageUploadResponse.json();
+//     });
+
+//     const uploadedImages = await Promise.all(uploadImagePromises);
+
+//     newlyCreatedSpot.images = uploadedImages;
+//     dispatch(actionCreateSpot(newlyCreatedSpot));
+
+//     return newlyCreatedSpot;
+//   };
 
 // ***************************updateSpotThunk**************************
 // these functions hit routes
