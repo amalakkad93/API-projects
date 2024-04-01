@@ -19,7 +19,8 @@
   max-height: 90%;
   overflow-y: auto;
 
-  padding: 0 80px;
+  /* padding: 0 80px; */
+  padding: 46px 80px;
 
 
   display: flex;
@@ -27,6 +28,8 @@
   align-items: center;
   justify-content: start;
 }
+
+
 
 .modal-close-button {
   position: absolute;

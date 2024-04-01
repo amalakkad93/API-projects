@@ -41,6 +41,8 @@ const PhotoGalleryModal = ({ isOpen, images, closeModal }) => {
         </Masonry>
       </div>
     </div>
+
+
   );
 };
 
